@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NXT Ship - Shipping Aggregator</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #e0f2fe, #f8fafc);
+      color: #0f172a;
+      overflow-x: hidden;
+    }
+
+    /* Floating Animation */
+    @keyframes float {
+      0% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-12px);
+      }
+
+      100% {
+        transform: translateY(0px);
+      }
+    }
+
+    /* Fade Animation */
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    section {
+      animation: fadeUp 1s ease;
+    }
+
+    /* Navbar */
+    header {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(10px);
+      padding: 18px 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+    }
+
+    header h2 {
+      font-size: 24px;
+      font-weight: 900;
+      color: #2563eb;
+    }
+
+    nav a {
+      margin-left: 18px;
+      text-decoration: none;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    nav a:hover {
+      color: #2563eb;
+    }
+
+    .nav-btn {
+      padding: 8px 16px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+
+    .login-btn {
+      background: transparent;
+      border: 2px solid #2563eb;
+      color: #2563eb;
+    }
+
+    .signup-btn {
+      background: #2563eb;
+      color: white;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 90px 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 50px;
+    }
+
+    .hero-text {
+      max-width: 580px;
+      transform-style: preserve-3d;
+    }
+
+    .hero-text h1 {
+      font-size: 58px;
+      font-weight: 900;
+      line-height: 1.2;
+    }
+
+    .hero-text h3 {
+      margin-top: 15px;
+      font-size: 24px;
+      color: #2563eb;
+    }
+
+    .hero-text p {
+      margin-top: 20px;
+      font-size: 17px;
+      line-height: 1.7;
+      color: #475569;
+    }
+
+    /* Tracker Card */
+    .tracker-box {
+      background: white;
+      padding: 35px;
+      border-radius: 25px;
+      width: 400px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+      animation: float 4s ease-in-out infinite;
+      transform-style: preserve-3d;
+    }
+
+    .tracker-box h2 {
+      color: #2563eb;
+      margin-bottom: 10px;
+    }
+
+    .tracker-box input {
+      width: 100%;
+      padding: 12px;
+      margin: 15px 0;
+      border-radius: 12px;
+      border: 1px solid #cbd5e1;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      background: #2563eb;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      background: #1d4ed8;
+      transform: scale(1.03);
+    }
+
+    /* Sections */
+    .section {
+      padding: 90px 60px;
+      text-align: center;
+    }
+
+    .section h2 {
+      font-size: 40px;
+      margin-bottom: 15px;
+    }
+
+    .section p {
+      color: #475569;
+      max-width: 850px;
+      margin: auto;
+      line-height: 1.7;
+    }
+
+    /* Features Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+      margin-top: 50px;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      transition: 0.4s;
+      transform-style: preserve-3d;
+    }
+
+    .card:hover {
+      transform: translateY(-10px) rotateX(6deg) rotateY(-6deg);
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
+      color: #2563eb;
+    }
+
+    /* Testimonials */
+    .testimonial {
+      background: white;
+      padding: 25px;
+      border-radius: 18px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      font-style: italic;
+      transform-style: preserve-3d;
+      transition: 0.4s;
+    }
+
+    .testimonial:hover {
+      transform: translateY(-8px) rotateX(5deg) rotateY(5deg);
+    }
+
+    /* Footer */
+    footer {
+      background: #0f172a;
+      color: white;
+      padding: 50px 60px;
+      margin-top: 40px;
+    }
+
+    footer p {
+      color: #cbd5e1;
+      margin: 8px 0;
+    }
+
+    /* WhatsApp Floating Button FIX */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: #25D366;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      width: 150px;
+      height: 55px;
+      border-radius: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+      z-index: 999;
+      transition: 0.3s;
+    }
+
+    .whatsapp-float:hover {
+      transform: scale(1.08);
+      background: #1ebe5d;
+    }
+
+    /* =============================== */
+/* 🌍 3D Courier Map Section CSS   */
+/* =============================== */
+
+/* Moving Grid Background */
+@keyframes gridMove {
+  0% {
+    transform: translateY(0px);
+  }
+  100% {
+    transform: translateY(40px);
+  }
+}
+
+/* Pin Pulse Animation */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.6);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+}
+
+/* 🚚 Truck Moving Animation */
+@keyframes truckMove {
+  0% {
+    left: -80px;
+    transform: rotate(-5deg);
+  }
+  100% {
+    left: 110%;
+    transform: rotate(5deg);
+  }
+}
+
+/* Truck Styling */
+.truck {
+  position: absolute;
+  bottom: 85px;
+  font-size: 42px;
+  animation: truckMove 7s linear infinite;
+  z-index: 10;
+}
+
+/* Second Truck */
+.truck2 {
+  bottom: 115px;
+  font-size: 36px;
+  animation-duration: 10s;
+  opacity: 0.9;
+}
+
+/* 📦 Parcel Trail Animation */
+@keyframes parcelMove {
+  0% {
+    left: -60px;
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    left: 110%;
+    opacity: 0;
+    transform: scale(1.2);
+  }
+}
+
+/* Parcel Styling */
+.parcel {
+  position: absolute;
+  bottom: 60px;
+  font-size: 24px;
+  animation: parcelMove 7s linear infinite;
+  z-index: 9;
+}
+
+/* Second Parcel Delay */
+.parcel2 {
+  animation-delay: 2s;
+}
+
+/* 🛣️ Curved Road Line */
+.route-line {
+  position: absolute;
+  top: 58%;
+  left: -20%;
+  width: 140%;
+  height: 120px;
+  border-top: 4px dashed rgba(255, 255, 255, 0.75);
+  border-radius: 50%;
+  transform: rotate(-8deg);
+  animation: roadDash 3s linear infinite;
+}
+
+/* Road Dash Glow Effect */
+@keyframes roadDash {
+  from {
+    opacity: 0.4;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+
+    @keyframes gridMove {
+      0% {
+        transform: translateY(0px);
+      }
+
+      100% {
+        transform: translateY(40px);
+      }
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        opacity: 0.7;
+      }
+
+      50% {
+        transform: scale(1.6);
+        opacity: 1;
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 0.7;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <header>
+    <h2>NXT Ship 🚚</h2>
+    <nav>
+      <a href="#features">Features</a>
+      <a href="#services">Services</a>
+      <a href="#testimonials">Reviews</a>
+      <a href="#contact">Contact</a>
+
+      <button class="nav-btn login-btn" onclick="window.location.href='login.html'">Login</button>
+      <button class="nav-btn signup-btn" onclick="window.location.href='signup.html'">Sign Up</button>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+
+    <div class="hero-text">
+      <h1>The Shipping Aggregator</h1>
+      <h3>Fast. Reliable. Affordable.</h3>
+
+      <p>
+        NXT Ship is a trusted shipping aggregator providing seamless courier and logistics solutions across India.
+        We connect customers with multiple leading courier partners to ensure the best rates, fastest delivery,
+        and secure shipping services.
+      </p>
+
+      <p>
+        Whether it’s documents, parcels, bulk shipments, or business logistics,
+        NXT Ship ensures door pickup, live tracking, and smooth delivery support.
+      </p>
+    </div>
+
+    <!-- Tracker -->
+    <div class="tracker-box">
+      <h2>📦 Track Shipment</h2>
+      <p>Enter your AWB / Tracking Number</p>
+
+      <input type="text" id="awb" placeholder="Enter AWB Number">
+      <button class="btn" onclick="trackShipment()">Track Now</button>
+
+      <p id="trackResult" style="margin-top:15px;font-weight:bold;"></p>
+    </div>
+
+  </section>
+
+  <!-- Features -->
+  <section class="section" id="features">
+    <h2>Powerful Features</h2>
+    <p>
+      NXT Ship gives you the best courier services with advanced shipping tools,
+      business automation, and secure delivery networks.
+    </p>
+
+    <div class="grid">
+      <div class="card">
+        <h3>🚀 Express Delivery</h3>
+        <p>Fast nationwide delivery with trusted courier partners.</p>
+      </div>
+
+      <div class="card">
+        <h3>📍 Live Tracking</h3>
+        <p>Track shipments anytime with real-time updates.</p>
+      </div>
+
+      <div class="card">
+        <h3>💰 Best Pricing</h3>
+        <p>Compare courier rates and save more on every order.</p>
+      </div>
+
+      <div class="card">
+        <h3>🔒 Secure Handling</h3>
+        <p>Safe parcel handling and insured delivery support.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Moving Truck -->
+
+  <!-- =============================== -->
+  <!-- 🌍 3D Courier Network Map Section -->
+  <!-- =============================== -->
+
+  <section style="padding:90px 60px; text-align:center;">
+
+    <h2 style="font-size:40px; margin-bottom:15px;">
+      Courier Network Integration
+    </h2>
+
+    <p style="color:#475569; max-width:850px; margin:auto; line-height:1.7;">
+      NXT Ship connects customers with multiple courier partners across India,
+      providing faster delivery, smart routing, and secure shipment handling.
+    </p>
+
+    <!-- 3D Map Box -->
+    <div style="
+    margin-top:50px;
+    height:280px;
+    border-radius:22px;
+    position:relative;
+    overflow:hidden;
+    background:linear-gradient(135deg,#0ea5e9,#e0f2fe);
+    box-shadow:0 20px 45px rgba(0,0,0,0.18);
+    transform: perspective(1200px) rotateX(12deg);
+    ">
+
+      <!-- Moving Grid Background -->
+      <div style="
+      position:absolute;
+      inset:0;
+      background-image:linear-gradient(rgba(255,255,255,0.15) 1px, transparent 1px),
+                       linear-gradient(90deg, rgba(255,255,255,0.15) 1px, transparent 1px);
+      background-size:40px 40px;
+      animation:gridMove 6s linear infinite;
+    "></div>
+
+      <!-- Curved Courier Route -->
+      <div class="route-line"></div>
+
+      <!-- Location Pins -->
+      <div style="
+      position:absolute;
+      top:42%;
+      left:25%;
+      width:18px;
+      height:18px;
+      background:#ef4444;
+      border-radius:50%;
+      box-shadow:0 0 15px rgba(239,68,68,0.9);
+      animation:pulse 1.5s infinite;
+    "></div>
+
+      <div style="
+      position:absolute;
+      top:55%;
+      left:55%;
+      width:18px;
+      height:18px;
+      background:#22c55e;
+      border-radius:50%;
+      box-shadow:0 0 15px rgba(34,197,94,0.9);
+      animation:pulse 1.8s infinite;
+    "></div>
+
+      <div style="
+      position:absolute;
+      top:30%;
+      left:75%;
+      width:18px;
+      height:18px;
+      background:#facc15;
+      border-radius:50%;
+      box-shadow:0 0 15px rgba(250,204,21,0.9);
+      animation:pulse 2s infinite;
+    "></div>
+
+      <!-- 🚚 Moving Trucks -->
+      <div class="truck truck1">🚚</div>
+      <div class="truck truck2">🚛</div>
+
+      <!-- 📦 Parcel Trail -->
+      <div class="parcel parcel1">📦</div>
+      <div class="parcel parcel2">📦</div>
+
+      <!-- Label -->
+      <div style="
+      position:absolute;
+      bottom:15px;
+      left:50%;
+      transform:translateX(-50%);
+      background:rgba(255,255,255,0.9);
+      padding:10px 20px;
+      border-radius:14px;
+      font-weight:bold;
+      color:#0f172a;
+      box-shadow:0 10px 20px rgba(0,0,0,0.15);
+    ">
+        🌍 Live Courier Network Map
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- Services -->
+  <section class="section" id="services">
+    <h2>Our Services</h2>
+    <p>
+      We provide complete courier and logistics solutions for individuals,
+      ecommerce businesses, and enterprises.
+    </p>
+
+    <div class="grid">
+      <div class="card">
+        <h3>📦 Bulk Shipping</h3>
+        <p>Business logistics and bulk parcel shipping across India.</p>
+      </div>
+
+      <div class="card">
+        <h3>🚚 Door Pickup</h3>
+        <p>Pickup service from your doorstep with scheduled support.</p>
+      </div>
+
+      <div class="card">
+        <h3>🏢 Enterprise Logistics</h3>
+        <p>Custom shipping solutions for companies & warehouses.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="section" id="testimonials">
+    <h2>Customer Reviews</h2>
+    <p>Trusted by businesses and customers across India.</p>
+
+    <div class="grid">
+
+      <div class="testimonial">
+        <img src="https://randomuser.me/api/portraits/men/32.jpg"
+          style="width:60px;height:60px;border-radius:50%;margin-bottom:10px;">
+        <h4>Rahul Sharma</h4>
+        ⭐⭐⭐⭐⭐ <br>
+        "NXT Ship made shipping so easy and affordable for my ecommerce store!"
+      </div>
+
+      <div class="testimonial">
+        <img src="https://randomuser.me/api/portraits/women/45.jpg"
+          style="width:60px;height:60px;border-radius:50%;margin-bottom:10px;">
+        <h4>Anjali Verma</h4>
+        ⭐⭐⭐⭐⭐ <br>
+        "Fast delivery, excellent tracking support. Highly recommended."
+      </div>
+
+      <div class="testimonial">
+        <img src="https://randomuser.me/api/portraits/men/65.jpg"
+          style="width:60px;height:60px;border-radius:50%;margin-bottom:10px;">
+        <h4>Mohit Singh</h4>
+        ⭐⭐⭐⭐⭐ <br>
+        "Best courier aggregator with competitive pricing."
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer id="contact">
+    <h2>NXT Ship 🚚</h2>
+    <p>📍 Main Branch: Hyderabad – 500055</p>
+    <p>📞 Contact: 9553281751 | 9391332253</p>
+    <p>📧 Email: linqjune416410@gmail.com</p>
+    <p style="margin-top:20px;">© 2026 NXT Ship. All Rights Reserved.</p>
+  </footer>
+
+  <!-- WhatsApp Support Button -->
+  <a href="https://wa.me/919553281751" target="_blank" class="whatsapp-float">
+    💬 Support
+  </a>
+
+  <!-- JS -->
+  <script>
+    function trackShipment() {
+      let awb = document.getElementById("awb").value;
+      let result = document.getElementById("trackResult");
+
+      if (awb === "") {
+        result.style.color = "red";
+        result.innerText = "⚠️ Please enter an AWB number.";
+      } else {
+        result.style.color = "green";
+        result.innerText =
+          "✅ Shipment " + awb + " is currently In Transit 🚚";
+      }
+    }
+  </script>
+
+</body>
+
+</html>
