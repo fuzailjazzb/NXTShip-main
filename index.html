@@ -137,6 +137,16 @@
       color: #475569;
     }
 
+    /*Tracker Container */
+    .tracker-container {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      gap: 30px;
+      justify-content: center;
+      align-items: center;
+    }
+
     /* Tracker Card */
     .tracker-box {
       background: white;
@@ -146,9 +156,7 @@
       box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
       animation: float 4s ease-in-out infinite;
       transform-style: preserve-3d;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+
     }
 
     .tracker-box h2 {
@@ -470,7 +478,9 @@
 
   </section>
 
-  <!-- Tracker -->
+  <div class="tracker-container">
+
+     <!-- Tracker -->
   <div class="tracker-box">
     <h2>📦 Track Shipment</h2>
     <p>Enter your AWB / Tracking Number</p>
@@ -496,6 +506,8 @@
     <p id="pinResult" style="margin-top:12px;font-weight:bold;"></p>
   </div>
 
+
+  </div>
   <!-- Features -->
   <section class="section" id="features">
     <h2>Powerful Features</h2>
