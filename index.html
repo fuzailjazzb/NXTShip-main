@@ -466,6 +466,31 @@
       <p id="trackResult" style="margin-top:15px;font-weight:bold;"></p>
     </div>
 
+    <!-- Tracker -->
+    <div class="tracker-box">
+      <h2>📦 Track Shipment</h2>
+      <p>Enter your AWB / Tracking Number</p>
+
+      <input type="text" id="awb" placeholder="Enter AWB Number">
+      <button class="btn" onclick="trackShipment()">Track Now</button>
+
+      <p id="trackResult" style="margin-top:15px;font-weight:bold;"></p>
+
+      <!-- ✅ PIN Check Added -->
+      <hr style="margin:20px 0;border:1px solid #e2e8f0;">
+
+      <h2 style="font-size:18px;">📍 Check PIN Availability</h2>
+      <p style="font-size:14px;color:#64748b;">
+        Enter delivery PIN to check courier service
+      </p>
+
+      <input type="text" id="pin" placeholder="Enter PIN Code">
+      <button class="btn" onclick="checkPin()">Check Availability</button>
+
+      <p id="pinResult" style="margin-top:12px;font-weight:bold;"></p>
+    </div>
+
+
   </section>
 
   <!-- Features -->
@@ -696,6 +721,75 @@
           "✅ Shipment " + awb + " is currently In Transit 🚚";
       }
     }
+
+    const BACKEND_URL = "https://nxtship-backend.onrender.com";
+
+    // ✅ Track Shipment Live
+    async function trackShipment() {
+      let awb = document.getElementById("awb").value;
+      let result = document.getElementById("trackResult");
+
+      if (awb.trim() === "") {
+        result.style.color = "red";
+        result.innerText = "⚠️ Please enter an AWB number.";
+        return;
+      }
+
+      result.style.color = "black";
+      result.innerText = "Tracking... ⏳";
+
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/shipment/track/${awb}`);
+        const data = await res.json();
+
+        if (data.success) {
+          result.style.color = "green";
+          result.innerText =
+            "✅ Status: " + data.status + " | Location: " + data.location;
+        } else {
+          result.style.color = "red";
+          result.innerText = "❌ Tracking Not Found!";
+        }
+      } catch (err) {
+        result.style.color = "red";
+        result.innerText = "Server Error ❌ Backend not reachable";
+      }
+    }
+
+    // ✅ PIN Availability Live
+    async function checkPin() {
+      let pin = document.getElementById("pin").value;
+      let pinResult = document.getElementById("pinResult");
+
+      if (pin.trim() === "") {
+        pinResult.style.color = "red";
+        pinResult.innerText = "⚠️ Please enter a PIN code.";
+        return;
+      }
+
+      pinResult.style.color = "black";
+      pinResult.innerText = "Checking... ⏳";
+
+      try {
+        const res = await fetch(`${BACKEND_URL}/api/shipment/pin/${pin}`);
+        const data = await res.json();
+
+        if (data.success) {
+          pinResult.style.color = "green";
+          pinResult.innerText =
+            "✅ Service Available in PIN: " + pin;
+        } else {
+          pinResult.style.color = "red";
+          pinResult.innerText =
+            "❌ Not Serviceable in this PIN";
+        }
+      } catch (err) {
+        pinResult.style.color = "red";
+        pinResult.innerText =
+          "Server Error ❌ Unable to check PIN";
+      }
+    }
+
   </script>
 
 </body>
