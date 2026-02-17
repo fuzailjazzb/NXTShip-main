@@ -146,6 +146,9 @@
       box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
       animation: float 4s ease-in-out infinite;
       transform-style: preserve-3d;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .tracker-box h2 {
@@ -278,117 +281,124 @@
     }
 
     /* =============================== */
-/* 🌍 3D Courier Map Section CSS   */
-/* =============================== */
+    /* 🌍 3D Courier Map Section CSS   */
+    /* =============================== */
 
-/* Moving Grid Background */
-@keyframes gridMove {
-  0% {
-    transform: translateY(0px);
-  }
-  100% {
-    transform: translateY(40px);
-  }
-}
+    /* Moving Grid Background */
+    @keyframes gridMove {
+      0% {
+        transform: translateY(0px);
+      }
 
-/* Pin Pulse Animation */
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-    opacity: 0.7;
-  }
-  50% {
-    transform: scale(1.6);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 0.7;
-  }
-}
+      100% {
+        transform: translateY(40px);
+      }
+    }
 
-/* 🚚 Truck Moving Animation */
-@keyframes truckMove {
-  0% {
-    left: -80px;
-    transform: rotate(-5deg);
-  }
-  100% {
-    left: 110%;
-    transform: rotate(5deg);
-  }
-}
+    /* Pin Pulse Animation */
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        opacity: 0.7;
+      }
 
-/* Truck Styling */
-.truck {
-  position: absolute;
-  bottom: 85px;
-  font-size: 42px;
-  animation: truckMove 7s linear infinite;
-  z-index: 10;
-}
+      50% {
+        transform: scale(1.6);
+        opacity: 1;
+      }
 
-/* Second Truck */
-.truck2 {
-  bottom: 115px;
-  font-size: 36px;
-  animation-duration: 10s;
-  opacity: 0.9;
-}
+      100% {
+        transform: scale(1);
+        opacity: 0.7;
+      }
+    }
 
-/* 📦 Parcel Trail Animation */
-@keyframes parcelMove {
-  0% {
-    left: -60px;
-    opacity: 0;
-    transform: scale(0.7);
-  }
-  30% {
-    opacity: 1;
-  }
-  100% {
-    left: 110%;
-    opacity: 0;
-    transform: scale(1.2);
-  }
-}
+    /* 🚚 Truck Moving Animation */
+    @keyframes truckMove {
+      0% {
+        left: -80px;
+        transform: rotate(-5deg);
+      }
 
-/* Parcel Styling */
-.parcel {
-  position: absolute;
-  bottom: 60px;
-  font-size: 24px;
-  animation: parcelMove 7s linear infinite;
-  z-index: 9;
-}
+      100% {
+        left: 110%;
+        transform: rotate(5deg);
+      }
+    }
 
-/* Second Parcel Delay */
-.parcel2 {
-  animation-delay: 2s;
-}
+    /* Truck Styling */
+    .truck {
+      position: absolute;
+      bottom: 85px;
+      font-size: 42px;
+      animation: truckMove 7s linear infinite;
+      z-index: 10;
+    }
 
-/* 🛣️ Curved Road Line */
-.route-line {
-  position: absolute;
-  top: 58%;
-  left: -20%;
-  width: 140%;
-  height: 120px;
-  border-top: 4px dashed rgba(255, 255, 255, 0.75);
-  border-radius: 50%;
-  transform: rotate(-8deg);
-  animation: roadDash 3s linear infinite;
-}
+    /* Second Truck */
+    .truck2 {
+      bottom: 115px;
+      font-size: 36px;
+      animation-duration: 10s;
+      opacity: 0.9;
+    }
 
-/* Road Dash Glow Effect */
-@keyframes roadDash {
-  from {
-    opacity: 0.4;
-  }
-  to {
-    opacity: 1;
-  }
-}
+    /* 📦 Parcel Trail Animation */
+    @keyframes parcelMove {
+      0% {
+        left: -60px;
+        opacity: 0;
+        transform: scale(0.7);
+      }
+
+      30% {
+        opacity: 1;
+      }
+
+      100% {
+        left: 110%;
+        opacity: 0;
+        transform: scale(1.2);
+      }
+    }
+
+    /* Parcel Styling */
+    .parcel {
+      position: absolute;
+      bottom: 60px;
+      font-size: 24px;
+      animation: parcelMove 7s linear infinite;
+      z-index: 9;
+    }
+
+    /* Second Parcel Delay */
+    .parcel2 {
+      animation-delay: 2s;
+    }
+
+    /* 🛣️ Curved Road Line */
+    .route-line {
+      position: absolute;
+      top: 58%;
+      left: -20%;
+      width: 140%;
+      height: 120px;
+      border-top: 4px dashed rgba(255, 255, 255, 0.75);
+      border-radius: 50%;
+      transform: rotate(-8deg);
+      animation: roadDash 3s linear infinite;
+    }
+
+    /* Road Dash Glow Effect */
+    @keyframes roadDash {
+      from {
+        opacity: 0.4;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
 
 
     @keyframes gridMove {
@@ -455,36 +465,36 @@
       </p>
     </div>
 
-   
+
 
 
   </section>
 
-   <!-- Tracker -->
-    <div class="tracker-box">
-      <h2>📦 Track Shipment</h2>
-      <p>Enter your AWB / Tracking Number</p>
+  <!-- Tracker -->
+  <div class="tracker-box">
+    <h2>📦 Track Shipment</h2>
+    <p>Enter your AWB / Tracking Number</p>
 
-      <input type="text" id="awb" placeholder="Enter AWB Number">
-      <button class="btn" onclick="trackShipment()">Track Now</button>
+    <input type="text" id="awb" placeholder="Enter AWB Number">
+    <button class="btn" onclick="trackShipment()">Track Now</button>
 
-      <p id="trackResult" style="margin-top:15px;font-weight:bold;"></p>
-    </div>
+    <p id="trackResult" style="margin-top:15px;font-weight:bold;"></p>
+  </div>
 
-    <!-- Tracker -->
-    <div class="tracker-box">
-      
-      <!-- ✅ PIN Check Added -->
-      <h2 style="font-size:18px;">📍 Check PIN Availability</h2>
-      <p style="font-size:14px;color:#64748b;">
-        Enter delivery PIN to check courier service
-      </p>
+  <!-- Tracker -->
+  <div class="tracker-box">
 
-      <input type="text" id="pin" placeholder="Enter PIN Code">
-      <button class="btn" onclick="checkPin()">Check Availability</button>
+    <!-- ✅ PIN Check Added -->
+    <h2 style="font-size:18px;">📍 Check PIN Availability</h2>
+    <p style="font-size:14px;color:#64748b;">
+      Enter delivery PIN to check courier service
+    </p>
 
-      <p id="pinResult" style="margin-top:12px;font-weight:bold;"></p>
-    </div>
+    <input type="text" id="pin" placeholder="Enter PIN Code">
+    <button class="btn" onclick="checkPin()">Check Availability</button>
+
+    <p id="pinResult" style="margin-top:12px;font-weight:bold;"></p>
+  </div>
 
   <!-- Features -->
   <section class="section" id="features">
