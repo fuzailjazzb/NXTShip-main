@@ -786,7 +786,7 @@
       pinResult.innerText = "Checking... ⏳";
 
       try {
-        const res = await fetch(`${BACKEND_URL}/api/shipment/pincode/${pin}`);
+        const res = await fetch(`${BACKEND_URL}/api/shipment/pin/${pin}`);
         const data = await res.json();
 
         if (data.success) {
