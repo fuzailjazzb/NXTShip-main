@@ -470,75 +470,6 @@
             }
           }
 
-          async function addMoneyToWallet() {
-
-            const amount = Number(document.getElementById("addAmount").value);
-            if (!amount || amount <= 0) {
-              return showtoast("Please enter a valid amount to add.");
-            }
-
-            try {
-              const res = await fetch("https://nxtship-backend.onrender.com/api/wallet/add-funds", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${localStorage.getItem("customerToken")}`,
-                },
-                body: JSON.stringify({ amount }),
-              });
-
-              const data = await res.json();
-              console.log("📌 Add Money API Response:", data);
-
-              showPopup("💰 " + (data.message || "Money Added Successfully!"));
-              document.getElementById("walletBalance").innerText = data.balance;
-
-              // Refresh transaction history after adding money
-              loadTransactions();
-            }
-            catch (err) {
-              console.log("❌ Error adding money to wallet:", err);
-              showPopup("Error adding money. Please try again.");
-            }
-          }
-
-          // Transaction History Load
-
-          async function loadTransactions() {
-            console.log("📈 Fetching Transaction History...");
-            try {
-              const res = await fetch("https://nxtship-backend.onrender.com/api/wallet/transactions", {
-                method: "GET",
-                headers: {
-                  Authorization: `Bearer ${localStorage.getItem("customerToken")}`,
-                },
-              });
-              const data = await res.json();
-
-              console.log("📌 Transactions API Response:", data);
-
-              const list = document.getElementById("transactionList");
-
-              if (!data.transactions.length) {
-                list.innerHTML = "<p>No transactions found.</p>";
-                return;
-              }
-
-              list.innerHTML = data.transactions.map(tx => `
-                <div class="tx-item">
-                  <b>₹${tx.amount}</b> - ${tx.message}<br/>
-                  <small>${new Date(tx.date).toLocaleString()}</small>
-                </div>
-              `)
-              .join("");
-            } catch (err) {
-              console.error("❌ Error fetching transactions:", err);
-              document.getElementById("transactionList").innerHTML = "<p style='color:red;'>Error loading transactions.</p>";
-            }
-          }
-
-
-
           loadWalletBalance();
           setInterval(loadWalletBalance, 30000); // Refresh every 30 seconds
           break;
@@ -609,6 +540,74 @@
           content.innerHTML = `<h2>❌ Section Not Found</h2>`;
       }
     }
+
+    async function addMoneyToWallet() {
+
+      const amount = Number(document.getElementById("addAmount").value);
+      if (!amount || amount <= 0) {
+        return showtoast("Please enter a valid amount to add.");
+      }
+
+      try {
+        const res = await fetch("https://nxtship-backend.onrender.com/api/wallet/add-funds", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("customerToken")}`,
+          },
+          body: JSON.stringify({ amount }),
+        });
+
+        const data = await res.json();
+        console.log("📌 Add Money API Response:", data);
+
+        showPopup("💰 " + (data.message || "Money Added Successfully!"));
+        document.getElementById("walletBalance").innerText = data.balance;
+
+        // Refresh transaction history after adding money
+        loadTransactions();
+      }
+      catch (err) {
+        console.log("❌ Error adding money to wallet:", err);
+        showPopup("Error adding money. Please try again.");
+      }
+    }
+
+    // Transaction History Load
+
+    async function loadTransactions() {
+      console.log("📈 Fetching Transaction History...");
+      try {
+        const res = await fetch("https://nxtship-backend.onrender.com/api/wallet/transactions", {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("customerToken")}`,
+          },
+        });
+        const data = await res.json();
+
+        console.log("📌 Transactions API Response:", data);
+
+        const list = document.getElementById("transactionList");
+
+        if (!data.transactions.length) {
+          list.innerHTML = "<p>No transactions found.</p>";
+          return;
+        }
+
+        list.innerHTML = data.transactions.map(tx => `
+                <div class="tx-item">
+                  <b>₹${tx.amount}</b> - ${tx.message}<br/>
+                  <small>${new Date(tx.date).toLocaleString()}</small>
+                </div>
+              `)
+          .join("");
+      } catch (err) {
+        console.error("❌ Error fetching transactions:", err);
+        document.getElementById("transactionList").innerHTML = "<p style='color:red;'>Error loading transactions.</p>";
+      }
+    }
+
 
     // ✅ Track Order Dummy
     function trackOrder() {
