@@ -2,240 +2,260 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NXT Ship Customer Dashboard</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NXT Ship Customer Dashboard</title>
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f4f6fb;
-            display: flex;
-        }
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6fb;
 
-        /* Sidebar */
-        .sidebar {
-            width: 260px;
-            height: 100vh;
-            background: linear-gradient(to bottom, #06142f, #0b234d);
-            padding: 25px;
-            color: white;
-            position: fixed;
-            left: -260px;
-            top: 0;
-            overflow-y: auto;
-            z-index: 1000;
-            transition: 0.3s ease;
-        }
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
 
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      height: 100vh;
+      background: linear-gradient(to bottom, #06142f, #0b234d);
+      padding: 25px;
+      color: white;
 
-        @media(min-width: 801px) {
-            .sidebar {
-                left: 0;
-            }
+      position: fixed;
+      top: 0;
+      left: 0;
 
-            .main {
-                margin-left: 260px;
-            }
-        }
+      overflow-y: auto;
+      z-index: 1000;
 
-        .sidebar h2 {
-            font-size: 22px;
-            margin-bottom: 25px;
-            font-weight: bold;
-        }
+      transform: translateX(-100%);
+      transition: transform 0.35s ease-in-out;
+    }
 
-        .menu-item {
-            padding: 14px;
-            margin: 8px 0;
-            border-radius: 10px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 16px;
-            transition: 0.3s;
-        }
+    /* Sidebar Open Animation */
+    .sidebar.open {
+      transform: translateX(0);
+      box-shadow: 4px 0 20px rgba(0, 0, 0, 0.4);
+    }
 
-        .menu-item:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
+    /* Desktop Mode */
+    @media(min-width: 801px) {
+      .sidebar {
+        transform: translateX(0);
+      }
 
-        .menu-item.active {
-            background: rgba(255, 255, 255, 0.25);
-        }
+      .main {
+        margin-left: 260px;
+      }
+    }
 
-        /* Main Content */
-        .main {
-            margin-left: 0;
-            width: 100%;
-            padding: 30px;
-            transition: 0.3s ease;
-        }
+    .sidebar h2 {
+      font-size: 22px;
+      margin-bottom: 25px;
+      font-weight: bold;
+    }
 
-        .topbar {
-            background: white;
-            padding: 15px 20px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-        }
+    .menu-item {
+      padding: 14px;
+      margin: 8px 0;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 16px;
+      transition: 0.25s;
+    }
 
-        .topbar h1 {
-            font-size: 22px;
-            margin: 0;
-        }
+    .menu-item:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateX(5px);
+    }
 
-        .content-box {
-            margin-top: 25px;
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            min-height: 450px;
-            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
-        }
+    .menu-item.active {
+      background: rgba(255, 255, 255, 0.25);
+    }
 
-        input,
-        button,
-        textarea {
-            padding: 10px;
-            margin: 8px 0;
-            width: 90%;
-            border-radius: 8px;
-            border: 1px solid #ddd;
-            font-size: 15px;
-        }
+    /* Main Content */
+    .main {
+      width: 100%;
+      padding: 30px;
+      transition: margin-left 0.3s ease;
+    }
 
-        button {
-            background: #2563eb;
-            color: white;
-            border: none;
-            cursor: pointer;
-            width: auto;
-            padding: 10px 18px;
-        }
+    .topbar {
+      background: white;
+      padding: 15px 20px;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    }
 
-        button:hover {
-            opacity: 0.85;
-        }
+    .topbar h1 {
+      font-size: 22px;
+      margin: 0;
+    }
 
-        /* Mobile Menu Button */
-        .menu-btn {
-            display: none;
-            font-size: 22px;
-            background: #2563eb;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 10px;
-            cursor: pointer;
-        }
+    .content-box {
+      margin-top: 25px;
+      background: white;
+      padding: 25px;
+      border-radius: 15px;
+      min-height: 450px;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
 
-        /* Sidebar Responsive */
-       
-        /* Responsive */
-        @media(max-width: 801px) {
-            .sidebar {
-                position: fixed;
-                left: -260px;
-                top: 0;
-                height: 100%;
-                transition: 0.3s ease;
-                z-index: 999;
-            }
+      animation: fadeIn 0.3s ease;
+    }
 
-            .sidebar.open {
-                left: 0;
-            }
+    /* Fade Animation */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
 
-            .main {
-                margin-left: 0 !important;
-            }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
-            .menu-btn {
-                display: block;
-            }
-        }
-    </style>
+    input,
+    button,
+    textarea {
+      padding: 10px;
+      margin: 8px 0;
+      width: 90%;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 15px;
+    }
+
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      cursor: pointer;
+      width: auto;
+      padding: 10px 18px;
+    }
+
+    button:hover {
+      opacity: 0.85;
+    }
+
+    /* Mobile Menu Button */
+    .menu-btn {
+      display: none;
+      font-size: 22px;
+      background: #2563eb;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    /* Mobile Responsive */
+    @media(max-width: 800px) {
+      .menu-btn {
+        display: block;
+      }
+
+      .main {
+        margin-left: 0 !important;
+        padding: 20px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <h2>🚀 NXT Ship</h2>
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <h2>🚀 NXT Ship</h2>
 
-        <div class="menu-item active" onclick="loadSection('dashboard', this)">🏠 Dashboard</div>
-        <div class="menu-item" onclick="loadSection('track', this)">📦 Track Orders</div>
-        <div class="menu-item" onclick="loadSection('shipment', this)">➕ Create Shipment</div>
-        <div class="menu-item" onclick="loadSection('rate', this)">💰 Rate Calculator</div>
-        <div class="menu-item" onclick="loadSection('courier', this)">🚚 Courier Services</div>
-        <div class="menu-item" onclick="loadSection('international', this)">🌍 International Shipping</div>
-        <div class="menu-item" onclick="loadSection('logistics', this)">🏢 Ecommerce Logistics</div>
-        <div class="menu-item" onclick="loadSection('wallet', this)">👛 Wallet</div>
-        <div class="menu-item" onclick="loadSection('reports', this)">📊 Reports</div>
-        <div class="menu-item" onclick="loadSection('resources', this)">📑 Resources</div>
-        <div class="menu-item" onclick="loadSection('support', this)">🎫 Support Tickets</div>
-        <div class="menu-item" onclick="loadSection('profile', this)">👤 Profile</div>
-        <div class="menu-item" onclick="loadSection('settings', this)">⚙️ Settings</div>
-        <div class="menu-item" onclick="logout()">🚪 Logout</div>
+    <div class="menu-item active" onclick="loadSection('dashboard', this)">🏠 Dashboard</div>
+    <div class="menu-item" onclick="loadSection('track', this)">📦 Track Orders</div>
+    <div class="menu-item" onclick="loadSection('shipment', this)">➕ Create Shipment</div>
+    <div class="menu-item" onclick="loadSection('rate', this)">💰 Rate Calculator</div>
+    <div class="menu-item" onclick="loadSection('courier', this)">🚚 Courier Services</div>
+    <div class="menu-item" onclick="loadSection('international', this)">🌍 International Shipping</div>
+    <div class="menu-item" onclick="loadSection('logistics', this)">🏢 Ecommerce Logistics</div>
+    <div class="menu-item" onclick="loadSection('wallet', this)">👛 Wallet</div>
+    <div class="menu-item" onclick="loadSection('reports', this)">📊 Reports</div>
+    <div class="menu-item" onclick="loadSection('resources', this)">📑 Resources</div>
+    <div class="menu-item" onclick="loadSection('support', this)">🎫 Support Tickets</div>
+    <div class="menu-item" onclick="loadSection('profile', this)">👤 Profile</div>
+    <div class="menu-item" onclick="loadSection('settings', this)">⚙️ Settings</div>
+    <div class="menu-item" onclick="logout()">🚪 Logout</div>
+  </div>
+
+  <!-- Main Area -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <div class="topbar">
+      <span class="menu-btn" onclick="toggleMenu()">☰</span>
+      <h1 id="pageTitle">Dashboard</h1>
+      <div id="customerName">Welcome 👋</div>
     </div>
 
-    <!-- Main Area -->
-    <div class="main">
+    <!-- Dynamic Content -->
+    <div class="content-box" id="contentArea"></div>
+  </div>
 
-        <!-- Topbar -->
-        <div class="topbar">
-            <span class="menu-btn" onclick="toggleMenu()">☰</span>
-            <h1 id="pageTitle">Dashboard</h1>
-            <div id="customerName">Welcome 👋</div>
-        </div>
+  <script>
+    console.log("🚀 Dashboard Script Loaded...");
 
-        <!-- Dynamic Content -->
-        <div class="content-box" id="contentArea"></div>
-    </div>
+    // ✅ Token Check
+    const token = localStorage.getItem("customerToken");
+    const customerData = JSON.parse(localStorage.getItem("customerData"));
 
-<script>
-  console.log("🚀 Dashboard Script Loaded...");
+    if (!token) {
+      console.log("❌ No Token Found, Redirecting...");
+      window.location.href = "login.html";
+    }
 
-  // ✅ Token Check
-  const token = localStorage.getItem("customerToken");
-  const customerData = JSON.parse(localStorage.getItem("customerData"));
+    // ✅ Show Customer Name
+    if (customerData) {
+      document.getElementById("customerName").innerText =
+        "Hello, " + customerData.name + " 👋";
+    }
 
-  if (!token) {
-    console.log("❌ No Token Found, Redirecting...");
-    window.location.href = "login.html";
-  }
-
-  // ✅ Show Customer Name
-  if (customerData) {
-    document.getElementById("customerName").innerText =
-      "Hello, " + customerData.name + " 👋";
-  }
-
-  // ✅ Set Active Sidebar Item
-  function setActive(element) {
-    document.querySelectorAll(".menu-item").forEach(item =>
-      item.classList.remove("active")
-    );
-    if (element) element.classList.add("active");
-  }
+    // ✅ Set Active Sidebar Item
+    function setActive(element) {
+      document.querySelectorAll(".menu-item").forEach(item =>
+        item.classList.remove("active")
+      );
+      if (element) element.classList.add("active");
+    }
 
     // ✅ Toggle Mobile Menu
     function toggleMenu() {
-        console.log("📱 Toggling Mobile Menu...");
+      console.log("📱 Toggling Mobile Menu...");
 
-        const sidebar = document.querySelector(".sidebar");
-        sidebar.classList.toggle("open");
-  }
+      const sidebar = document.getElementById("sidebar");
+      if (!sidebar) {
+        console.error("❌ Sidebar Element Not Found");
+        return;
+      }
+      
+      sidebar.classList.toggle("open");
 
-  // ✅ Dashboard Default Content
-  function loadDashboard() {
-    document.getElementById("pageTitle").innerText = "Dashboard";
+      console.log("📌 Sidebar State:", sidebar.classList.contains("open") ? "Open" : "Closed");
+    }
 
-    document.getElementById("contentArea").innerHTML = `
+    // ✅ Dashboard Default Content
+    function loadDashboard() {
+      document.getElementById("pageTitle").innerText = "Dashboard";
+
+      document.getElementById("contentArea").innerHTML = `
       <h2>🏠 Dashboard Overview</h2>
       <p>Welcome to your NXT Ship Customer Panel 🚀</p>
 
@@ -248,26 +268,26 @@
         <p>🎫 Support ticket management</p>
       </div>
     `;
-  }
+    }
 
-  // ✅ Load Sections Dynamically
-  function loadSection(section, element) {
-    console.log("📌 Loading Section:", section);
+    // ✅ Load Sections Dynamically
+    function loadSection(section, element) {
+      console.log("📌 Loading Section:", section);
 
-    setActive(element);
+      setActive(element);
 
-    const content = document.getElementById("contentArea");
+      const content = document.getElementById("contentArea");
 
-    switch (section) {
+      switch (section) {
 
-      case "dashboard":
-        loadDashboard();
-        break;
+        case "dashboard":
+          loadDashboard();
+          break;
 
-      case "track":
-        document.getElementById("pageTitle").innerText = "Track Orders";
+        case "track":
+          document.getElementById("pageTitle").innerText = "Track Orders";
 
-        content.innerHTML = `
+          content.innerHTML = `
           <h2>📦 Track Orders</h2>
           <input id="awb" placeholder="Enter Tracking ID (AWB)" />
           <button onclick="trackOrder()">Track Now</button>
@@ -275,12 +295,12 @@
 
           <!-- यहाँ Backend API से Tracking Result आएगा -->
         `;
-        break;
+          break;
 
-      case "shipment":
-        document.getElementById("pageTitle").innerText = "Create Shipment";
+        case "shipment":
+          document.getElementById("pageTitle").innerText = "Create Shipment";
 
-        content.innerHTML = `
+          content.innerHTML = `
           <h2>➕ Create Shipment</h2>
 
           <!-- Shipment Form Placeholder -->
@@ -295,12 +315,12 @@
             Backend integration next step 🔥
           </p>
         `;
-        break;
+          break;
 
-      case "rate":
-        document.getElementById("pageTitle").innerText = "Rate Calculator";
+        case "rate":
+          document.getElementById("pageTitle").innerText = "Rate Calculator";
 
-        content.innerHTML = `
+          content.innerHTML = `
           <h2>💰 Rate Calculator</h2>
 
           <!-- Rate Calculation Placeholder -->
@@ -309,45 +329,45 @@
 
           <button>Calculate Rate</button>
         `;
-        break;
+          break;
 
-      case "courier":
-        document.getElementById("pageTitle").innerText = "Courier Services";
+        case "courier":
+          document.getElementById("pageTitle").innerText = "Courier Services";
 
-        content.innerHTML = `
+          content.innerHTML = `
           <h2>🚚 Courier Services</h2>
 
           <!-- Courier Partner List आएगी -->
           <p>Available courier partners will show here.</p>
         `;
-        break;
+          break;
 
-      case "international":
-        document.getElementById("pageTitle").innerText = "International Shipping";
+        case "international":
+          document.getElementById("pageTitle").innerText = "International Shipping";
 
-        content.innerHTML = `
+          content.innerHTML = `
           <h2>🌍 International Shipping</h2>
 
           <!-- International Options Placeholder -->
           <p>International shipping options coming soon.</p>
         `;
-        break;
+          break;
 
-      case "logistics":
-        document.getElementById("pageTitle").innerText = "Ecommerce Logistics";
+        case "logistics":
+          document.getElementById("pageTitle").innerText = "Ecommerce Logistics";
 
-        content.innerHTML = `
+          content.innerHTML = `
           <h2>🏢 Ecommerce Logistics</h2>
 
           <!-- Bulk Shipping + Warehouse -->
           <p>Warehousing + Bulk shipping solutions will appear here.</p>
         `;
-        break;
+          break;
 
-      case "wallet":
-        document.getElementById("pageTitle").innerText = "Wallet";
+        case "wallet":
+          document.getElementById("pageTitle").innerText = "Wallet";
 
-        content.innerHTML = `
+          content.innerHTML = `
           <h2>👛 Wallet</h2>
 
           <!-- Wallet Balance Dynamic -->
@@ -361,108 +381,108 @@
           <p style="color:gray;">Wallet system backend se connect होगा</p>
         `;
 
-        // Dummy Wallet Balance
-        document.getElementById("walletBalance").innerText = "500";
-        break;
+          // Dummy Wallet Balance
+          document.getElementById("walletBalance").innerText = "500";
+          break;
 
-      case "reports":
-        document.getElementById("pageTitle").innerText = "Reports";
+        case "reports":
+          document.getElementById("pageTitle").innerText = "Reports";
 
-        content.innerHTML = `
+          content.innerHTML = `
           <h2>📊 Reports</h2>
 
           <!-- Reports Placeholder -->
           <p>Monthly shipment analytics will appear here.</p>
         `;
-        break;
+          break;
 
-      case "resources":
-        document.getElementById("pageTitle").innerText = "Resources";
+        case "resources":
+          document.getElementById("pageTitle").innerText = "Resources";
 
-        content.innerHTML = `
+          content.innerHTML = `
           <h2>📑 Resources</h2>
 
           <!-- Documents & Downloads -->
           <p>Download invoices, labels, documents here.</p>
         `;
-        break;
+          break;
 
-      case "support":
-        document.getElementById("pageTitle").innerText = "Support Tickets";
+        case "support":
+          document.getElementById("pageTitle").innerText = "Support Tickets";
 
-        content.innerHTML = `
+          content.innerHTML = `
           <h2>🎫 Support Tickets</h2>
 
           <!-- Ticket Form -->
           <textarea placeholder="Write your issue..."></textarea>
           <button>Submit Ticket</button>
         `;
-        break;
+          break;
 
-      case "profile":
-        document.getElementById("pageTitle").innerText = "Profile";
+        case "profile":
+          document.getElementById("pageTitle").innerText = "Profile";
 
-        if (!customerData) {
-          content.innerHTML = `<p>❌ Customer Data Missing</p>`;
-          return;
-        }
+          if (!customerData) {
+            content.innerHTML = `<p>❌ Customer Data Missing</p>`;
+            return;
+          }
 
-        content.innerHTML = `
+          content.innerHTML = `
           <h2>👤 Profile</h2>
 
           <p><b>Name:</b> ${customerData.name}</p>
           <p><b>Email:</b> ${customerData.email}</p>
           <p><b>Phone:</b> ${customerData.phone}</p>
         `;
-        break;
+          break;
 
-      case "settings":
-        document.getElementById("pageTitle").innerText = "Settings";
+        case "settings":
+          document.getElementById("pageTitle").innerText = "Settings";
 
-        content.innerHTML = `
+          content.innerHTML = `
           <h2>⚙️ Settings</h2>
 
           <!-- Account Settings Placeholder -->
           <p>Account settings will appear here.</p>
         `;
-        break;
+          break;
 
-      default:
-        content.innerHTML = `<h2>❌ Section Not Found</h2>`;
+        default:
+          content.innerHTML = `<h2>❌ Section Not Found</h2>`;
+      }
     }
-  }
 
-  // ✅ Track Order Dummy
-  function trackOrder() {
-    const awb = document.getElementById("awb").value;
+    // ✅ Track Order Dummy
+    function trackOrder() {
+      const awb = document.getElementById("awb").value;
 
-    document.getElementById("trackResult").innerHTML =
-      "<p>📌 Backend Tracking API Next Step 🔥</p>";
+      document.getElementById("trackResult").innerHTML =
+        "<p>📌 Backend Tracking API Next Step 🔥</p>";
 
-    console.log("Tracking AWB:", awb);
-  }
+      console.log("Tracking AWB:", awb);
+    }
 
-  // ✅ Add Money Dummy
-  function addMoney() {
-    console.log("💰 Add Money Clicked");
-  }
+    // ✅ Add Money Dummy
+    function addMoney() {
+      console.log("💰 Add Money Clicked");
+    }
 
-  // ✅ Logout
-  function logout() {
-    console.log("🚪 Logging Out...");
+    // ✅ Logout
+    function logout() {
+      console.log("🚪 Logging Out...");
 
-    localStorage.removeItem("customerToken");
-    localStorage.removeItem("customerData");
+      localStorage.removeItem("customerToken");
+      localStorage.removeItem("customerData");
 
-    window.location.href = "login.html";
-  }
+      window.location.href = "login.html";
+    }
 
-  // ✅ Default Load Dashboard on Page Open
-  window.onload = () => {
-    console.log("✅ Dashboard Loaded Successfully");
-    loadDashboard();
-  };
-</script>
+    // ✅ Default Load Dashboard on Page Open
+    window.onload = () => {
+      console.log("✅ Dashboard Loaded Successfully");
+      loadDashboard();
+    };
+  </script>
 
 </body>
 
