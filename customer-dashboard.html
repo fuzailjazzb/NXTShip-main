@@ -145,11 +145,20 @@
         /* Responsive */
         @media(max-width: 800px) {
             .sidebar {
-                display: none;
+                position: fixed;
+                left: -260px;
+                top: 0;
+                height: 100%;
+                transition: 0.3s ease;
+                z-index: 999;
+            }
+
+            .sidebar.open {
+                left: 0;
             }
 
             .main {
-                margin-left: 0;
+                margin-left: 0 !important;
             }
         }
     </style>
