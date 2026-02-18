@@ -1,172 +1,230 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NXT Ship - Customer Signup</title>
 
   <style>
-    *{
-      margin:0;
-      padding:0;
-      box-sizing:border-box;
-      font-family:"Segoe UI",sans-serif;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Segoe UI", sans-serif;
     }
 
-    body{
-      height:100vh;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      background:radial-gradient(circle at top,#e0f2fe,#f8fafc);
+    body {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(circle at top, #e0f2fe, #f8fafc);
 
     }
 
     /* Floating Background Circles */
-    .circle{
-      position:absolute;
-      border-radius:50%;
-      filter:blur(45px);
-      opacity:0.6;
-      animation:floatBg 7s ease-in-out infinite;
+    .circle {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(45px);
+      opacity: 0.6;
+      animation: floatBg 7s ease-in-out infinite;
     }
 
-    .circle.one{
-      width:320px;
-      height:320px;
-      background:#2563eb;
-      top:8%;
-      left:12%;
+    .circle.one {
+      width: 320px;
+      height: 320px;
+      background: #2563eb;
+      top: 8%;
+      left: 12%;
     }
 
-    .circle.two{
-      width:280px;
-      height:280px;
-      background:#facc15;
-      bottom:12%;
-      right:10%;
-      animation-delay:2s;
+    .circle.two {
+      width: 280px;
+      height: 280px;
+      background: #facc15;
+      bottom: 12%;
+      right: 10%;
+      animation-delay: 2s;
     }
 
-    @keyframes floatBg{
-      0%{transform:translateY(0px);}
-      50%{transform:translateY(-30px);}
-      100%{transform:translateY(0px);}
+    @keyframes floatBg {
+      0% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-30px);
+      }
+
+      100% {
+        transform: translateY(0px);
+      }
     }
 
     /* Signup Card */
-    .signup-card{
-      width:450px;
-      background:rgba(255,255,255,0.92);
-      backdrop-filter:blur(12px);
-      padding:40px;
+    .signup-card {
+      width: 450px;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      padding: 40px;
       margin-top: 20%;
-      border-radius:22px;
-      box-shadow:0 20px 55px rgba(0,0,0,0.15);
-      transform:perspective(1000px) rotateX(8deg);
-      transition:0.4s;
-      z-index:10;
+      border-radius: 22px;
+      box-shadow: 0 20px 55px rgba(0, 0, 0, 0.15);
+      transform: perspective(1000px) rotateX(8deg);
+      transition: 0.4s;
+      z-index: 10;
       overflow: hidden;
     }
 
-    .signup-card:hover{
-      transform:perspective(1000px) rotateX(0deg) scale(1.02);
+    .signup-card:hover {
+      transform: perspective(1000px) rotateX(0deg) scale(1.02);
     }
 
-    .signup-card h1{
-      text-align:center;
-      font-size:28px;
-      font-weight:900;
-      color:#2563eb;
+    .signup-card h1 {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 900;
+      color: #2563eb;
     }
 
-    .signup-card p{
-      text-align:center;
-      margin-top:8px;
-      color:#475569;
-      font-size:14px;
+    .signup-card p {
+      text-align: center;
+      margin-top: 8px;
+      color: #475569;
+      font-size: 14px;
     }
 
     /* Input Fields */
-    .input-box{
-      margin-top:18px;
+    .input-box {
+      margin-top: 18px;
     }
 
-    .input-box label{
-      font-size:14px;
-      font-weight:600;
-      color:#334155;
+    .input-box label {
+      font-size: 14px;
+      font-weight: 600;
+      color: #334155;
     }
 
-    .input-box input{
-      width:100%;
-      padding:12px;
-      margin-top:6px;
-      border-radius:12px;
-      border:1px solid #cbd5e1;
-      outline:none;
-      transition:0.3s;
+    .input-box input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 6px;
+      border-radius: 12px;
+      border: 1px solid #cbd5e1;
+      outline: none;
+      transition: 0.3s;
     }
 
-    .input-box input:focus{
-      border-color:#2563eb;
-      box-shadow:0 0 10px rgba(37,99,235,0.25);
+    .input-box input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 10px rgba(37, 99, 235, 0.25);
     }
 
     /* Button */
-    .btn{
-      width:100%;
-      padding:12px;
-      margin-top:25px;
-      border:none;
-      border-radius:12px;
-      background:#2563eb;
-      color:white;
-      font-size:15px;
-      font-weight:bold;
-      cursor:pointer;
-      transition:0.3s;
+    .btn {
+      width: 100%;
+      padding: 12px;
+      margin-top: 25px;
+      border: none;
+      border-radius: 12px;
+      background: #2563eb;
+      color: white;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
     }
 
-    .btn:hover{
-      background:#1d4ed8;
-      transform:scale(1.03);
+    .btn:hover {
+      background: #1d4ed8;
+      transform: scale(1.03);
     }
 
     /* Links */
-    .links{
-      margin-top:18px;
-      text-align:center;
-      font-size:14px;
+    .links {
+      margin-top: 18px;
+      text-align: center;
+      font-size: 14px;
     }
 
-    .links a{
-      text-decoration:none;
-      color:#2563eb;
-      font-weight:600;
+    .links a {
+      text-decoration: none;
+      color: #2563eb;
+      font-weight: 600;
     }
 
-    .links a:hover{
-      text-decoration:underline;
+    .links a:hover {
+      text-decoration: underline;
     }
 
     /* Back Button */
-    .back-home{
-      position:absolute;
-      top:20px;
-      left:25px;
-      text-decoration:none;
-      font-weight:bold;
-      color:#2563eb;
-      background:white;
-      padding:10px 16px;
-      border-radius:12px;
-      box-shadow:0 6px 15px rgba(0,0,0,0.1);
+    .back-home {
+      position: absolute;
+      top: 20px;
+      left: 25px;
+      text-decoration: none;
+      font-weight: bold;
+      color: #2563eb;
+      background: white;
+      padding: 10px 16px;
+      border-radius: 12px;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
     }
 
-    .back-home:hover{
-      background:#2563eb;
-      color:white;
+    .back-home:hover {
+      background: #2563eb;
+      color: white;
+    }
+
+    /* ✅ Popup Toast Styling */
+    #toastPopup {
+      position: fixed;
+      top: 25px;
+      right: 25px;
+      background: white;
+      padding: 15px 20px;
+      border-radius: 14px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+      font-size: 14px;
+      font-weight: 600;
+      font-family: "Segoe UI", sans-serif;
+      display: none;
+      z-index: 9999;
+      min-width: 280px;
+      animation: slideIn 0.4s ease;
+    }
+
+    /* Success */
+    .toast-success {
+      border-left: 6px solid #16a34a;
+      color: #166534;
+    }
+
+    /* Error */
+    .toast-error {
+      border-left: 6px solid #dc2626;
+      color: #7f1d1d;
+    }
+
+    /* Warning */
+    .toast-warning {
+      border-left: 6px solid #f59e0b;
+      color: #78350f;
+    }
+
+    /* Animation */
+    @keyframes slideIn {
+      from {
+        transform: translateX(100px);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0px);
+        opacity: 1;
+      }
     }
   </style>
 </head>
@@ -226,29 +284,92 @@
 
   <!-- JS -->
   <script>
-    function signupUser() {
-      let name = document.getElementById("name").value;
-      let email = document.getElementById("email").value;
-      let phone = document.getElementById("phone").value;
-      let password = document.getElementById("password").value;
-      let confirmPassword = document.getElementById("confirmPassword").value;
+/* ✅ Toast Popup Function */
+function showToast(message, type = "success") {
+  const toast = document.getElementById("toastPopup");
 
-      if(name === "" || email === "" || phone === "" || password === ""){
-        alert("⚠️ Please fill all fields");
-        return;
+  toast.className = "";
+  toast.classList.add("toast-" + type);
+
+  toast.innerHTML = message;
+  toast.style.display = "block";
+
+  // Auto Hide after 3 sec
+  setTimeout(() => {
+    toast.style.display = "none";
+  }, 3000);
+}
+
+/* ✅ Signup Function */
+async function signupUser() {
+
+  let name = document.getElementById("name").value.trim();
+  let email = document.getElementById("email").value.trim();
+  let phone = document.getElementById("phone").value.trim();
+  let password = document.getElementById("password").value.trim();
+  let confirmPassword = document.getElementById("confirmPassword").value.trim();
+
+  // ✅ Basic Validation
+  if (name === "" || email === "" || phone === "" || password === "") {
+    showToast("⚠️ Please fill all fields", "warning");
+    return;
+  }
+
+  if (password !== confirmPassword) {
+    showToast("❌ Passwords do not match", "error");
+    return;
+  }
+
+  try {
+    // ✅ Backend Signup API Call
+    const res = await fetch(
+      "https://nxtship-backend.onrender.com/api/customer/signup",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name: name,
+          email: email,
+          phone: phone,
+          password: password
+        })
       }
+    );
 
-      if(password !== confirmPassword){
-        alert("❌ Passwords do not match");
-        return;
-      }
+    const data = await res.json();
 
-      alert("✅ Signup Successful! Please login now.");
-
-      // Redirect to login page
-      window.location.href = "login.html";
+    // ❌ Signup Failed
+    if (!res.ok) {
+      showToast("❌ Signup Failed: " + (data.message || "Error"), "error");
+      return;
     }
-  </script>
+
+    // ✅ Signup Success
+    showToast("✅ Account Created Successfully!", "success");
+
+    // ✅ Save Token
+    localStorage.setItem("customerToken", data.token);
+
+    // ✅ Save Customer Info
+    localStorage.setItem("customerData", JSON.stringify(data.customer));
+
+    // ✅ Redirect After 1.5 sec
+    setTimeout(() => {
+      window.location.href = "customer-dashboard.html";
+    }, 1500);
+
+  } catch (error) {
+    console.error("Signup Error:", error);
+    showToast("⚠️ Server Error! Try again later.", "error");
+  }
+}
+</script>
+
+  <div id="toastPopup">
+  </div>
 
 </body>
+
 </html>
