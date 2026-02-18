@@ -198,7 +198,7 @@
         <!-- Topbar -->
         <div class="topbar">
             <h1>Customer Dashboard</h1>
-            <div class="user-box">Hello, Customer 👋</div>
+            <div class="user-box" id="customerName">Hello, Customer 👋</div>
         </div>
 
         <!-- Dashboard Cards -->
@@ -276,22 +276,47 @@
 
 
     <script>
-        // Track Shipment Button Action
-        function trackOrder(awb) {
-            alert("📦 Tracking Started for AWB: " + awb +
-                "\n\nStatus: In Transit 🚚");
+
+
+        function checkCustomerAuth() {
+            const token = localStorage.getItem("customerToken");
+            const customerData = localStorage.getItem("customerData");
+
+            if (!token || !customerData) {
+                alert("⚠️ Please login to access the dashboard.");
+                window.location.href = "login.html";
+                return;
+            }
+
+            const customer = JSON.parse(customerData);
+
+            if (document.getElementById("customerName")) {
+                document.getElementById("customerName").innerText = "Hello, " + customer.name + " 👋";
+            }
         }
+
+        window.onload = checkCustomerAuth;
+
+
+        // Track Shipment Button Action
+        
+
+
+
+
 
         // Logout Function
         function logoutUser() {
-            alert("✅ Logged out successfully!");
-            window.location.href = "login.html";
+            localStorage.removeItem("customerToken");
+            localStorage.removeItem("customerData");
+
+            showToast("👋 Logged out successfully!", "success");
+
+            setTimeout(() => {
+                window.location.href = "login.html";
+            }, 1500);
         }
 
-        // Demo: Welcome Message
-        window.onload = function () {
-            console.log("🚀 Welcome to NXT Ship Customer Dashboard");
-        };
     </script>
 
 
