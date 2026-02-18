@@ -443,20 +443,25 @@
               });
               const data = await res.json();
 
+              console.log("📌 Wallet API Response:", data);
+
               if (!res.ok) {
                 console.error("❌ wallet fetch failed:", data.message || "Unknown error");
                 return;
               }
 
-              console.log("✅ Wallet Balance Fetched:", data.balance);
+              const balance = data.walletBalance || data.balance || "0.00";
 
-              document.getElementById("walletBalance").innerText = data.balance;
+              console.log("✅ Wallet Balance Fetched:", balance);
+
+              document.getElementById("walletBalance").innerText = balance;
             } catch (err) {
               console.error("❌ Error fetching wallet balance:", err);
               document.getElementById("walletBalance").innerText = "Error";
             }
           }
           loadWalletBalance();
+          setInterval(loadWalletBalance, 30000); // Refresh every 30 seconds
           break;
 
         case "reports":
