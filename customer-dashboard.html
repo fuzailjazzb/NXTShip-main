@@ -191,186 +191,264 @@
         <div class="content-box" id="contentArea"></div>
     </div>
 
-    <script>
-        // ✅ Token Check
-        const token = localStorage.getItem("customerToken");
-        const customerData = JSON.parse(localStorage.getItem("customerData"));
+<script>
+  console.log("🚀 Dashboard Script Loaded...");
 
-        if (!token) {
-            window.location.href = "login.html";
-        }
+  // ✅ Token Check
+  const token = localStorage.getItem("customerToken");
+  const customerData = JSON.parse(localStorage.getItem("customerData"));
 
-        if (customerData) {
-            document.getElementById("customerName").innerText =
-                "Hello, " + customerData.name + " 👋";
-        }
+  if (!token) {
+    console.log("❌ No Token Found, Redirecting...");
+    window.location.href = "login.html";
+  }
 
-        function toggleMenu() {
-            document.querySelector(".sidebar").classList.toggle("show");
-        }
+  // ✅ Show Customer Name
+  if (customerData) {
+    document.getElementById("customerName").innerText =
+      "Hello, " + customerData.name + " 👋";
+  }
 
-        // ✅ Default Dashboard Load
-        loadDashboard();
+  // ✅ Set Active Sidebar Item
+  function setActive(element) {
+    document.querySelectorAll(".menu-item").forEach(item =>
+      item.classList.remove("active")
+    );
+    if (element) element.classList.add("active");
+  }
 
-        function setActive(element) {
-            document.querySelectorAll(".menu-item").forEach(item =>
-                item.classList.remove("active")
-            );
-            element.classList.add("active");
-        }
+  // ✅ Dashboard Default Content
+  function loadDashboard() {
+    document.getElementById("pageTitle").innerText = "Dashboard";
 
-        function loadDashboard() {
-            document.getElementById("contentArea").innerHTML = `
+    document.getElementById("contentArea").innerHTML = `
       <h2>🏠 Dashboard Overview</h2>
       <p>Welcome to your NXT Ship Customer Panel 🚀</p>
 
-      <ul>
-        <li>📦 Track all shipments easily</li>
-        <li>➕ Create new shipments instantly</li>
-        <li>💰 Calculate courier rates</li>
-        <li>👛 Wallet & Payments system</li>
-        <li>🎫 Support ticket management</li>
-      </ul>
+      <!-- Quick Features -->
+      <div class="quick-box">
+        <p>📦 Track all shipments easily</p>
+        <p>➕ Create new shipments instantly</p>
+        <p>💰 Calculate courier rates</p>
+        <p>👛 Wallet & Payments system</p>
+        <p>🎫 Support ticket management</p>
+      </div>
     `;
+  }
+
+  // ✅ Load Sections Dynamically
+  function loadSection(section, element) {
+    console.log("📌 Loading Section:", section);
+
+    setActive(element);
+
+    const content = document.getElementById("contentArea");
+
+    switch (section) {
+
+      case "dashboard":
+        loadDashboard();
+        break;
+
+      case "track":
+        document.getElementById("pageTitle").innerText = "Track Orders";
+
+        content.innerHTML = `
+          <h2>📦 Track Orders</h2>
+          <input id="awb" placeholder="Enter Tracking ID (AWB)" />
+          <button onclick="trackOrder()">Track Now</button>
+          <div id="trackResult"></div>
+
+          <!-- यहाँ Backend API से Tracking Result आएगा -->
+        `;
+        break;
+
+      case "shipment":
+        document.getElementById("pageTitle").innerText = "Create Shipment";
+
+        content.innerHTML = `
+          <h2>➕ Create Shipment</h2>
+
+          <!-- Shipment Form Placeholder -->
+          <input placeholder="Receiver Name"/>
+          <input placeholder="Receiver Address"/>
+          <input placeholder="Pincode"/>
+          <input placeholder="City"/>
+
+          <button>Create Shipment</button>
+
+          <p style="color:gray;">
+            Backend integration next step 🔥
+          </p>
+        `;
+        break;
+
+      case "rate":
+        document.getElementById("pageTitle").innerText = "Rate Calculator";
+
+        content.innerHTML = `
+          <h2>💰 Rate Calculator</h2>
+
+          <!-- Rate Calculation Placeholder -->
+          <input placeholder="Enter Weight (kg)"/>
+          <input placeholder="Enter Destination Pincode"/>
+
+          <button>Calculate Rate</button>
+        `;
+        break;
+
+      case "courier":
+        document.getElementById("pageTitle").innerText = "Courier Services";
+
+        content.innerHTML = `
+          <h2>🚚 Courier Services</h2>
+
+          <!-- Courier Partner List आएगी -->
+          <p>Available courier partners will show here.</p>
+        `;
+        break;
+
+      case "international":
+        document.getElementById("pageTitle").innerText = "International Shipping";
+
+        content.innerHTML = `
+          <h2>🌍 International Shipping</h2>
+
+          <!-- International Options Placeholder -->
+          <p>International shipping options coming soon.</p>
+        `;
+        break;
+
+      case "logistics":
+        document.getElementById("pageTitle").innerText = "Ecommerce Logistics";
+
+        content.innerHTML = `
+          <h2>🏢 Ecommerce Logistics</h2>
+
+          <!-- Bulk Shipping + Warehouse -->
+          <p>Warehousing + Bulk shipping solutions will appear here.</p>
+        `;
+        break;
+
+      case "wallet":
+        document.getElementById("pageTitle").innerText = "Wallet";
+
+        content.innerHTML = `
+          <h2>👛 Wallet</h2>
+
+          <!-- Wallet Balance Dynamic -->
+          <div class="wallet-box">
+            Wallet Balance: ₹<span id="walletBalance">0</span>
+          </div>
+
+          <button onclick="addMoney()">Add Money</button>
+
+          <!-- Transaction History Placeholder -->
+          <p style="color:gray;">Wallet system backend se connect होगा</p>
+        `;
+
+        // Dummy Wallet Balance
+        document.getElementById("walletBalance").innerText = "500";
+        break;
+
+      case "reports":
+        document.getElementById("pageTitle").innerText = "Reports";
+
+        content.innerHTML = `
+          <h2>📊 Reports</h2>
+
+          <!-- Reports Placeholder -->
+          <p>Monthly shipment analytics will appear here.</p>
+        `;
+        break;
+
+      case "resources":
+        document.getElementById("pageTitle").innerText = "Resources";
+
+        content.innerHTML = `
+          <h2>📑 Resources</h2>
+
+          <!-- Documents & Downloads -->
+          <p>Download invoices, labels, documents here.</p>
+        `;
+        break;
+
+      case "support":
+        document.getElementById("pageTitle").innerText = "Support Tickets";
+
+        content.innerHTML = `
+          <h2>🎫 Support Tickets</h2>
+
+          <!-- Ticket Form -->
+          <textarea placeholder="Write your issue..."></textarea>
+          <button>Submit Ticket</button>
+        `;
+        break;
+
+      case "profile":
+        document.getElementById("pageTitle").innerText = "Profile";
+
+        if (!customerData) {
+          content.innerHTML = `<p>❌ Customer Data Missing</p>`;
+          return;
         }
 
-        function loadSection(section, element) {
-            setActive(element);
+        content.innerHTML = `
+          <h2>👤 Profile</h2>
 
-            document.getElementById("pageTitle").innerText =
-                section.charAt(0).toUpperCase() + section.slice(1);
+          <p><b>Name:</b> ${customerData.name}</p>
+          <p><b>Email:</b> ${customerData.email}</p>
+          <p><b>Phone:</b> ${customerData.phone}</p>
+        `;
+        break;
 
-            const content = document.getElementById("contentArea");
+      case "settings":
+        document.getElementById("pageTitle").innerText = "Settings";
 
-            // ✅ Track Orders
-            if (section === "track") {
-                content.innerHTML = `
-        <h2>📦 Track Orders</h2>
-        <input id="awb" placeholder="Enter Tracking ID (AWB)" />
-        <button onclick="trackOrder()">Track Now</button>
-        <div id="trackResult"></div>
-      `;
-            }
+        content.innerHTML = `
+          <h2>⚙️ Settings</h2>
 
-            // ✅ Create Shipment
-            if (section === "shipment") {
-                content.innerHTML = `
-        <h2>➕ Create Shipment</h2>
-        <input placeholder="Receiver Name"/>
-        <input placeholder="Receiver Address"/>
-        <input placeholder="Pincode"/>
-        <input placeholder="City"/>
-        <button>Create Shipment</button>
-        <p style="color:gray;">(Backend connection next step)</p>
-      `;
-            }
+          <!-- Account Settings Placeholder -->
+          <p>Account settings will appear here.</p>
+        `;
+        break;
 
-            // ✅ Rate Calculator
-            if (section === "rate") {
-                content.innerHTML = `
-        <h2>💰 Rate Calculator</h2>
-        <input placeholder="Enter Weight (kg)"/>
-        <input placeholder="Enter Destination Pincode"/>
-        <button>Calculate Rate</button>
-      `;
-            }
+      default:
+        content.innerHTML = `<h2>❌ Section Not Found</h2>`;
+    }
+  }
 
-            // ✅ Courier Services
-            if (section === "courier") {
-                content.innerHTML = `
-        <h2>🚚 Courier Services</h2>
-        <p>Available courier partners will show here.</p>
-      `;
-            }
+  // ✅ Track Order Dummy
+  function trackOrder() {
+    const awb = document.getElementById("awb").value;
 
-            // ✅ International Shipping
-            if (section === "international") {
-                content.innerHTML = `
-        <h2>🌍 International Shipping</h2>
-        <p>International shipping options coming soon.</p>
-      `;
-            }
+    document.getElementById("trackResult").innerHTML =
+      "<p>📌 Backend Tracking API Next Step 🔥</p>";
 
-            // ✅ Ecommerce Logistics
-            if (section === "logistics") {
-                content.innerHTML = `
-        <h2>🏢 Ecommerce Logistics</h2>
-        <p>Warehousing + Bulk shipping solutions will appear here.</p>
-      `;
-            }
+    console.log("Tracking AWB:", awb);
+  }
 
-            // ✅ Wallet
-            if (section === "wallet") {
-                content.innerHTML = `
-        <h2>👛 Wallet</h2>
-        <p>Your Balance: ₹0</p>
-        <button>Add Money</button>
-      `;
-            }
+  // ✅ Add Money Dummy
+  function addMoney() {
+    console.log("💰 Add Money Clicked");
+  }
 
-            // ✅ Reports
-            if (section === "reports") {
-                content.innerHTML = `
-        <h2>📊 Reports</h2>
-        <p>Monthly shipment analytics will appear here.</p>
-      `;
-            }
+  // ✅ Logout
+  function logout() {
+    console.log("🚪 Logging Out...");
 
-            // ✅ Resources
-            if (section === "resources") {
-                content.innerHTML = `
-        <h2>📑 Resources</h2>
-        <p>Download invoices, labels, documents here.</p>
-      `;
-            }
+    localStorage.removeItem("customerToken");
+    localStorage.removeItem("customerData");
 
-            // ✅ Support Tickets
-            if (section === "support") {
-                content.innerHTML = `
-        <h2>🎫 Support Tickets</h2>
-        <textarea placeholder="Write your issue..."></textarea>
-        <button>Submit Ticket</button>
-      `;
-            }
+    window.location.href = "login.html";
+  }
 
-            // ✅ Profile
-            if (section === "profile") {
-                content.innerHTML = `
-        <h2>👤 Profile</h2>
-        <p><b>Name:</b> ${customerData.name}</p>
-        <p><b>Email:</b> ${customerData.email}</p>
-        <p><b>Phone:</b> ${customerData.phone}</p>
-      `;
-            }
-
-            // ✅ Settings
-            if (section === "settings") {
-                content.innerHTML = `
-        <h2>⚙️ Settings</h2>
-        <p>Account settings will appear here.</p>
-      `;
-            }
-
-            // Default Dashboard
-            if (section === "dashboard") {
-                loadDashboard();
-            }
-        }
-
-        // ✅ Track Order Dummy Function
-        function trackOrder() {
-            const awb = document.getElementById("awb").value;
-            document.getElementById("trackResult").innerHTML =
-                "<p>Tracking feature backend se connect karenge next 🔥</p>";
-        }
-
-        // ✅ Logout
-        function logout() {
-            localStorage.removeItem("customerToken");
-            localStorage.removeItem("customerData");
-            window.location.href = "login.html";
-        }
-    </script>
+  // ✅ Default Load Dashboard on Page Open
+  window.onload = () => {
+    console.log("✅ Dashboard Loaded Successfully");
+    loadDashboard();
+  };
+</script>
 
 </body>
 
