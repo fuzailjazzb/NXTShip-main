@@ -323,7 +323,7 @@ async function signupUser() {
   try {
     // ✅ Backend Signup API Call
     const res = await fetch(
-      "https://nxtship-backend.onrender.com/api/customer/signup",
+      "https://nxtship-backend.onrender.com/api/customer/auth/signup",
       {
         method: "POST",
         headers: {
