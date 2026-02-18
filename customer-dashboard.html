@@ -39,7 +39,7 @@
       width: 0px;
     }
 
-    
+
 
     /* Sidebar Open Animation */
     .sidebar.open {
@@ -420,7 +420,7 @@
 
           <!-- Wallet Balance Dynamic -->
           <div class="wallet-box">
-            Wallet Balance: ₹<span id="walletBalance">0</span>
+            Wallet Balance: ₹<span id="walletBalance">Loading...</span>
           </div>
 
           <button onclick="addMoney()">Add Money</button>
@@ -430,7 +430,33 @@
         `;
 
           // Dummy Wallet Balance
-          document.getElementById("walletBalance").innerText = "500";
+          async function loadWalletBalance() {
+            console.log("💰 Fetching Wallet Balance...");
+            // Simulate API Call
+            try {
+              const res = await fetch("https://nxtship-backend.onrender.com/api/wallet/balance", {
+                
+                method: "GET",
+                headers: {
+                  "Authorization": `Bearer ${localStorage.getItem("customerToken")}`,
+                },
+              });
+              const data = await res.json();
+
+              if (!res.ok) {
+                console.error("❌ wallet fetch failed:", data.message || "Unknown error");
+                return;
+              }
+
+              console.log("✅ Wallet Balance Fetched:", data.balance);
+
+              document.getElementById("walletBalance").innerText = data.balance;
+            } catch (err) {
+              console.error("❌ Error fetching wallet balance:", err);
+              document.getElementById("walletBalance").innerText = "Error";
+            }
+          }
+          loadWalletBalance();
           break;
 
         case "reports":
