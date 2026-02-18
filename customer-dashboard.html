@@ -19,14 +19,25 @@
             width: 260px;
             height: 100vh;
             background: linear-gradient(to bottom, #06142f, #0b234d);
-            padding: 20px;
+            padding: 25px;
             color: white;
             position: fixed;
-            left: 0;
+            left: -260px;
             top: 0;
             overflow-y: auto;
             z-index: 1000;
             transition: 0.3s ease;
+        }
+
+
+        @media(min-width: 801px) {
+            .sidebar {
+                left: 0;
+            }
+
+            .main {
+                margin-left: 260px;
+            }
         }
 
         .sidebar h2 {
@@ -57,9 +68,10 @@
 
         /* Main Content */
         .main {
-            margin-left: 280px;
+            margin-left: 0;
             width: 100%;
             padding: 30px;
+            transition: 0.3s ease;
         }
 
         .topbar {
@@ -124,7 +136,7 @@
         /* Sidebar Responsive */
        
         /* Responsive */
-        @media(max-width: 800px) {
+        @media(max-width: 801px) {
             .sidebar {
                 position: fixed;
                 left: -260px;
@@ -140,6 +152,10 @@
 
             .main {
                 margin-left: 0 !important;
+            }
+
+            .menu-btn {
+                display: block;
             }
         }
     </style>
