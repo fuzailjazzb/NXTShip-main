@@ -217,6 +217,14 @@
     if (element) element.classList.add("active");
   }
 
+    // ✅ Toggle Mobile Menu
+    function toggleMenu() {
+        console.log("📱 Toggling Mobile Menu...");
+
+        const sidebar = document.querySelector(".sidebar");
+        sidebar.classList.toggle("open");
+  }
+
   // ✅ Dashboard Default Content
   function loadDashboard() {
     document.getElementById("pageTitle").innerText = "Dashboard";
