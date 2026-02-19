@@ -561,12 +561,31 @@
           document.getElementById("pageTitle").innerText = "Support Tickets";
 
           content.innerHTML = `
-          <h2>🎫 Support Tickets</h2>
+    <h2>🎫 Support Tickets</h2>
 
-          <!-- Ticket Form -->
-          <textarea placeholder="Write your issue..."></textarea>
-          <button>Submit Ticket</button>
-        `;
+    <!-- Ticket Form -->
+    <div class="card">
+      <h3>Create New Ticket</h3>
+
+      <input type="text" id="ticketSubject" placeholder="Enter Subject" />
+
+      <textarea id="ticketMessage" placeholder="Describe your issue..." rows="4"></textarea>
+
+      <button onclick="createTicket()">📩 Submit Ticket</button>
+
+      <p id="ticketStatus"></p>
+    </div>
+
+    <!-- Ticket List -->
+    <div class="card">
+      <h3>Your Tickets</h3>
+      <div id="ticketList">Loading tickets...</div>
+    </div>
+  `;
+
+          loadTickets();
+
+
           break;
 
         case "profile":
@@ -637,7 +656,7 @@
         <p id="profileMsg"></p>
       `;
 
-      console.log("✅ Profile Data Rendered on UI" + JSON.stringify(customer));
+              console.log("✅ Profile Data Rendered on UI" + JSON.stringify(customer));
 
               // ✅ Enable Edit Mode
               document.getElementById("editBtn").onclick = () => {
@@ -687,7 +706,7 @@
                   document.getElementById("profileMsg").innerHTML =
                     "✅ Profile Updated Successfully";
 
-                    console.log("✅ Profile Updated, Reloading Data...");
+                  console.log("✅ Profile Updated, Reloading Data...");
 
                   // ✅ Reload fresh DB data after save
                   loadCustomerProfile();
@@ -697,11 +716,15 @@
                   document.getElementById("profileMsg").innerHTML =
                     "❌ Update Failed";
                 }
+                console.log("📌 Profile Update Process Completed")
               };
+
+
             } catch (err) {
               content.innerHTML = `<p>❌ Server Error</p>`;
               console.log("Profile Error:", err);
             }
+
           }
 
           console.log("📌 Loading Profile Section...");
@@ -848,6 +871,95 @@
         console.log("Update Error:", error);
         document.getElementById("profileMsg").innerText =
           "❌ Server Error!";
+      }
+    }
+
+
+    async function createTicket() {
+      const subject = document.getElementById("ticketSubject").value;
+      const message = document.getElementById("ticketMessage").value;
+
+      if (!subject || !message) {
+        document.getElementById("ticketStatus").innerText =
+          "❌ Subject and Message required!";
+        return;
+      }
+
+      try {
+        const res = await fetch(
+          "https://nxtship-backend.onrender.com/api/support/create",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+            body: JSON.stringify({ subject, message }),
+          }
+        );
+
+        const data = await res.json();
+
+        if (data.success) {
+          document.getElementById("ticketStatus").innerText =
+            "✅ Ticket submitted successfully!";
+
+          document.getElementById("ticketSubject").value = "";
+          document.getElementById("ticketMessage").value = "";
+
+          loadTickets(); // reload list
+        } else {
+          document.getElementById("ticketStatus").innerText =
+            "❌ Ticket submit failed!";
+        }
+      } catch (err) {
+        document.getElementById("ticketStatus").innerText =
+          "❌ Server error!";
+      }
+    }
+
+    async function loadTickets() {
+      try {
+        const res = await fetch(
+          "https://nxtship-backend.onrender.com/api/support/mytickets",
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
+          }
+        );
+
+        const data = await res.json();
+
+        if (!data.success) {
+          document.getElementById("ticketList").innerHTML =
+            "<p>❌ Unable to load tickets</p>";
+          return;
+        }
+
+        if (data.tickets.length === 0) {
+          document.getElementById("ticketList").innerHTML =
+            "<p>No tickets created yet.</p>";
+          return;
+        }
+
+        let html = "";
+
+        data.tickets.forEach((t) => {
+          html += `
+        <div class="ticketBox">
+          <p><b>Subject:</b> ${t.subject}</p>
+          <p><b>Message:</b> ${t.message}</p>
+          <p><b>Status:</b> ${t.status}</p>
+          <hr>
+        </div>
+      `;
+        });
+
+        document.getElementById("ticketList").innerHTML = html;
+      } catch (err) {
+        document.getElementById("ticketList").innerHTML =
+          "<p>❌ Server Error</p>";
       }
     }
 
