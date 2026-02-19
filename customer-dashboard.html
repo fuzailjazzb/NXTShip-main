@@ -216,9 +216,34 @@
     .popup-box.success {
       border-left: 5px solid #16a34a;
     }
+
     .popup-box.error {
       border-left: 5px solid #dc2626;
     }
+
+
+    .profile-box {
+      max-width: 500px;
+      padding: 15px;
+    }
+
+    .profile-box input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    .profile-box button {
+      padding: 10px 15px;
+      background: black;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
 
     @keyframes slideIn {
       from {
@@ -507,7 +532,7 @@
           }
 
           loadWalletBalance();
-          setInterval(loadWalletBalance, 30000); // Refresh every 30 seconds
+          setInterval(loadWalletBalance, 10000); // Refresh every 30 seconds
           break;
 
         case "reports":
@@ -553,12 +578,44 @@
           }
 
           content.innerHTML = `
-          <h2>👤 Profile</h2>
+            <h2>👤 My Profile</h2>
 
-          <p><b>Name:</b> ${customerData.name}</p>
-          <p><b>Email:</b> ${customerData.email}</p>
-          <p><b>Phone:</b> ${customerData.phone}</p>
-        `;
+              <div class="profile-box">
+
+              <label>Name</label>
+              <input type="text" id="name" value="${customerData.name}" disabled />
+
+            <label>Email</label>
+            <input type="email" id="email" value="${customerData.email}" disabled />
+
+            <label>Phone</label>
+            <input type="text" id="phone" value="${customerData.phone}" disabled />
+
+            <hr/>
+
+            <h3>📍 Address Details</h3>
+
+            <label>Address</label>
+            <input type="text" id="address" value="${customerData.address || ""}" />
+
+            <label>Landmark</label>
+            <input type="text" id="landmark" value="${customerData.landmark || ""}" />
+
+            <label>City</label>
+            <input type="text" id="city" value="${customerData.city || ""}" />
+
+            <label>State</label>
+            <input type="text" id="state" value="${customerData.state || ""}" />
+
+            <label>Pincode</label>
+            <input type="text" id="pincode" value="${customerData.pincode || ""}" />
+
+            <button onclick="updateProfile()">✅ Update Profile</button>
+
+            <p id="profileMsg"></p>
+
+            </div>
+          `;
           break;
 
         case "settings":
@@ -645,7 +702,7 @@
     }
 
     function showPopup(message, type = "success") {
-      
+
       const oldPopup = document.querySelector(".custom-popup");
       if (oldPopup) oldPopup.remove();
 
@@ -662,6 +719,45 @@
       setTimeout(() => {
         popup.remove();
       }, 3000);
+    }
+
+
+    async function updateProfile() {
+      const token = localStorage.getItem("customerToken");
+
+      const updatedData = {
+        address: document.getElementById("address").value,
+        landmark: document.getElementById("landmark").value,
+        city: document.getElementById("city").value,
+        state: document.getElementById("state").value,
+        pincode: document.getElementById("pincode").value,
+      };
+
+      try {
+        const res = await fetch("https://nxtship-backend.onrender.com/api/customers/profile/update", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(updatedData),
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          document.getElementById("profileMsg").innerText =
+            "✅ Profile Updated Successfully!";
+        } else {
+          document.getElementById("profileMsg").innerText =
+            "❌ Update Failed!";
+        }
+
+      } catch (error) {
+        console.log("Update Error:", error);
+        document.getElementById("profileMsg").innerText =
+          "❌ Server Error!";
+      }
     }
 
 
