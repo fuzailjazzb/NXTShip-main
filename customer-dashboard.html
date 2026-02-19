@@ -1143,20 +1143,24 @@
     }
 
 
-    function renderChart(monthlyStats) {
+    function renderChart(shipmentsPerDay) {
       const ctx = document.getElementById("shipmentChart").getContext("2d");
 
       if (shipmentChart) {
         shipmentChart.destroy();
       }
 
+      const labels = shipmentsPerDay.map(item => item._id);
+      const counts = shipmentsPerDay.map(item => item.total);
+
       shipmentChart = new Chart(ctx, {
         type: "bar",
         data: {
-          labels: monthlyStats.map(m => m.month),
+          labels: labels,
+
           datasets: [{
-            label: "Shipments",
-            data: monthlyStats.map(m => m.count),
+            label: "Shipments (Last 7 Days)",
+            data: counts,
             borderWidth: 1
           }]
         },
