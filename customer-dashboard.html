@@ -665,9 +665,9 @@
 </div>
         `;
 
-        setTimeout(() => {
-          loadReports();
-        }, 100);
+          setTimeout(() => {
+            loadReports();
+          }, 100);
 
           break;
 
@@ -1108,32 +1108,34 @@
         console.log("✅ Reports Data:", data);
 
         // ==== Stats Update ====
-        document.getElementById("totalShipments").innerText = data.total;
-        document.getElementById("deliveredShipments").innerText = data.delivered;
-        document.getElementById("inTransitShipments").innerText = data.inTransit;
-        document.getElementById("cancelledShipments").innerText = data.cancelled;
-        document.getElementById("thisMonthShipments").innerText = data.thisMonth;
+        document.getElementById("totalShipments").innerText = data.totalShipments || 0;
+        document.getElementById("deliveredShipments").innerText = data.delivered || 0;
+        document.getElementById("inTransitShipments").innerText = data.inTransit || 0;
+        document.getElementById("cancelledShipments").innerText = data.cancelled || 0;
+        document.getElementById("thisMonthShipments").innerText = data.thisMonth || 0;
 
         // ==== Table Fill ====
         const tbody = document.getElementById("reportTableBody");
         tbody.innerHTML = "";
 
-        data.shipments.forEach(order => {
-          const row = `
-        <tr>
-          <td>${new Date(order.createdAt).toLocaleString()}</td>
-          <td>${order.orderId}</td>
-          <td>${order.from}</td>
-          <td>${order.to}</td>
-          <td>${order.status}</td>
-          <td>${order.paymentStatus}</td>
-        </tr>
-      `;
-          tbody.innerHTML += row;
-        });
+        if (!Array.isArray(data.recentShipments)) {
+          data.recentShipments.forEach(order => {
+            const row = `
+              <tr>
+                <td>${new Date(order.createdAt).toLocaleString()}</td>
+                <td>${order.orderId}</td>
+                <td>${order.from}</td>
+                <td>${order.to}</td>
+                <td>${order.status}</td>
+                <td>${order.paymentStatus}</td>
+              </tr>
+              `;
+            tbody.innerHTML += row;
+          });
+        }
 
         // ==== Chart Render ====
-        renderChart(data.monthlyStats);
+        renderChart(data.shipmentsPerDay || []);
 
       } catch (err) {
         console.error("❌ Error Loading Reports:", err);
@@ -1187,8 +1189,8 @@
 
       window.URL.revokeObjectURL(url);
     }
-    
-    
+
+
     // ✅ Track Order Dummy
     function trackOrder() {
       const awb = document.getElementById("awb").value;
