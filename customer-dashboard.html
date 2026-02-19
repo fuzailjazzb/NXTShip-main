@@ -578,44 +578,117 @@
           }
 
           content.innerHTML = `
-            <h2>👤 My Profile</h2>
+    <h2>👤 Profile Details</h2>
 
-              <div class="profile-box">
+    <!-- Readonly Basic Info -->
+    <p><b>Name:</b> ${customerData.name}</p>
+    <p><b>Email:</b> ${customerData.email}</p>
+    <p><b>Phone:</b> ${customerData.phone}</p>
 
-              <label>Name</label>
-              <input type="text" id="name" value="${customerData.name}" disabled />
+    <hr>
 
-            <label>Email</label>
-            <input type="email" id="email" value="${customerData.email}" disabled />
+    <!-- Address Form -->
+    <h3>📍 Address Details</h3>
 
-            <label>Phone</label>
-            <input type="text" id="phone" value="${customerData.phone}" disabled />
+    <form id="profileForm">
 
-            <hr/>
+      <label>Address</label>
+      <input type="text" id="address" value="${customerData.address || ""}" readonly />
 
-            <h3>📍 Address Details</h3>
+      <label>Landmark</label>
+      <input type="text" id="landmark" value="${customerData.landmark || ""}" readonly />
 
-            <label>Address</label>
-            <input type="text" id="address" value="${customerData.address || ""}" />
+      <label>City</label>
+      <input type="text" id="city" value="${customerData.city || ""}" readonly />
 
-            <label>Landmark</label>
-            <input type="text" id="landmark" value="${customerData.landmark || ""}" />
+      <label>State</label>
+      <input type="text" id="state" value="${customerData.state || ""}" readonly />
 
-            <label>City</label>
-            <input type="text" id="city" value="${customerData.city || ""}" />
+      <label>Pincode</label>
+      <input type="text" id="pincode" value="${customerData.pincode || ""}" readonly />
 
-            <label>State</label>
-            <input type="text" id="state" value="${customerData.state || ""}" />
+      <br>
 
-            <label>Pincode</label>
-            <input type="text" id="pincode" value="${customerData.pincode || ""}" />
+      <!-- Buttons -->
+      <button type="button" id="editBtn">✏️ Edit Profile</button>
 
-            <button onclick="updateProfile()">✅ Update Profile</button>
+      <button type="submit" id="saveBtn" style="display:none;">
+        ✅ Save Profile
+      </button>
 
-            <p id="profileMsg"></p>
+      <p id="profileMsg"></p>
 
-            </div>
-          `;
+    </form>
+  `;
+
+          // Buttons
+          const editBtn = document.getElementById("editBtn");
+          const saveBtn = document.getElementById("saveBtn");
+
+          const fields = ["address", "landmark", "city", "state", "pincode"];
+
+          // ✅ Enable Edit Mode
+          editBtn.onclick = () => {
+            fields.forEach(id => {
+              document.getElementById(id).removeAttribute("readonly");
+            });
+
+            editBtn.style.display = "none";
+            saveBtn.style.display = "block";
+
+            document.getElementById("profileMsg").innerText =
+              "✏️ Now you can edit your profile...";
+          };
+
+          // ✅ Save Profile Update
+          document.getElementById("profileForm").onsubmit = async (e) => {
+            e.preventDefault();
+
+            document.getElementById("profileMsg").innerText =
+              "⏳ Updating profile...";
+
+            const updatedData = {};
+            fields.forEach(id => {
+              updatedData[id] = document.getElementById(id).value;
+            });
+
+            try {
+              const res = await fetch(
+                "https://nxtship-backend.onrender.com/api/customers/profile/update",
+                {
+                  method: "PUT",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: "Bearer " + localStorage.getItem("token"),
+                  },
+                  body: JSON.stringify(updatedData),
+                }
+              );
+
+              const data = await res.json();
+
+              if (data.success) {
+                document.getElementById("profileMsg").innerText =
+                  "✅ Profile Updated Successfully! Reloading...";
+
+                // ✅ Save updated data in localStorage
+                localStorage.setItem("customerData", JSON.stringify(data.customer));
+
+                // ✅ Reload profile section with fresh DB data
+                setTimeout(() => {
+                  loadSection("profile");
+                }, 1000);
+
+              } else {
+                document.getElementById("profileMsg").innerText =
+                  "❌ Update Failed!";
+              }
+
+            } catch (err) {
+              document.getElementById("profileMsg").innerText =
+                "❌ Server Error!";
+            }
+          };
           break;
 
         case "settings":
