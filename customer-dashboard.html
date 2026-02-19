@@ -5,6 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NXT Ship Customer Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <style>
     body {
@@ -242,6 +243,63 @@
       border: none;
       cursor: pointer;
       border-radius: 6px;
+    }
+
+    .report-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .card {
+      background: #1f2937;
+      padding: 20px;
+      border-radius: 10px;
+      color: white;
+      text-align: center;
+    }
+
+    .chart-container {
+      background: #111827;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    .top-destinations {
+      background: #1f2937;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      color: white;
+    }
+
+    .export-btn {
+      padding: 10px 15px;
+      background: #4f46e5;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      cursor: pointer;
+    }
+
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+    }
+
+    th,
+    td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
     }
 
 
@@ -539,11 +597,78 @@
           document.getElementById("pageTitle").innerText = "Reports";
 
           content.innerHTML = `
-          <h2>📊 Reports</h2>
+          <div id="reportsSection" class="section" style="display:none;">
 
-          <!-- Reports Placeholder -->
-          <p>Monthly shipment analytics will appear here.</p>
+  <h2>📊 Activity Reports</h2>
+
+  <!-- 🔹 Stats Cards -->
+  <div class="report-stats">
+    <div class="card">
+      <h3 id="totalShipments">0</h3>
+      <p>Total Shipments</p>
+    </div>
+
+    <div class="card">
+      <h3 id="deliveredShipments">0</h3>
+      <p>Delivered</p>
+    </div>
+
+    <div class="card">
+      <h3 id="inTransitShipments">0</h3>
+      <p>In Transit</p>
+    </div>
+
+    <div class="card">
+      <h3 id="cancelledShipments">0</h3>
+      <p>Cancelled</p>
+    </div>
+
+    <div class="card">
+      <h3 id="thisMonthShipments">0</h3>
+      <p>This Month</p>
+    </div>
+  </div>
+
+  <!-- 🔹 Graph -->
+  <div class="chart-container">
+    <canvas id="shipmentChart"></canvas>
+  </div>
+
+  <!-- 🔹 Top Destinations -->
+  <div class="top-destinations">
+    <h3>📍 Most Used Destinations</h3>
+    <ul id="destinationList"></ul>
+  </div>
+
+  <!-- 🔹 Export -->
+  <button onclick="exportReport()" class="export-btn">
+    📥 Export CSV
+  </button>
+
+  <!-- 🔹 Table -->
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Date & Time</th>
+          <th>Order ID</th>
+          <th>From</th>
+          <th>To</th>
+          <th>Status</th>
+          <th>Payment</th>
+        </tr>
+      </thead>
+      <tbody id="reportTableBody"></tbody>
+    </table>
+  </div>
+
+</div>
         `;
+
+        setTimeout(() => {
+          loadReports();
+        }, 100);
+
           break;
 
         case "resources":
@@ -815,6 +940,7 @@
       }
     }
 
+
     function showPopup(message, type = "success") {
 
       const oldPopup = document.querySelector(".custom-popup");
@@ -918,6 +1044,7 @@
       }
     }
 
+
     async function loadTickets() {
       try {
         const res = await fetch(
@@ -965,6 +1092,103 @@
     }
 
 
+    async function loadReports() {
+      try {
+        console.log("📊 Loading Reports Data...");
+
+        const token = localStorage.getItem("customerToken");
+
+        const res = await fetch("https://nxtship-backend.onrender.com/api/customer/reports", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        const data = await res.json();
+        console.log("✅ Reports Data:", data);
+
+        // ==== Stats Update ====
+        document.getElementById("totalShipments").innerText = data.total;
+        document.getElementById("deliveredShipments").innerText = data.delivered;
+        document.getElementById("inTransitShipments").innerText = data.inTransit;
+        document.getElementById("cancelledShipments").innerText = data.cancelled;
+        document.getElementById("thisMonthShipments").innerText = data.thisMonth;
+
+        // ==== Table Fill ====
+        const tbody = document.getElementById("reportTableBody");
+        tbody.innerHTML = "";
+
+        data.shipments.forEach(order => {
+          const row = `
+        <tr>
+          <td>${new Date(order.createdAt).toLocaleString()}</td>
+          <td>${order.orderId}</td>
+          <td>${order.from}</td>
+          <td>${order.to}</td>
+          <td>${order.status}</td>
+          <td>${order.paymentStatus}</td>
+        </tr>
+      `;
+          tbody.innerHTML += row;
+        });
+
+        // ==== Chart Render ====
+        renderChart(data.monthlyStats);
+
+      } catch (err) {
+        console.error("❌ Error Loading Reports:", err);
+      }
+    }
+
+
+    function renderChart(monthlyStats) {
+      const ctx = document.getElementById("shipmentChart").getContext("2d");
+
+      if (shipmentChart) {
+        shipmentChart.destroy();
+      }
+
+      shipmentChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: monthlyStats.map(m => m.month),
+          datasets: [{
+            label: "Shipments",
+            data: monthlyStats.map(m => m.count),
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+    }
+
+
+    function exportReport() {
+      const rows = document.querySelectorAll("table tr");
+      let csv = [];
+
+      rows.forEach(row => {
+        const cols = row.querySelectorAll("td, th");
+        let rowData = [];
+        cols.forEach(col => rowData.push(col.innerText));
+        csv.push(rowData.join(","));
+      });
+
+      const blob = new Blob([csv.join("\n")], { type: "text/csv" });
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "shipment-report.csv";
+      a.click();
+
+      window.URL.revokeObjectURL(url);
+    }
+    
+    
     // ✅ Track Order Dummy
     function trackOrder() {
       const awb = document.getElementById("awb").value;
