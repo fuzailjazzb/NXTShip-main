@@ -637,6 +637,8 @@
         <p id="profileMsg"></p>
       `;
 
+      console.log("✅ Profile Data Rendered on UI" + JSON.stringify(customer));
+
               // ✅ Enable Edit Mode
               document.getElementById("editBtn").onclick = () => {
                 document.getElementById("address").removeAttribute("readonly");
@@ -649,6 +651,8 @@
                 document.getElementById("saveBtn").style.display = "block";
               };
 
+              console.log("✅ Profile Loaded:", customer);
+
               // ✅ Save Profile Update
               document.getElementById("saveBtn").onclick = async () => {
                 const updatedData = {
@@ -658,6 +662,8 @@
                   state: document.getElementById("state").value,
                   pincode: document.getElementById("pincode").value,
                 };
+
+                console.log("📌 Updated Profile Data:", updatedData);
 
                 const updateRes = await fetch(
                   "https://nxtship-backend.onrender.com/api/customers/profile/update",
@@ -671,14 +677,22 @@
                   }
                 );
 
+                console.log("📌 Profile Update API Status:", updateRes.status);
+
                 const updateResult = await updateRes.json();
+
+                console.log("📌 Profile Update API Response:", updateResult);
 
                 if (updateResult.success) {
                   document.getElementById("profileMsg").innerHTML =
                     "✅ Profile Updated Successfully";
 
+                    console.log("✅ Profile Updated, Reloading Data...");
+
                   // ✅ Reload fresh DB data after save
                   loadCustomerProfile();
+
+                  console.log("✅ Profile Reloaded After Update");
                 } else {
                   document.getElementById("profileMsg").innerHTML =
                     "❌ Update Failed";
@@ -690,6 +704,7 @@
             }
           }
 
+          console.log("📌 Loading Profile Section...");
           // ✅ Load Profile Automatically
           loadCustomerProfile();
           break;
