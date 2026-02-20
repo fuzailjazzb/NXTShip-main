@@ -302,22 +302,63 @@
       text-align: left;
     }
 
-    .faq-item {
-      border: 1px solid #ddd;
-      margin-bottom: 10px;
+    .resource-box,
+    .faq-box {
+      margin-top: 20px;
+      padding: 15px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
       padding: 10px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+
+    button {
+      padding: 6px 10px;
+      border: none;
+      border-radius: 5px;
+      background: #2b7cff;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.8;
+    }
+
+    .faq-item {
+      margin-bottom: 10px;
     }
 
     .faq-question {
-      font-weight: bold;
       cursor: pointer;
+      font-weight: bold;
+      padding: 8px;
+      background: #f2f2f2;
+      border-radius: 5px;
     }
 
     .faq-answer {
       display: none;
-      margin-top: 10px;
-      color: #555;
+      padding: 8px;
+      background: #fafafa;
+      border-left: 3px solid #2b7cff;
     }
+
 
 
     @keyframes slideIn {
@@ -690,6 +731,66 @@
           break;
 
         case "resources":
+          document.getElementById("pageTitle").innerText = "Resources";
+
+          content.innerHTML = `
+    <h2>📦 Resources</h2>
+
+    <div class="resource-box">
+        <h3>📑 Shipment Records</h3>
+        <div id="shipmentTable">Loading shipments...</div>
+    </div>
+
+    <div class="faq-box">
+        <h3>❓ Frequently Asked Questions</h3>
+
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                ▶ How to Book Shipment?
+            </div>
+            <div class="faq-answer">
+                Go to Logistics tab → Fill pickup & destination → Confirm shipment.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                ▶ How to Track Shipment?
+            </div>
+            <div class="faq-answer">
+                Use Tracking ID inside Resources tab → Click Track Now.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                ▶ How to Cancel Shipment?
+            </div>
+            <div class="faq-answer">
+                Open shipment details → Click Cancel (if not dispatched).
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                ▶ How to Add Wallet Funds?
+            </div>
+            <div class="faq-answer">
+                Go to Wallet tab → Enter amount → Click Add Money.
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                ▶ Where to Download Invoice?
+            </div>
+            <div class="faq-answer">
+                In Resources table → Click Download Invoice button.
+            </div>
+        </div>
+
+    </div>
+  `;
           loadResources();
           break;
 
@@ -1207,117 +1308,100 @@
 
 
     async function loadResources() {
-      const res = await fetch("https://nxtship-backend.onrender.com/api/customer/shipment/shipments", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("customerToken")}` }
-      });
+      try {
+        const res = await fetch(
+          "https://nxtship-backend.onrender.com/api/customer/shipment/shipments",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("customerToken")}`
+            }
+          }
+        );
 
-      const data = await res.json();
-      const shipments = data.shipments;
+        const data = await res.json();
+        const table = document.getElementById("shipmentTable");
 
-      let html = `
-    <h2>Resources</h2>
-    <table border="1" cellpadding="10">
-      <tr>
-        <th>Order ID</th>
-        <th>Status</th>
-        <th>Date</th>
-        <th>Actions</th>
-      </tr>
-  `;
+        if (!res.ok) {
+          table.innerHTML = "<p style='color:red'>Failed to load shipments</p>";
+          return;
+        }
 
-      shipments.forEach(s => {
-        html += `
-      <tr>
-        <td>${s.orderId}</td>
-        <td>${s.status}</td>
-        <td>${new Date(s.createdAt).toLocaleString()}</td>
-        <td>
-          <button onclick="downloadInvoice('${s._id}')">Invoice</button>
-          <button onclick="downloadLabel('${s._id}')">Label</button>
-          <button onclick="downloadCSV('${s._id}')">CSV</button>
-        </td>
-      </tr>
-    `;
-      });
+        if (!data.shipments || !data.shipments.length) {
+          table.innerHTML = "<p>No shipments found.</p>";
+          return;
+        }
 
-      html += `</table>`;
+        table.innerHTML = `
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Invoice</th>
+                            <th>Export</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.shipments.map(s => `
+                            <tr>
+                                <td>${s._id}</td>
+                                <td>${s.status}</td>
+                                <td>${new Date(s.createdAt).toLocaleDateString()}</td>
+                                <td>
+                                    <button onclick="downloadInvoice('${s._id}')">
+                                        📄 Invoice
+                                    </button>
+                                </td>
+                                <td>
+                                    <button onclick="exportCSV('${s._id}')">
+                                        📥 CSV
+                                    </button>
+                                </td>
+                            </tr>
+                        `).join("")}
+                    </tbody>
+                </table>
+            </div>
+        `;
 
-      // FAQ Section
-      html += `
-    <h3 style="margin-top:40px;">Frequently Asked Questions</h3>
-
-    <div class="faq-item">
-      <div class="faq-question" onclick="toggleFAQ(this)">
-        ▶ How to Book Shipment?
-      </div>
-      <div class="faq-answer">
-        Go to Dashboard → Click Book Shipment → Fill pickup & delivery details → Submit.
-      </div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-question" onclick="toggleFAQ(this)">
-        ▶ How to Track Shipment?
-      </div>
-      <div class="faq-answer">
-        Go to Track section → Enter Waybill or Order ID → View real-time status.
-      </div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-question" onclick="toggleFAQ(this)">
-        ▶ How to Cancel Shipment?
-      </div>
-      <div class="faq-answer">
-        Open shipment details → Click Cancel → Confirm cancellation.
-      </div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-question" onclick="toggleFAQ(this)">
-        ▶ How to Add Wallet Funds?
-      </div>
-      <div class="faq-answer">
-        Go to Wallet → Click Add Funds → Enter amount → Complete payment.
-      </div>
-    </div>
-
-    <div class="faq-item">
-      <div class="faq-question" onclick="toggleFAQ(this)">
-        ▶ Where to Download Invoice?
-      </div>
-      <div class="faq-answer">
-        Go to Resources tab → Click Invoice button next to shipment.
-      </div>
-    </div>
-  `;
-
-      document.getElementById("pageTitle").innerHTML = html;
+      } catch (err) {
+        document.getElementById("shipmentTable").innerHTML =
+          "<p style='color:red'>Error loading shipments.</p>";
+        console.error("Resource Load Error:", err);
+      }
     }
 
-    // Download functions
+
     function downloadInvoice(id) {
-      window.open(`https://nxtship-backend.onrender.com/api/resources/invoice/${id}`, "_blank");
+      console.log("📄 Downloading Invoice for Shipment ID:", id);
+      // यहाँ Backend से Invoice PDF डाउनलोड करने का API कॉल आएगा
+      window.open(
+        `https://nxtship-backend.onrender.com/api/resources/invoice/${id}`,
+        "_blank"
+      )
     }
 
-    function downloadLabel(id) {
-      window.open(`https://nxtship-backend.onrender.com/api/resources/label/${id}`, "_blank");
+    function exportCSV(id) {
+      console.log("📥 Exporting CSV for Shipment ID:", id);
+      // यहाँ Backend से CSV डेटा डाउनलोड करने का API कॉल आएगा
+      window.open(
+        `https://nxtship-backend.onrender.com/api/resources/export/${id}`,
+        "_blank"
+      )
     }
 
-    function downloadCSV(id) {
-      window.open(`https://nxtship-backend.onrender.com/api/resources/export/${id}`, "_blank");
-    }
-
-    // FAQ Toggle
     function toggleFAQ(element) {
       const answer = element.nextElementSibling;
-
       if (answer.style.display === "block") {
         answer.style.display = "none";
-        element.innerHTML = element.innerHTML.replace("▼", "▶");
+        element.innerText = "▶ " + element.innerText.slice(2);
       } else {
         answer.style.display = "block";
-        element.innerHTML = element.innerHTML.replace("▶", "▼");
+        element.innerText = "▼ " + element.innerText.slice(2);
       }
     }
 
