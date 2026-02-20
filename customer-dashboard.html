@@ -1207,7 +1207,7 @@
 
 
     async function loadResources() {
-      const res = await fetch("https://nxtship-backend.onrender.com/api/customer/shipments", {
+      const res = await fetch("https://nxtship-backend.onrender.com/api/customer/shipment/shipments", {
         headers: { Authorization: `Bearer ${localStorage.getItem("customerToken")}` }
       });
 
