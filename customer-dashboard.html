@@ -302,6 +302,23 @@
       text-align: left;
     }
 
+    .faq-item {
+      border: 1px solid #ddd;
+      margin-bottom: 10px;
+      padding: 10px;
+    }
+
+    .faq-question {
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .faq-answer {
+      display: none;
+      margin-top: 10px;
+      color: #555;
+    }
+
 
     @keyframes slideIn {
       from {
@@ -673,14 +690,7 @@
           break;
 
         case "resources":
-          document.getElementById("pageTitle").innerText = "Resources";
-
-          content.innerHTML = `
-          <h2>📑 Resources</h2>
-
-          <!-- Documents & Downloads -->
-          <p>Download invoices, labels, documents here.</p>
-        `;
+          loadResources();
           break;
 
         case "support":
@@ -1195,6 +1205,121 @@
       window.URL.revokeObjectURL(url);
     }
 
+
+    async function loadResources() {
+      const res = await fetch("https://nxtship-backend.onrender.com/api/customer/shipments", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("customerToken")}` }
+      });
+
+      const data = await res.json();
+      const shipments = data.shipments;
+
+      let html = `
+    <h2>Resources</h2>
+    <table border="1" cellpadding="10">
+      <tr>
+        <th>Order ID</th>
+        <th>Status</th>
+        <th>Date</th>
+        <th>Actions</th>
+      </tr>
+  `;
+
+      shipments.forEach(s => {
+        html += `
+      <tr>
+        <td>${s.orderId}</td>
+        <td>${s.status}</td>
+        <td>${new Date(s.createdAt).toLocaleString()}</td>
+        <td>
+          <button onclick="downloadInvoice('${s._id}')">Invoice</button>
+          <button onclick="downloadLabel('${s._id}')">Label</button>
+          <button onclick="downloadCSV('${s._id}')">CSV</button>
+        </td>
+      </tr>
+    `;
+      });
+
+      html += `</table>`;
+
+      // FAQ Section
+      html += `
+    <h3 style="margin-top:40px;">Frequently Asked Questions</h3>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        ▶ How to Book Shipment?
+      </div>
+      <div class="faq-answer">
+        Go to Dashboard → Click Book Shipment → Fill pickup & delivery details → Submit.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        ▶ How to Track Shipment?
+      </div>
+      <div class="faq-answer">
+        Go to Track section → Enter Waybill or Order ID → View real-time status.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        ▶ How to Cancel Shipment?
+      </div>
+      <div class="faq-answer">
+        Open shipment details → Click Cancel → Confirm cancellation.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        ▶ How to Add Wallet Funds?
+      </div>
+      <div class="faq-answer">
+        Go to Wallet → Click Add Funds → Enter amount → Complete payment.
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question" onclick="toggleFAQ(this)">
+        ▶ Where to Download Invoice?
+      </div>
+      <div class="faq-answer">
+        Go to Resources tab → Click Invoice button next to shipment.
+      </div>
+    </div>
+  `;
+
+      document.getElementById("content").innerHTML = html;
+    }
+
+    // Download functions
+    function downloadInvoice(id) {
+      window.open(`https://nxtship-backend.onrender.com/api/resources/invoice/${id}`, "_blank");
+    }
+
+    function downloadLabel(id) {
+      window.open(`https://nxtship-backend.onrender.com/api/resources/label/${id}`, "_blank");
+    }
+
+    function downloadCSV(id) {
+      window.open(`https://nxtship-backend.onrender.com/api/resources/export/${id}`, "_blank");
+    }
+
+    // FAQ Toggle
+    function toggleFAQ(element) {
+      const answer = element.nextElementSibling;
+
+      if (answer.style.display === "block") {
+        answer.style.display = "none";
+        element.innerHTML = element.innerHTML.replace("▼", "▶");
+      } else {
+        answer.style.display = "block";
+        element.innerHTML = element.innerHTML.replace("▶", "▼");
+      }
+    }
 
     // ✅ Track Order Dummy
     function trackOrder() {
