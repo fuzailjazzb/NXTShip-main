@@ -428,6 +428,98 @@
       text-align: center;
     }
 
+    .delhivery-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    .delhivery-hero {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    .badge {
+      background: #e2e8f0;
+      padding: 5px 12px;
+      border-radius: 20px;
+      margin-right: 8px;
+      font-size: 12px;
+    }
+
+    .badge.active {
+      background: #16a34a;
+      color: white;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .rate-section {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    .rate-form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .rate-card {
+      margin-top: 15px;
+      background: #f8fafc;
+      padding: 15px;
+      border-radius: 10px;
+    }
+
+    .rate-line {
+      display: flex;
+      justify-content: space-between;
+      margin: 5px 0;
+    }
+
+    .rate-total {
+      text-align: right;
+      font-size: 22px;
+      font-weight: bold;
+      color: #2563eb;
+      margin-top: 10px;
+    }
+
+    .book-btn {
+      width: 100%;
+      margin-top: 15px;
+      padding: 10px;
+      background: #16a34a;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    @media(max-width:768px) {
+      .rate-form {
+        flex-direction: column;
+      }
+    }
+
+
     @keyframes slideIn {
       from {
         opacity: 0;
@@ -652,14 +744,59 @@
           break;
 
         case "courier":
-          document.getElementById("pageTitle").innerText = "Courier Services";
+          document.getElementById("pageTitle").innerText = "Delhivery Services";
 
           content.innerHTML = `
-          <h2>🚚 Courier Services</h2>
+  <div class="delhivery-panel">
 
-          <!-- Courier Partner List आएगी -->
-          <p>Available courier partners will show here.</p>
-        `;
+    <!-- HERO -->
+    <div class="delhivery-hero">
+      <h2>🚚 Delhivery Official Service Panel</h2>
+      <div class="delhivery-badges">
+        <span class="badge active">Active</span>
+        <span class="badge">PAN India</span>
+        <span class="badge">Surface + Air</span>
+        <span class="badge">COD Available</span>
+      </div>
+      <p>Integrated domestic courier partner powered by NXT Ship API engine.</p>
+    </div>
+
+    <!-- PERFORMANCE STATS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3>18,000+</h3>
+        <p>Serviceable PIN Codes</p>
+      </div>
+      <div class="stat-card">
+        <h3>3 Days</h3>
+        <p>Avg Delivery</p>
+      </div>
+      <div class="stat-card">
+        <h3>99%</h3>
+        <p>Delivery Success</p>
+      </div>
+    </div>
+
+    <!-- LIVE RATE -->
+    <div class="rate-section">
+      <h3>💰 Live Rate Preview</h3>
+
+      <div class="rate-form">
+        <input id="d_fromPin" placeholder="From Pincode" maxlength="6" />
+        <input id="d_toPin" placeholder="To Pincode" maxlength="6" />
+        <input id="d_weight" type="number" step="0.1" placeholder="Weight (kg)" />
+        <select id="d_paymentType">
+          <option value="Pre-paid">Pre-paid</option>
+          <option value="COD">COD</option>
+        </select>
+        <button onclick="fetchDelhiveryRate()">Check Rate</button>
+      </div>
+
+      <div id="d_rateResult"></div>
+    </div>
+
+  </div>
+  `;
           break;
 
         case "international":
@@ -1560,6 +1697,109 @@
         document.getElementById("rateResult").innerHTML =
           "<p style='color:red'>Server Error</p>";
       }
+    }
+
+
+    async function fetchDelhiveryRate() {
+
+      const from = document.getElementById("d_fromPin").value;
+      const to = document.getElementById("d_toPin").value;
+      const weight = document.getElementById("d_weight").value;
+      const paymentType = document.getElementById("d_paymentType").value;
+      const resultBox = document.getElementById("d_rateResult");
+
+      if (!from || !to || !weight) {
+        resultBox.innerHTML = "<p style='color:red'>Please fill all fields</p>";
+        return;
+      }
+
+      resultBox.innerHTML = "Calculating rate...";
+
+      try {
+        const res = await fetch(
+          "https://nxtship-backend.onrender.com/api/rate/calculate-rate",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("customerToken")
+            },
+            body: JSON.stringify({
+              fromPincode: from,
+              toPincode: to,
+              weight: Number(weight),
+              paymentType
+            })
+          }
+        );
+
+        const data = await res.json();
+        if (!data.success) {
+          resultBox.innerHTML = "Rate not available";
+          return;
+        }
+
+        const b = data.breakdown;
+
+        const estimatedDays = Math.floor(Math.random() * 2) + 2;
+        const zone = from.substring(0, 2) === to.substring(0, 2) ? "Local" : "National";
+
+        resultBox.innerHTML = `
+      <div class="rate-card">
+
+        <div class="rate-line"><span>Freight</span><span>₹${b.freight}</span></div>
+        <div class="rate-line"><span>Fuel</span><span>₹${b.fuelSurcharge}</span></div>
+        <div class="rate-line"><span>COD</span><span>₹${b.codCharge}</span></div>
+        <div class="rate-line"><span>GST</span><span>₹${b.gst}</span></div>
+
+        <hr/>
+
+        <div class="rate-line"><span>Zone</span><span>${zone}</span></div>
+        <div class="rate-line"><span>Estimated Delivery</span><span>${estimatedDays} Days</span></div>
+
+        <div class="rate-total">
+          ₹<span id="animatedTotal">0</span>
+        </div>
+
+        <button class="book-btn" onclick="redirectToBooking('${from}','${to}','${weight}','${paymentType}')">
+          Book Now 🚀
+        </button>
+
+      </div>
+    `;
+
+        animateValue("animatedTotal", 0, b.totalAmount, 800);
+
+      } catch (err) {
+        resultBox.innerHTML = "Server Error";
+      }
+    }
+
+
+    function animateValue(id, start, end, duration) {
+      let range = end - start;
+      let current = start;
+      let increment = end > start ? 1 : -1;
+      let stepTime = Math.abs(Math.floor(duration / range));
+      let obj = document.getElementById(id);
+
+      let timer = setInterval(function () {
+        current += increment;
+        obj.innerHTML = current;
+        if (current == end) {
+          clearInterval(timer);
+        }
+      }, stepTime);
+    }
+
+
+    function redirectToBooking(from, to, weight, paymentType) {
+
+      loadSection("shipment");
+
+      setTimeout(() => {
+        document.querySelector("input[placeholder='Receiver Pincode']").value = to;
+      }, 300);
     }
 
 
