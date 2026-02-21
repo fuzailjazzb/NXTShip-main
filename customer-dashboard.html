@@ -360,6 +360,50 @@
     }
 
 
+    .rate-box {
+      margin-top: 20px;
+      padding: 20px;
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .rate-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 400px;
+    }
+
+    .rate-form input,
+    .rate-form select {
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    .rate-form button {
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      background: #2b7cff;
+      color: white;
+      cursor: pointer;
+    }
+
+    .rate-form button:hover {
+      opacity: 0.9;
+    }
+
+    .rate-output {
+      margin-top: 15px;
+      padding: 10px;
+      background: #f4f8ff;
+      border-left: 4px solid #2b7cff;
+      overflow-x: auto;
+    }
+
+
 
     @keyframes slideIn {
       from {
@@ -399,7 +443,7 @@
     <div class="menu-item" onclick="loadSection('rate', this)">💰 Rate Calculator</div>
     <div class="menu-item" onclick="loadSection('courier', this)">🚚 Courier Services</div>
     <div class="menu-item" onclick="loadSection('international', this)">🌍 International Shipping</div>
- 
+
     <div class="menu-item" onclick="loadSection('wallet', this)">👛 Wallet</div>
     <div class="menu-item" onclick="loadSection('reports', this)">📊 Reports</div>
     <div class="menu-item" onclick="loadSection('resources', this)">📑 Resources</div>
@@ -556,14 +600,27 @@
           document.getElementById("pageTitle").innerText = "Rate Calculator";
 
           content.innerHTML = `
-          <h2>💰 Rate Calculator</h2>
+    <h2>🚚 Delhivery Rate Calculator</h2>
 
-          <!-- Rate Calculation Placeholder -->
-          <input placeholder="Enter Weight (kg)"/>
-          <input placeholder="Enter Destination Pincode"/>
+    <div class="rate-box">
+        <div class="rate-form">
 
-          <button>Calculate Rate</button>
-        `;
+            <input id="fromPin" placeholder="From Pincode" maxlength="6" />
+            <input id="toPin" placeholder="To Pincode" maxlength="6" />
+            <input id="weight" type="number" placeholder="Weight (kg)" step="0.1" />
+
+            <select id="paymentType">
+                <option value="Pre-paid">Pre-paid</option>
+                <option value="COD">Cash on Delivery</option>
+            </select>
+
+            <button onclick="calculateRate()">Calculate Rate</button>
+
+            <div id="rateResult"></div>
+
+        </div>
+    </div>
+  `;
           break;
 
         case "courier":
@@ -1392,6 +1449,64 @@
         element.innerText = "▼ " + element.innerText.slice(2);
       }
     }
+
+
+    async function calculateRate() {
+      const from = document.getElementById("fromPin").value;
+      const to = document.getElementById("toPin").value;
+      const weight = document.getElementById("weight").value;
+      const paymentType = document.getElementById("paymentType").value;
+
+      if (!from || !to || !weight) {
+        document.getElementById("rateResult").innerHTML =
+          "<p style='color:red'>Please fill all fields</p>";
+        return;
+      }
+
+      document.getElementById("rateResult").innerHTML = "Calculating...";
+
+      try {
+        const res = await fetch(
+          "https://nxtship-backend.onrender.com/api/rate/calculate-rate",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("customerToken")}`
+            },
+            body: JSON.stringify({
+              fromPincode: from,
+              toPincode: to,
+              weight: Number(weight),
+              paymentType
+            })
+          }
+        );
+
+        const data = await res.json();
+
+        if (!data.success) {
+          document.getElementById("rateResult").innerHTML =
+            `<p style="color:red">${data.message || "Rate fetch failed"}</p>`;
+          return;
+        }
+
+        // Since backend sending raw Delhivery response
+        const charges = data.raw;
+
+        document.getElementById("rateResult").innerHTML = `
+            <div class="rate-output">
+                <h4>💰 Rate Details</h4>
+                <pre>${JSON.stringify(charges, null, 2)}</pre>
+            </div>
+        `;
+
+      } catch (error) {
+        document.getElementById("rateResult").innerHTML =
+          "<p style='color:red'>Server Error</p>";
+      }
+    }
+
 
     // ✅ Track Order Dummy
     function trackOrder() {
