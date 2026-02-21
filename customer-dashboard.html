@@ -360,50 +360,73 @@
     }
 
 
-    .rate-box {
+    .rate-container {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
       margin-top: 20px;
-      padding: 20px;
-      background: #ffffff;
       border-radius: 10px;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
     .rate-form {
+      flex: 1;
       display: flex;
       flex-direction: column;
       gap: 12px;
-      max-width: 400px;
+      max-width: 280px;
     }
 
     .rate-form input,
     .rate-form select {
-      padding: 8px;
+      padding: 10px;
       border-radius: 6px;
       border: 1px solid #ccc;
     }
 
     .rate-form button {
-      padding: 10px;
+      padding: 12px;
       border: none;
       border-radius: 6px;
-      background: #2b7cff;
+      background: #2563eb;
       color: white;
       cursor: pointer;
+      font-weight: bold;
     }
 
     .rate-form button:hover {
       opacity: 0.9;
     }
 
-    .rate-output {
-      margin-top: 15px;
-      padding: 10px;
+    .rate-card {
+      flex: 1;
+      min-width: 280px;
       background: #f4f8ff;
+      padding: 20px;
+      border-radius: 12px;
       border-left: 4px solid #2b7cff;
-      overflow-x: auto;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+      animation: fadeIn 0.3s ease;
     }
 
+    .rate-line,
+    .rate-total {
+      display: flex;
+      justify-content: space-between;
+      margin: 8px 0;
+    }
 
+    .rate-total {
+      font-size: 18px;
+      font-weight: bold;
+      color: #2563eb;
+    }
+
+    .loading {
+      color: #2563eb;
+      font-weight: bold;
+      text-align: center;
+    }
 
     @keyframes slideIn {
       from {
@@ -426,6 +449,10 @@
       .main {
         margin-left: 0 !important;
         padding: 1px;
+      }
+
+      .rate-container {
+        flex-direction: column;
       }
     }
   </style>
@@ -602,12 +629,12 @@
           content.innerHTML = `
     <h2>🚚 Delhivery Rate Calculator</h2>
 
-    <div class="rate-box">
+    <div class="rate-container">
         <div class="rate-form">
 
             <input id="fromPin" placeholder="From Pincode" maxlength="6" />
             <input id="toPin" placeholder="To Pincode" maxlength="6" />
-            <input id="weight" type="number" placeholder="Weight (kg)" step="0.1" />
+            <input id="weight" type="number" step="0.1" placeholder="Weight (kg)"  />
 
             <select id="paymentType">
                 <option value="Pre-paid">Pre-paid</option>
@@ -615,10 +642,11 @@
             </select>
 
             <button onclick="calculateRate()">Calculate Rate</button>
+          </div>
 
-            <div id="rateResult"></div>
+            <div id="rateResult" class="rate-result"></div>
 
-        </div>
+
     </div>
   `;
           break;
@@ -1452,6 +1480,7 @@
 
 
     async function calculateRate() {
+
       const from = document.getElementById("fromPin").value;
       const to = document.getElementById("toPin").value;
       const weight = document.getElementById("weight").value;
@@ -1463,7 +1492,8 @@
         return;
       }
 
-      document.getElementById("rateResult").innerHTML = "Calculating...";
+      document.getElementById("rateResult").innerHTML =
+        "<div class='loading'>Calculating best rate...</div>";
 
       try {
         const res = await fetch(
@@ -1487,17 +1517,42 @@
 
         if (!data.success) {
           document.getElementById("rateResult").innerHTML =
-            `<p style="color:red">${data.message || "Rate fetch failed"}</p>`;
+            `<p style="color:red">${data.message}</p>`;
           return;
         }
 
-        // Since backend sending raw Delhivery response
-        const charges = data.raw;
+        const b = data.breakdown;
 
         document.getElementById("rateResult").innerHTML = `
-            <div class="rate-output">
-                <h4>💰 Rate Details</h4>
-                <pre>${JSON.stringify(charges, null, 2)}</pre>
+            <div class="rate-card">
+                <h3>📦 Shipping Cost Breakdown</h3>
+
+                <div class="rate-line">
+                    <span>Freight Charges</span>
+                    <span>₹${b.freight}</span>
+                </div>
+
+                <div class="rate-line">
+                    <span>Fuel Surcharge</span>
+                    <span>₹${b.fuelSurcharge}</span>
+                </div>
+
+                <div class="rate-line">
+                    <span>COD Charges</span>
+                    <span>₹${b.codCharge}</span>
+                </div>
+
+                <div class="rate-line">
+                    <span>GST</span>
+                    <span>₹${b.gst}</span>
+                </div>
+
+                <hr/>
+
+                <div class="rate-total">
+                    <span>Total Payable</span>
+                    <span>₹${b.totalAmount}</span>
+                </div>
             </div>
         `;
 
