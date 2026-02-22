@@ -522,6 +522,58 @@
       cursor: pointer;
     }
 
+    .shipment-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .shipment-header {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    .shipment-form {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .dimension-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .preview-box {
+      margin-top: 10px;
+      padding: 10px;
+      background: #f0f9ff;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+
+    .shipment-form button {
+      margin-top: 15px;
+      padding: 10px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+    }
+
+    @media(max-width:768px) {
+      .dimension-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     @media(max-width:768px) {
       .rate-form {
         flex-direction: column;
@@ -709,20 +761,63 @@
           document.getElementById("pageTitle").innerText = "Create Shipment";
 
           content.innerHTML = `
-          <h2>➕ Create Shipment</h2>
+  <div class="shipment-panel">
 
-          <!-- Shipment Form Placeholder -->
-          <input placeholder="Receiver Name"/>
-          <input placeholder="Receiver Address"/>
-          <input placeholder="Pincode"/>
-          <input placeholder="City"/>
+    <div class="shipment-header">
+      <h2>📦 Create Shipment</h2>
+      <p>Fill shipment details to generate AWB & schedule pickup</p>
+    </div>
 
-          <button>Create Shipment</button>
+    <div class="shipment-form">
 
-          <p style="color:gray;">
-            Backend integration next step 🔥
-          </p>
-        `;
+      <!-- Receiver -->
+      <h3>Receiver Details</h3>
+
+      <input id="receiverName" placeholder="Receiver Name" />
+      <input id="receiverPhone" placeholder="Receiver Phone" />
+      <textarea id="receiverAddress" placeholder="Receiver Address"></textarea>
+      <input id="toPin" placeholder="Receiver Pincode" />
+      <input id="receiverCity" placeholder="City" />
+
+      <!-- Shipment Info -->
+      <h3>Shipment Details</h3>
+
+      <input id="weight" type="number" step="0.1" placeholder="Weight (kg)" />
+
+      <div class="dimension-grid">
+        <input id="length" placeholder="Length (cm)" />
+        <input id="breadth" placeholder="Breadth (cm)" />
+        <input id="height" placeholder="Height (cm)" />
+      </div>
+
+      <select id="paymentType">
+        <option value="Pre-paid">Pre-paid</option>
+        <option value="COD">Cash on Delivery</option>
+      </select>
+
+      <input id="orderValue" type="number" placeholder="Order Value (for COD)" />
+
+      <!-- Rate Preview -->
+      <div id="shipmentRatePreview"></div>
+
+      <button onclick="createShipment()">🚀 Create Shipment</button>
+
+      <div id="shipmentMessage"></div>
+
+    </div>
+  </div>
+  `;
+
+          document.addEventListener("input", function (e) {
+            if (["toPin", "weight"].includes(e.target.id)) {
+              previewShipmentRate();
+            }
+          });
+
+          setTimeout(() => {
+            autoPrefillShipment();
+          }, 200);
+
           break;
 
         case "rate":
@@ -1798,7 +1893,7 @@
       function update(currentTime) {
         const elapsed = currentTime - startTime;
         const progress = Math.min(elapsed / duration, 1);
-        
+
         const value = start + (end - start) * progress;
 
         obj.innerHTML = value.toFixed(2);
@@ -1814,23 +1909,76 @@
 
     function redirectToBooking(from, to, weight, paymentType) {
 
+      const shipmentData = {
+        fromPincode: from,
+        toPincode: to,
+        weight: weight,
+        paymentType: paymentType
+      };
+
+
+      localStorage.setItem("prefillShipment", JSON.stringify(shipmentData));
+
       loadSection("shipment");
 
+    }
+
+
+    function autoPrefillShipment() {
+      const saved = localStorage.getItem("prefillShipment");
+      if (!saved) return;
+
+      const data = JSON.parse(saved);
+
+      document.getElementById("fromPin").value = data.fromPincode;
+      document.getElementById("toPin").value = data.toPincode;
+      document.getElementById("weight").value = data.weight;
+      document.getElementById("PaymentType").value = data.paymentType;
+
+      localStorage.removeItem("prefillShipment");
+
+    }
+
+
+    async function previewShipmentRate() {
+
+      const toPin = document.getElementById("toPin").value;
+      const weight = document.getElementById("weight").value;
+
+      if (!toPin || !weight) return;
+
+      const res = await fetch("https://nxtship-backend.onrender.com/api/rate/calculate-rate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + localStorage.getItem("customerToken")
+        },
+        body: JSON.stringify({
+          fromPincode: "500055",
+          toPincode: toPin,
+          weight: Number(weight),
+          paymentType: document.getElementById("paymentType").value
+        })
+      });
+
+      const data = await res.json();
+      if (!data.success) return;
+
+      document.getElementById("shipmentRatePreview").innerHTML =
+        `<div class="preview-box">Estimated Charge: ₹${data.breakdown.totalAmount}</div>`;
+    }
+
+
+    async function createShipment() {
+      const message = document.getElementById("shipmentMessage");
+      message.innerHTML = "Creating Shipment...";
+
       setTimeout(() => {
-        document.querySelector("input[placeholder='Receiver Pincode']").value = to;
-      }, 300);
-    }
-
-
+        message.innerHTML = "<span style='color:green'>Shipment Created Successfully</span>";
+      }, 1200);
+    };
     // ✅ Track Order Dummy
-    function trackOrder() {
-      const awb = document.getElementById("awb").value;
 
-      document.getElementById("trackResult").innerHTML =
-        "<p>📌 Backend Tracking API Next Step 🔥</p>";
-
-      console.log("Tracking AWB:", awb);
-    }
 
 
     // ✅ Logout
