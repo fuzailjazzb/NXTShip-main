@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>NXT Ship Customer Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
   <style>
     body {
@@ -966,6 +967,7 @@
           }
 
           loadWalletBalance();
+          loadTransactions();
           break;
 
         case "reports":
@@ -1303,33 +1305,69 @@
     async function addMoneyToWallet() {
 
       const amount = Number(document.getElementById("addAmount").value);
+
       if (!amount || amount <= 0) {
-        return showtoast("Please enter a valid amount to add.");
+        showPopup("Enter valid amount");
+        return;
       }
 
-      try {
-        const res = await fetch("https://nxtship-backend.onrender.com/api/wallet/add-funds", {
+      // 1️⃣ Create Razorpay Order
+      const orderRes = await fetch(
+        "https://nxtship-backend.onrender.com/api/wallet/create-order",
+        {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("customerToken")}`,
+            Authorization: `Bearer ${localStorage.getItem("customerToken")}`
           },
-          body: JSON.stringify({ amount }),
-        });
+          body: JSON.stringify({ amount })
+        }
+      );
 
-        const data = await res.json();
-        console.log("📌 Add Money API Response:", data);
+      const orderData = await orderRes.json();
 
-        showPopup("💰 " + (data.message || "Money Added Successfully!"));
-        document.getElementById("walletBalance").innerText = data.balance;
+      const options = {
+        key: "rzp_live_SL8Zr9PYlQ3By0", // YOUR KEY ID
+        amount: orderData.order.amount,
+        currency: "INR",
+        order_id: orderData.order.id,
 
-        // Refresh transaction history after adding money
-        loadTransactions();
-      }
-      catch (err) {
-        console.log("❌ Error adding money to wallet:", err);
-        showPopup("Error adding money. Please try again.");
-      }
+        handler: async function (response) {
+
+          // 2️⃣ Verify Payment
+          const verifyRes = await fetch(
+            "https://nxtship-backend.onrender.com/api/wallet/verify-payment",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("customerToken")}`
+              },
+              body: JSON.stringify({
+                ...response,
+                amount
+              })
+            }
+          );
+
+          const verifyData = await verifyRes.json();
+
+          if (verifyData.success) {
+            showPopup("✅ Money Added Successfully");
+            document.getElementById("walletBalance").innerText =
+              verifyData.walletBalance;
+
+            loadTransactions();
+          }
+        },
+
+        theme: {
+          color: "#2563eb"
+        }
+      };
+
+      const rzp = new Razorpay(options);
+      rzp.open();
     }
 
     // Transaction History Load
