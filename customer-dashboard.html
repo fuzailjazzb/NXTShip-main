@@ -750,6 +750,19 @@
     function loadSection(section, element) {
       console.log("📌 Loading Section:", section);
 
+      /* ================================
+          SHIPMENT SECTION LOAD
+         ================================ */
+
+      if (section === "shipment") {
+
+        console.log("Loading Shipment Section...");
+
+        setTimeout(() => {
+          autoPrefillShipment();
+        }, 200);
+      }
+
       if (window.innerWidth <= 801) {
         closeMenu();
       }
@@ -2043,7 +2056,7 @@
             body: JSON.stringify({
               customerName: document.getElementById("receiverName").value,
               address: document.getElementById("recieverAddress").value,
-              pincode: document.getElementById("toPin").value,
+              pincode: document.getElementById("toPincode").value,
               city: document.getElementById("recieverCity").value,
               state: document.getElementById("recieverState").value,
               phone: document.getElementById("recieverPhone").value,
