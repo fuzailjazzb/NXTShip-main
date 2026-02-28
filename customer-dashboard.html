@@ -7,6 +7,25 @@
   <title>NXT Ship Customer Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script>
+    /* ================================
+       SAFE DOM HELPERS
+    ================================ */
+
+    function $(id) {
+      return document.getElementById(id);
+    }
+
+    function getVal(id) {
+      const el = $(id);
+      return el ? el.value : "";
+    }
+
+    function setVal(id, value) {
+      const el = $(id);
+      if (el) el.value = value;
+    }
+  </script>
 
   <style>
     body {
