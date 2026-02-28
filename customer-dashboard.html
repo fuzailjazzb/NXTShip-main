@@ -791,66 +791,46 @@
           break;
 
         case "shipment":
+
           document.getElementById("pageTitle").innerText = "Create Shipment";
 
           content.innerHTML = `
-  <div class="shipment-panel">
+<div class="shipment-panel">
 
-    <div class="shipment-header">
-      <h2>📦 Create Shipment</h2>
-      <p>Fill shipment details to generate AWB & schedule pickup</p>
-    </div>
+<h2>Create Shipment</h2>
 
-    <div class="shipment-form">
+<h3>Receiver Details</h3>
 
-      <!-- Receiver -->
-      <h3>Receiver Details</h3>
+<input id="receiverName" placeholder="Receiver Name"/>
+<input id="receiverPhone" placeholder="Receiver Phone"/>
+<textarea id="receiverAddress" placeholder="Receiver Address"></textarea>
+<input id="toPincode" placeholder="Receiver Pincode"/>
+<input id="receiverCity" placeholder="City"/>
+<input id="receiverState" placeholder="State"/>
 
-      <input id="receiverName" placeholder="Receiver Name" />
-      <input id="receiverPhone" placeholder="Receiver Phone" />
-      <textarea id="receiverAddress" placeholder="Receiver Address"></textarea>
-      <input id="toPincode" placeholder="Receiver Pincode" />
-      <input id="receiverCity" placeholder="City" />
-      <input id="receiverState" placeholder="State" />
+<h3>Shipment Details</h3>
 
-      <!-- Shipment Info -->
-      <h3>Shipment Details</h3>
+<input id="weight" type="number" step="0.1" placeholder="Weight (kg)"/>
 
-      <input id="weight" type="number" step="0.1" placeholder="Weight (kg)" />
+<input id="length" placeholder="Length (cm)"/>
+<input id="breadth" placeholder="Breadth (cm)"/>
+<input id="height" placeholder="Height (cm)"/>
 
-      <div class="dimension-grid">
-        <input id="length" placeholder="Length (cm)" />
-        <input id="breadth" placeholder="Breadth (cm)" />
-        <input id="height" placeholder="Height (cm)" />
-      </div>
+<select id="paymentType">
+  <option value="Pre-paid">Pre-paid</option>
+  <option value="COD">Cash on Delivery</option>
+</select>
 
-      <select id="paymentType">
-        <option value="Pre-paid">Pre-paid</option>
-        <option value="COD">Cash on Delivery</option>
-      </select>
+<input id="orderValue" type="number" placeholder="Order Value"/>
 
-      <input id="orderValue" type="number" placeholder="Order Value (for COD)" />
+<br><br>
 
-      <!-- Rate Preview -->
-      <div id="shipmentRatePreview"></div>
+<button onclick="createShipment()">🚀 Create Shipment</button>
 
-      <button onclick="createShipment()">🚀 Create Shipment</button>
+<div id="shipmentMessage"></div>
 
-      <div id="shipmentMessage"></div>
-
-    </div>
-  </div>
-  `;
-
-          document.addEventListener("input", function (e) {
-            if (["toPin", "weight"].includes(e.target.id)) {
-              previewShipmentRate();
-            }
-          });
-
-          setTimeout(() => {
-            autoPrefillShipment();
-          }, 200);
+</div>
+`;
 
           break;
 
@@ -2043,7 +2023,24 @@
     async function createShipment() {
 
       try {
+
         showPopup("⏳ Creating Shipment...");
+
+        const payload = {
+          customerName: document.getElementById("receiverName")?.value || "",
+          address: document.getElementById("receiverAddress")?.value || "",
+          pincode: document.getElementById("toPincode")?.value || "",
+          city: document.getElementById("receiverCity")?.value || "",
+          state: document.getElementById("receiverState")?.value || "",
+          phone: document.getElementById("receiverPhone")?.value || "",
+          weight: document.getElementById("weight")?.value || "0.5",
+          length: document.getElementById("length")?.value || "10",
+          breadth: document.getElementById("breadth")?.value || "10",
+          height: document.getElementById("height")?.value || "10",
+          orderValue: document.getElementById("orderValue")?.value || 0,
+          paymentMode: document.getElementById("paymentType")?.value || "Pre-paid",
+          orderId: "ORD-" + Date.now()
+        };
 
         const res = await fetch(
           "https://nxtship-backend.onrender.com/api/customer/shipment/book",
@@ -2051,23 +2048,9 @@
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("customerToken")}`,
+              Authorization: `Bearer ${localStorage.getItem("customerToken")}`
             },
-            body: JSON.stringify({
-              customerName: document.getElementById("receiverName").value,
-              address: document.getElementById("receiverAddress").value,
-              pincode: document.getElementById("toPincode").value,
-              city: document.getElementById("recieverCity").value,
-              state: document.getElementById("recieverState").value,
-              phone: document.getElementById("recieverPhone").value,
-              weight: document.getElementById("weight").value,
-              length: document.getElementById("length").value,
-              breadth: document.getElementById("breadth").value,
-              height: document.getElementById("height").value,
-              orderValue: document.getElementById("orderValue").value,
-              paymentMode: document.getElementById("paymentType").value,
-              orderId: "ORD-" + Date.now()
-            }),
+            body: JSON.stringify(payload)
           }
         );
 
@@ -2078,12 +2061,20 @@
           return;
         }
 
-        // ✅ SUCCESS UI
-        showShipmentSuccess(data);
+        // ✅ SUCCESS
+        showPopup("✅ Shipment Created");
+
+        document.getElementById("shipmentMessage").innerHTML = `
+<div style="background:#e8fff1;padding:15px;border-radius:10px">
+<h3>Shipment Booked 🎉</h3>
+<p><b>Tracking ID:</b> ${data.trackingId}</p>
+<p><b>Status:</b> Booked</p>
+</div>
+`;
 
       } catch (err) {
         console.log("Shipment Error:", err);
-        showPopup("Server Error ❌");
+        showPopup("❌ Server Error");
       }
     }
 
