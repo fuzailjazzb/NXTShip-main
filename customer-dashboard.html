@@ -2008,16 +2008,109 @@
 
 
     async function createShipment() {
-      const message = document.getElementById("shipmentMessage");
-      message.innerHTML = "Creating Shipment...";
+
+      try {
+        showPopup("⏳ Creating Shipment...");
+
+        const res = await fetch(
+          "https://nxtship-backend.onrender.com/api/customer/shipment/book",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("customerToken")}`,
+            },
+            body: JSON.stringify({
+              customerName: document.getElementById("name").value,
+              address: document.getElementById("address").value,
+              pincode: document.getElementById("pincode").value,
+              city: document.getElementById("city").value,
+              state: document.getElementById("state").value,
+              phone: document.getElementById("phone").value,
+              weight: document.getElementById("weight").value,
+              orderValue: document.getElementById("orderValue").value,
+              paymentMode: document.getElementById("paymentMode").value,
+              orderId: "ORD-" + Date.now()
+            }),
+          }
+        );
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          showPopup("❌ " + (data.message || "Shipment Failed"));
+          return;
+        }
+
+        // ✅ SUCCESS UI
+        showShipmentSuccess(data);
+
+      } catch (err) {
+        console.log("Shipment Error:", err);
+        showPopup("Server Error ❌");
+      }
+    }
+
+    function showShipmentSuccess(data) {
+
+      const content = document.getElementById("contentArea");
+
+      content.innerHTML = `
+    <div style="text-align:center;padding:30px;animation:fadeIn .4s ease">
+
+      <h2 style="color:green;">✅ Shipment Booked Successfully</h2>
+
+      <div style="
+        background:#f1f5ff;
+        padding:20px;
+        border-radius:12px;
+        margin-top:20px;
+        display:inline-block;
+      ">
+
+        <p><b>🚚 Courier:</b> Delhivery</p>
+        <p><b>📦 Tracking ID:</b> ${data.trackingId}</p>
+        <p><b>🧾 AWB Number:</b> ${data.waybill}</p>
+        <p><b>📍 Status:</b> Booked</p>
+
+      </div>
+
+      <div style="margin-top:25px">
+
+        <button onclick="trackNow('${data.waybill}')">
+          📦 Track Shipment
+        </button>
+
+        <button onclick="loadSection('shipment')">
+          ➕ Book Another
+        </button>
+
+      </div>
+
+      <p style="margin-top:20px;color:gray">
+        Redirecting to tracking page in 5 seconds...
+      </p>
+
+    </div>
+  `;
+
+      // ✅ Refresh Wallet
+      loadWalletBalance?.();
+
+      // ✅ AUTO REDIRECT
+      setTimeout(() => {
+        loadSection("track");
+      }, 5000);
+    }
+
+    function trackNow(awb) {
+      loadSection("track");
 
       setTimeout(() => {
-        message.innerHTML = "<span style='color:green'>Shipment Created Successfully</span>";
-      }, 1200);
-    };
-    // ✅ Track Order Dummy
-
-
+        document.getElementById("awb").value = awb;
+        trackOrder();
+      }, 400);
+    }
 
     // ✅ Logout
     function logout() {
