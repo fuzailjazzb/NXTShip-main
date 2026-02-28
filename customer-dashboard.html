@@ -779,6 +779,7 @@
       <textarea id="receiverAddress" placeholder="Receiver Address"></textarea>
       <input id="toPin" placeholder="Receiver Pincode" />
       <input id="receiverCity" placeholder="City" />
+      <input id="receiverState" placeholder="State" />
 
       <!-- Shipment Info -->
       <h3>Shipment Details</h3>
@@ -2021,15 +2022,18 @@
               Authorization: `Bearer ${localStorage.getItem("customerToken")}`,
             },
             body: JSON.stringify({
-              customerName: document.getElementById("name").value,
-              address: document.getElementById("address").value,
-              pincode: document.getElementById("pincode").value,
-              city: document.getElementById("city").value,
-              state: document.getElementById("state").value,
-              phone: document.getElementById("phone").value,
+              customerName: document.getElementById("receiverName").value,
+              address: document.getElementById("recieverAddress").value,
+              pincode: document.getElementById("toPin").value,
+              city: document.getElementById("recieverCity").value,
+              state: document.getElementById("recieverState").value,
+              phone: document.getElementById("recieverPhone").value,
               weight: document.getElementById("weight").value,
+              length: document.getElementById("length").value,
+              breadth: document.getElementById("breadth").value,
+              height: document.getElementById("height").value,
               orderValue: document.getElementById("orderValue").value,
-              paymentMode: document.getElementById("paymentMode").value,
+              paymentMode: document.getElementById("paymentType").value,
               orderId: "ORD-" + Date.now()
             }),
           }
