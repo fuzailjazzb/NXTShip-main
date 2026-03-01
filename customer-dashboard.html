@@ -826,16 +826,26 @@
           break;
 
         case "track":
+
           document.getElementById("pageTitle").innerText = "Track Orders";
 
           content.innerHTML = `
-          <h2>📦 Track Orders</h2>
-          <input id="awb" placeholder="Enter Tracking ID (AWB)" />
-          <button onclick="trackOrder()">Track Now</button>
-          <div id="trackResult"></div>
 
-          <!-- यहाँ Backend API से Tracking Result आएगा -->
-        `;
+<h2>📦 Track Orders</h2>
+
+<div style="margin-bottom:20px">
+  <input id="trackInput"
+    placeholder="Enter Order ID or AWB Number"/>
+  <button onclick="trackShipment()">Track Now</button>
+</div>
+
+<div id="trackingResult"></div>
+
+<h3 style="margin-top:30px">🕘 Recent Shipments</h3>
+<div id="recentShipments">Loading...</div>
+`;
+
+          loadRecentShipments();
           break;
 
         case "shipment":
@@ -2149,9 +2159,6 @@
     }
 
 
-
-
-
     function showShipmentSuccess(data) {
 
       const content = document.getElementById("contentArea");
@@ -2227,6 +2234,7 @@
       }, 1000);
     }
 
+
     function showBookingProgressUI() {
 
       const content = document.getElementById("contentArea");
@@ -2282,13 +2290,103 @@
     }
 
 
-    function trackNow(awb) {
-      loadSection("track");
+    async function trackShipment() {
 
-      setTimeout(() => {
-        document.getElementById("awb").value = awb;
-        trackOrder();
-      }, 400);
+      const id = document.getElementById("trackInput").value.trim();
+
+      if (!id) return showPopup("Enter Order ID or AWB");
+
+      document.getElementById("trackingResult").innerHTML =
+        "🔄 Fetching tracking details...";
+
+      try {
+
+        const res = await fetch(
+          `https://nxtship-backend.onrender.com/api/customer/track/${id}`,
+          {
+            headers: {
+              Authorization:
+                `Bearer ${localStorage.getItem("customerToken")}`
+            }
+          }
+        );
+
+        const data = await res.json();
+
+        if (!res.ok)
+          return showPopup(data.message || "Tracking failed");
+
+        const live =
+          data.liveTracking?.Status || {};
+
+        document.getElementById("trackingResult").innerHTML = `
+      <div style="background:#f1f5ff;padding:15px;border-radius:10px">
+        <p><b>Order ID:</b> ${data.shipment.orderId}</p>
+        <p><b>AWB:</b> ${data.shipment.waybill}</p>
+        <p><b>Status:</b> ${live.Status || data.shipment.status}</p>
+        <p><b>Location:</b> ${live.StatusLocation || "N/A"}</p>
+        <p><b>Last Update:</b> ${live.StatusDateTime || "N/A"}</p>
+      </div>
+    `;
+
+      } catch (err) {
+        console.log("Tracking Error:", err);
+        showPopup("Server Error");
+      }
+    }
+
+
+    async function loadRecentShipments() {
+
+      try {
+
+        const res = await fetch(
+          "https://nxtship-backend.onrender.com/api/customer/shipments",
+          {
+            headers: {
+              Authorization:
+                `Bearer ${localStorage.getItem("customerToken")}`
+            }
+          }
+        );
+
+        const data = await res.json();
+
+        const container =
+          document.getElementById("recentShipments");
+
+        if (!data.shipments.length) {
+          container.innerHTML = "No shipments yet.";
+          return;
+        }
+
+        container.innerHTML = data.shipments.map(s => `
+      <div style="
+        padding:12px;
+        margin:10px 0;
+        background:white;
+        border-radius:10px;
+        box-shadow:0 2px 8px rgba(0,0,0,.06);
+      ">
+        <b>${s.orderId}</b><br/>
+        AWB: ${s.waybill || "Pending"}<br/>
+        Status: ${s.status}
+        <br/>
+        <button onclick="quickTrack('${s.orderId}')">
+          Track
+        </button>
+      </div>
+    `).join("");
+
+      } catch (err) {
+        console.log("Recent Shipment Error:", err);
+      }
+    }
+
+
+    function quickTrack(id) {
+      document.getElementById("trackInput").value = id;
+      trackShipment();
     }
 
     // ✅ Logout
