@@ -2124,7 +2124,7 @@
         }
 
         // ✅ SUCCESS FEEDBACK
-        showPopup("✅ Shipment Created Successfully");
+        showPopup(`✅ Shipment Created AWB: ${data.waybill}`);
 
         // small delay → smoother UX
         setTimeout(() => {
@@ -2177,7 +2177,7 @@
     ">
 
       <p><b>🚚 Courier:</b> Delhivery</p>
-      <p><b>📦 Tracking ID:</b> ${data.trackingId}</p>
+      <p><b>📦 Tracking ID:</b> ${data.trackingId || trackingId || orderId}</p>
       <p><b>🧾 AWB Number:</b> ${data.waybill}</p>
       <p><b>📍 Status:</b> Booked</p>
 
@@ -2204,7 +2204,9 @@
   `;
 
       // ✅ Refresh wallet automatically
-      loadWalletBalance?.();
+      if (typeof loadWalletBalance === "function") {
+        loadWalletBalance();
+      };
 
       // ⏱ Countdown Animation
       let seconds = 5;
