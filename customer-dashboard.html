@@ -588,6 +588,63 @@
       border-radius: 8px;
     }
 
+    #bookingLoader {
+      display: inline-block;
+      margin-left: 10px;
+      color: #2563eb;
+      font-weight: bold;
+      animation: blink 1s infinite;
+    }
+
+    .booking-step {
+      padding: 12px;
+      margin: 10px 0;
+      background: #f1f5f9;
+      border-radius: 10px;
+      font-weight: 600;
+      transition: 0.35s;
+    }
+
+    .booking-step.active {
+      background: #e0f2fe;
+      color: #2563eb;
+    }
+
+    .booking-step.done {
+      background: #dcfce7;
+      color: #16a34a;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 20px;
+      overflow: hidden;
+      margin-top: 15px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: #2563eb;
+      transition: width .4s ease;
+    }
+
+
+    @keyframes blink {
+      0% {
+        opacity: 0.3
+      }
+
+      50% {
+        opacity: 1
+      }
+
+      100% {
+        opacity: 0.3
+      }
+    }
+
     @media(max-width:768px) {
       .dimension-grid {
         grid-template-columns: 1fr;
@@ -816,7 +873,10 @@
 
 <br><br>
 
-<button onclick="createShipment()">🚀 Create Shipment</button>
+<button id="bookBtn" onclick="createShipment()">🚀 Create Shipment</button>
+<span id="bookingLoader" style="display:none;">
+  Booking Shipment...
+</span>
 
 <div id="shipmentMessage"></div>
 
@@ -2013,10 +2073,22 @@
 
     async function createShipment() {
 
+      const btn = document.getElementById("bookBtn");
+      const loader = document.getElementById("bookingLoader");
+
+      // ✅ Prevent Double Click
+      if (btn.disabled) return;
+
+      btn.disabled = true;
+      loader.style.display = "inline";
+      btn.innerText = "Booking...";
+
       try {
 
-        showPopup("⏳ Creating Shipment...");
-        
+        showBookingProgressUI();
+
+        // STEP 1
+        updateBookingStep(1, "Creating Order", 25);
 
         const payload = {
           customerName: document.getElementById("receiverName")?.value || "",
@@ -2034,6 +2106,12 @@
           orderId: "ORD-" + Date.now()
         };
 
+        // Small UX delay (professional feel)
+        await new Promise(r => setTimeout(r, 600));
+
+        // STEP 2
+        updateBookingStep(2, "Generating AWB", 55);
+
         const res = await fetch(
           "https://nxtship-backend.onrender.com/api/customer/shipment/book",
           {
@@ -2049,78 +2127,142 @@
         const data = await res.json();
 
         if (!res.ok) {
-          showPopup("❌ " + (data.message || "Shipment Failed"));
-          return;
+          throw new Error(data.message || "Shipment Failed");
         }
 
-        // ✅ SUCCESS
-        showPopup("✅ Shipment Created");
+        await new Promise(r => setTimeout(r, 500));
 
-        document.getElementById("shipmentMessage").innerHTML = `
-<div style="background:#e8fff1;padding:15px;border-radius:10px">
-<h3>Shipment Booked 🎉</h3>
-<p><b>Tracking ID:</b> ${data.trackingId}</p>
-<p><b>Status:</b> Booked</p>
-</div>
-`;
+        // STEP 3
+        updateBookingStep(3, "Confirming Courier", 80);
 
-      } catch (err) {
+        await new Promise(r => setTimeout(r, 700));
+
+        // STEP 4
+        updateBookingStep(4, "Booking Complete", 100);
+
+        showPopup("✅ Shipment Created Successfully");
+
+        showShipmentSuccess(data);
+
+      }
+      catch (err) {
         console.log("Shipment Error:", err);
-        showPopup("❌ Server Error");
+        showPopup("❌ " + err.message);
+      }
+      finally {
+
+        // restore button
+        btn.disabled = false;
+        loader.style.display = "none";
+        btn.innerText = "Book Shipment";
+
       }
     }
+
 
     function showShipmentSuccess(data) {
 
       const content = document.getElementById("contentArea");
 
       content.innerHTML = `
-    <div style="text-align:center;padding:30px;animation:fadeIn .4s ease">
+  <div style="text-align:center;padding:30px;animation:fadeIn .4s ease">
 
-      <h2 style="color:green;">✅ Shipment Booked Successfully</h2>
+    <h2 style="color:green;">✅ Shipment Booked Successfully</h2>
 
-      <div style="
-        background:#f1f5ff;
-        padding:20px;
-        border-radius:12px;
-        margin-top:20px;
-        display:inline-block;
-      ">
+    <div style="
+      background:#f1f5ff;
+      padding:20px;
+      border-radius:12px;
+      margin-top:20px;
+      display:inline-block;
+    ">
 
-        <p><b>🚚 Courier:</b> Delhivery</p>
-        <p><b>📦 Tracking ID:</b> ${data.trackingId}</p>
-        <p><b>🧾 AWB Number:</b> ${data.waybill}</p>
-        <p><b>📍 Status:</b> Booked</p>
+      <p><b>🚚 Courier:</b> Delhivery</p>
+      <p><b>📦 Tracking ID:</b> ${data.trackingId}</p>
+      <p><b>🧾 AWB:</b> ${data.waybill}</p>
+      <p><b>📍 Status:</b> Booked</p>
 
+    </div>
+
+    <div style="margin-top:25px">
+      <button onclick="trackNow('${data.waybill}')">
+        📦 Track Shipment
+      </button>
+
+      <button onclick="loadSection('shipment')">
+        ➕ Book Another
+      </button>
+    </div>
+
+    <p style="margin-top:20px;color:gray">
+      Redirecting to tracking page...
+    </p>
+
+  </div>
+  `;
+
+      loadWalletBalance?.();
+
+      setTimeout(() => {
+        loadSection("track");
+      }, 4000);
+    }
+
+
+    function showBookingProgressUI() {
+
+      const content = document.getElementById("contentArea");
+
+      content.innerHTML = `
+    <div style="text-align:center;padding:40px">
+
+      <h2>🚀 Booking Shipment</h2>
+
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
       </div>
 
-      <div style="margin-top:25px">
+      <div style="margin-top:25px;text-align:left;max-width:420px;margin:auto">
 
-        <button onclick="trackNow('${data.waybill}')">
-          📦 Track Shipment
-        </button>
+        <div class="booking-step active" id="step1">
+          ⏳ Creating Order...
+        </div>
 
-        <button onclick="loadSection('shipment')">
-          ➕ Book Another
-        </button>
+        <div class="booking-step" id="step2">
+          ⏳ Generating AWB...
+        </div>
+
+        <div class="booking-step" id="step3">
+          ⏳ Confirming Courier...
+        </div>
+
+        <div class="booking-step" id="step4">
+          ⏳ Booking Complete
+        </div>
 
       </div>
-
-      <p style="margin-top:20px;color:gray">
-        Redirecting to tracking page in 5 seconds...
-      </p>
 
     </div>
   `;
-
-      // ✅ Refresh Wallet
-      loadWalletBalance?.();
-
-      // ✅ AUTO REDIRECT
-      setTimeout(() => {
-        loadSection("track");
-      }, 5000);
     }
+
+    
+    function updateBookingStep(stepNo, text, progress) {
+
+      const step = document.getElementById("step" + stepNo);
+      const bar = document.getElementById("progressFill");
+
+      if (step) {
+        step.classList.remove("active");
+        step.classList.add("done");
+        step.innerHTML = "✅ " + text;
+      }
+
+      if (bar) {
+        bar.style.width = progress + "%";
+      }
+    }
+
 
     function trackNow(awb) {
       loadSection("track");
