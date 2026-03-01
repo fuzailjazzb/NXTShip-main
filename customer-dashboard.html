@@ -856,7 +856,9 @@
 <input id="receiverCity" placeholder="City"/>
 <input id="receiverState" placeholder="State"/>
 
-<h3>Shipment Details</h3>
+<h3>Product Details Details</h3>
+
+<input id="productName" placeholder="Product Name (e.g. T-Shirt, Shoes, Mobile Cover)" required/>
 
 <input id="weight" type="number" step="0.1" placeholder="Weight (kg)"/>
 
@@ -2095,6 +2097,7 @@
           city: document.getElementById("receiverCity")?.value || "",
           state: document.getElementById("receiverState")?.value || "",
           phone: document.getElementById("receiverPhone")?.value || "",
+          productName: document.getElementById("productName")?.value || "General Item",
           weight: document.getElementById("weight")?.value || "0.5",
           length: document.getElementById("length")?.value || "10",
           breadth: document.getElementById("breadth")?.value || "10",
@@ -2177,7 +2180,7 @@
     ">
 
       <p><b>🚚 Courier:</b> Delhivery</p>
-      <p><b>📦 Tracking ID:</b> ${data.trackingId || orderId}</p>
+      <p><b>📦 Tracking ID:</b> ${data.trackingId}</p>
       <p><b>🧾 AWB Number:</b> ${data.waybill}</p>
       <p><b>📍 Status:</b> Booked</p>
 
