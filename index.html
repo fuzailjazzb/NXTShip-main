@@ -729,20 +729,25 @@
 
     // ✅ Track Shipment Live
     async function trackShipment() {
-      let awb = document.getElementById("awb").value;
-      
+      const id = document.getElementById("awb").value.trim();
 
-      if (awb.trim() === "") {
-        result.style.color = "red";
-        result.innerText = "⚠️ Please enter an AWB number.";
-        return;
-      }
+      if (!id) return showPopup("Enter Order ID or AWB");
 
-      result.style.color = "black";
-      result.innerText = "Tracking... ⏳";
+      document.getElementById("trackResult").innerHTML =
+        "🔄 Fetching tracking details...";
 
       try {
-        const res = await fetch(`${BACKEND_URL}/api/customer/track/${id}`);
+
+        const res = await fetch(
+          `https://nxtship-backend.onrender.com/api/customer/track/${id}`,
+          {
+            headers: {
+              Authorization:
+                `Bearer ${localStorage.getItem("customerToken")}`
+            }
+          }
+        );
+
         const data = await res.json();
 
         if (!res.ok)
@@ -751,7 +756,7 @@
         const live =
           data.liveTracking?.Status || {};
 
-        document.getElementById("trackResult").innerHTML = `
+        document.getElementById("trackingResult").innerHTML = `
       <div style="background:#f1f5ff;padding:15px;border-radius:10px">
         <p><b>Order ID:</b> ${data.shipment.orderId}</p>
         <p><b>AWB:</b> ${data.shipment.waybill}</p>
@@ -766,6 +771,7 @@
         showPopup("Server Error");
       }
     }
+
 
     // ✅ PIN Availability Live
     async function checkPin() {
