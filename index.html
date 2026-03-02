@@ -729,16 +729,9 @@
 
     // ✅ Track Shipment Live
     async function trackShipment() {
-      const id = document.getElementById("awb").value.trim();
-
-      if (!id) return showPopup("Enter Order ID or AWB");
-
-      document.getElementById("trackResult").innerHTML =
-        "🔄 Fetching tracking details...";
 
       const token = localStorage.getItem("customerToken");
       const customerData = localStorage.getItem("customerData");
-
 
       // check login
 
@@ -753,7 +746,12 @@
 
       }
 
-      
+      const id = document.getElementById("awb").value.trim();
+
+      if (!id) return showPopup("Enter Order ID or AWB");
+
+      document.getElementById("trackResult").innerHTML =
+        "🔄 Fetching tracking details...";
 
       try {
 
