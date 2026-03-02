@@ -2331,9 +2331,18 @@
         <p><b>Status:</b> ${live.Status || data.shipment.status}</p>
         <p><b>Location:</b> ${live.StatusLocation || "N/A"}</p>
         <p><b>Last Update:</b> ${live.StatusDateTime || "N/A"}</p>
-        <p><b>📍 Current Status:</b> ${data.smartTracking.timeline} </p>
-        <p><b> Rider Name:</b> ${data.smartTracking.rider} </p>
-        <p><b> Rider Contact:</b> ${data.smartTracking.eta} </p>
+        <p><b>📍 Current Status:</b> ${data.smartTracking.timeline.map(
+          t => `
+                <div>
+                  ${t.status} - ${t.location}
+                  <br>
+                  <small>${new Date(t.time).toLocaleString()}</small>
+                  </div>
+                  `
+                )
+        .join("")} </p>
+        <p><b> Rider Name:</b> ${data.smartTracking.rider?.name || "Not Assigned Yet"} </p>
+        <p><b> Rider Contact:</b> ${data.smartTracking.rider?.phone || "Will Appear on OFD"} </p>
       </div>
     `;
 
