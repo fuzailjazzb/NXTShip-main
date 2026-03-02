@@ -480,31 +480,31 @@
 
   <div class="tracker-container">
 
-     <!-- Tracker -->
-  <div class="tracker-box">
-    <h2>📦 Track Shipment</h2>
-    <p>Enter your AWB / Tracking Number</p>
+    <!-- Tracker -->
+    <div class="tracker-box">
+      <h2>📦 Track Shipment</h2>
+      <p>Enter your AWB / Tracking Number</p>
 
-    <input type="text" id="awb" placeholder="Enter AWB Number">
-    <button class="btn" onclick="trackShipment()">Track Now</button>
+      <input type="text" id="awb" placeholder="Enter AWB Number">
+      <button class="btn" onclick="trackShipment()">Track Now</button>
 
-    <p id="trackResult" style="margin-top:15px;font-weight:bold;"></p>
-  </div>
+      <p id="trackResult" style="margin-top:15px;font-weight:bold;"></p>
+    </div>
 
-  <!-- Tracker -->
-  <div class="tracker-box">
+    <!-- Tracker -->
+    <div class="tracker-box">
 
-    <!-- ✅ PIN Check Added -->
-    <h2 style="font-size:18px;">📍 Check PIN Availability</h2>
-    <p style="font-size:14px;color:#64748b;">
-      Enter delivery PIN to check courier service
-    </p>
+      <!-- ✅ PIN Check Added -->
+      <h2 style="font-size:18px;">📍 Check PIN Availability</h2>
+      <p style="font-size:14px;color:#64748b;">
+        Enter delivery PIN to check courier service
+      </p>
 
-    <input type="text" id="pin" placeholder="Enter PIN Code">
-    <button class="btn" onclick="checkPin()">Check Availability</button>
+      <input type="text" id="pin" placeholder="Enter PIN Code">
+      <button class="btn" onclick="checkPin()">Check Availability</button>
 
-    <p id="pinResult" style="margin-top:12px;font-weight:bold;"></p>
-  </div>
+      <p id="pinResult" style="margin-top:12px;font-weight:bold;"></p>
+    </div>
 
 
   </div>
@@ -723,7 +723,7 @@
 
   <!-- JS -->
   <script>
-   
+
 
     const BACKEND_URL = "https://nxtship-backend.onrender.com";
 
@@ -745,17 +745,25 @@
         const res = await fetch(`${BACKEND_URL}/api/customer/track/${id}`);
         const data = await res.json();
 
-        if (data.success) {
-          result.style.color = "green";
-          result.innerText =
-            "✅ Status: " + data.status + " | Location: " + data.location;
-        } else {
-          result.style.color = "red";
-          result.innerText = "❌ Tracking Not Found!";
-        }
+        if (!res.ok)
+          return showPopup(data.message || "Tracking failed");
+
+        const live =
+          data.liveTracking?.Status || {};
+
+        document.getElementById("trackingResult").innerHTML = `
+      <div style="background:#f1f5ff;padding:15px;border-radius:10px">
+        <p><b>Order ID:</b> ${data.shipment.orderId}</p>
+        <p><b>AWB:</b> ${data.shipment.waybill}</p>
+        <p><b>Status:</b> ${live.Status || data.shipment.status}</p>
+        <p><b>Location:</b> ${live.StatusLocation || "N/A"}</p>
+        <p><b>Last Update:</b> ${live.StatusDateTime || "N/A"}</p>
+      </div>
+    `;
+
       } catch (err) {
-        result.style.color = "red";
-        result.innerText = "Server Error ❌ Backend not reachable";
+        console.log("Tracking Error:", err);
+        showPopup("Server Error");
       }
     }
 
