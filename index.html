@@ -801,6 +801,26 @@
       }
     }
 
+function showPopup(message, type = "success") {
+
+      const oldPopup = document.querySelector(".custom-popup");
+      if (oldPopup) oldPopup.remove();
+
+      const popup = document.createElement("div");
+      popup.className = "custom-popup ";
+
+      popup.innerHTML = `
+       <div class="popup-box ${type}">
+         <p>${message}</p>
+        </div>
+      `;
+      document.body.appendChild(popup);
+
+      setTimeout(() => {
+        popup.remove();
+      }, 3000);
+    }
+
   </script>
 
 </body>
