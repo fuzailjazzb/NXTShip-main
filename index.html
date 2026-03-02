@@ -723,19 +723,7 @@
 
   <!-- JS -->
   <script>
-    function trackShipment() {
-      let awb = document.getElementById("awb").value;
-      let result = document.getElementById("trackResult");
-
-      if (awb === "") {
-        result.style.color = "red";
-        result.innerText = "⚠️ Please enter an AWB number.";
-      } else {
-        result.style.color = "green";
-        result.innerText =
-          "✅ Shipment " + awb + " is currently In Transit 🚚";
-      }
-    }
+   
 
     const BACKEND_URL = "https://nxtship-backend.onrender.com";
 
@@ -754,7 +742,7 @@
       result.innerText = "Tracking... ⏳";
 
       try {
-        const res = await fetch(`${BACKEND_URL}/api/shipment/track/${awb}`);
+        const res = await fetch(`${BACKEND_URL}/api/customer/track/${id}`);
         const data = await res.json();
 
         if (data.success) {
