@@ -736,9 +736,24 @@
       document.getElementById("trackResult").innerHTML =
         "🔄 Fetching tracking details...";
 
-       if (localStorage("customerToken") && localStorage("customerData")) {
-        window.location.href = "login.html";
-       }
+      const token = localStorage.getItem("customerToken");
+      const customerData = localStorage.getItem("customerData");
+
+
+      // check login
+
+      if (!token || !customerData) {
+        showPopup("Please Login To Track");
+
+        setTimeout(() => {
+          window.location.href = "login.html";
+        }, 1500)
+
+        return;
+
+      }
+
+      
 
       try {
 
@@ -805,19 +820,23 @@
       }
     }
 
-function showPopup(message, type = "success") {
-
-      const oldPopup = document.querySelector(".custom-popup");
-      if (oldPopup) oldPopup.remove();
+    function showPopup(message) {
 
       const popup = document.createElement("div");
-      popup.className = "custom-popup ";
+      popup.innerText = message;
 
-      popup.innerHTML = `
-       <div class="popup-box ${type}">
-         <p>${message}</p>
-        </div>
-      `;
+
+      popup.style.position = "fixed";
+      popup.style.top = "20px";
+      popup.style.right = "20px";
+      popup.style.background = "#ff4d4d";
+      popup.style.color = "#fff";
+      popup.style.padding = "12px 18px";
+      popup.style.borderRadius = "8px";
+      popup.style.fontSize = "14px";
+      popup.style.zIndex = "9999";
+      popup.style.boxShadow = "0 4px 10px rgba(0,0,0,0.2)";
+
       document.body.appendChild(popup);
 
       setTimeout(() => {
