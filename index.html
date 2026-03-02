@@ -739,13 +739,7 @@
       try {
 
         const res = await fetch(
-          `https://nxtship-backend.onrender.com/api/customer/track/${id}`,
-          {
-            headers: {
-              Authorization:
-                `Bearer ${localStorage.getItem("customerToken")}`
-            }
-          }
+          `https://nxtship-backend.onrender.com/api/customer/track/${id}`
         );
 
         const data = await res.json();
