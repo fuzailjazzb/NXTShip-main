@@ -736,6 +736,10 @@
       document.getElementById("trackResult").innerHTML =
         "🔄 Fetching tracking details...";
 
+       if (localStorage("customerToken") && localStorage("customerData")) {
+        window.location.href = "login.html";
+       }
+
       try {
 
         const res = await fetch(
