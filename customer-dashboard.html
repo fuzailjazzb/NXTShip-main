@@ -2324,11 +2324,16 @@
 
         document.getElementById("trackingResult").innerHTML = `
       <div style="background:#f1f5ff;padding:15px;border-radius:10px">
+        <p><b>🚚 Courier:</b> Delhivery</p>
+        <p><b>🛒 Product:<b> ${data.shipment.productName}</p>
         <p><b>Order ID:</b> ${data.shipment.orderId}</p>
         <p><b>AWB:</b> ${data.shipment.waybill}</p>
         <p><b>Status:</b> ${live.Status || data.shipment.status}</p>
         <p><b>Location:</b> ${live.StatusLocation || "N/A"}</p>
         <p><b>Last Update:</b> ${live.StatusDateTime || "N/A"}</p>
+        <p><b>📍 Current Status:</b> ${data.smartTracking.timeline} </p>
+        <p><b> Rider Name:</b> ${data.smartTracking.rider} </p>
+        <p><b> Rider Contact:</b> ${data.smartTracking.eta} </p>
       </div>
     `;
 
