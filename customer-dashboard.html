@@ -658,6 +658,95 @@
       text-align: left;
     }
 
+    .dashboardContainer {
+      padding: 20px;
+    }
+
+    .sectionTitle {
+      margin: 25px 0 10px;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .walletAlert {
+      background: #fff4e5;
+      padding: 15px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .rechargeBtn {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .cardGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .statCard,
+    .trackerCard {
+      background: white;
+      padding: 18px;
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+      text-align: center;
+    }
+
+    .statCard h3,
+    .trackerCard h3 {
+      font-size: 26px;
+      margin-bottom: 5px;
+    }
+
+    .metricsGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .metricCard {
+      background: white;
+      padding: 18px;
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .shipmentTable {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    .shipmentTable th,
+    .shipmentTable td {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+      font-size: 14px;
+    }
+
+    @media(max-width:768px) {
+
+      .sectionTitle {
+        font-size: 16px;
+      }
+
+      .statCard h3 {
+        font-size: 22px;
+      }
+
+    }
+
 
     @keyframes blink {
       0% {
@@ -850,73 +939,125 @@
       switch (section) {
 
         case "dashboard":
-          
 
           const content = document.getElementById("contentArea");
 
-            content.innerHTML = `
+          content.innerHTML = `
 
-              <div class="dashboard">
+<div class="dashboardContainer">
 
-              <div class="cards">
+<div class="walletAlert">
+⚠ Low Wallet Balance - Please Recharge
+<button class="rechargeBtn">Recharge</button>
+</div>
 
-              <div class="card">
-              <h3 id="totalOrders">0</h3>
-              <p>Total Orders</p>
-              </div>
+<h2 class="sectionTitle">Action Required</h2>
 
-              <div class="card">
-              <h3 id="totalShipments">0</h3>
-              <p>Total Shipments</p>
-              </div>
+<div class="cardGrid">
 
-              <div class="card">
-              <h3 id="deliveredOrders">0</h3>
-              <p>Delivered</p>
-              </div>
+<div class="statCard blue">
+<h3 id="newOrders">0</h3>
+<p>New Orders</p>
+</div>
 
-              <div class="card">
-              <h3 id="walletBalance">₹0</h3>
-              <p>Wallet Balance</p>
-              </div>
+<div class="statCard red">
+<h3 id="rtoRisk">0</h3>
+<p>High RTO Risk</p>
+</div>
 
-              </div>
+<div class="statCard purple">
+<h3 id="pickupScheduled">0</h3>
+<p>Pickup Scheduled</p>
+</div>
+
+<div class="statCard orange">
+<h3 id="needsAttention">0</h3>
+<p>Needs Attention</p>
+</div>
+
+</div>
 
 
-              <div class="chartBox">
-              <canvas id="shipmentChart"></canvas>
-              </div>
+<h2 class="sectionTitle">Live Tracker</h2>
+
+<div class="cardGrid">
+
+<div class="trackerCard green">
+<h3 id="readyShip">0</h3>
+<p>Ready To Ship</p>
+</div>
+
+<div class="trackerCard blue">
+<h3 id="inTransit">0</h3>
+<p>In Transit</p>
+</div>
+
+<div class="trackerCard yellow">
+<h3 id="outDelivery">0</h3>
+<p>Out For Delivery</p>
+</div>
+
+<div class="trackerCard dark">
+<h3 id="deliveredToday">0</h3>
+<p>Delivered Today</p>
+</div>
+
+</div>
 
 
-              <h3 style="margin-top:25px">Recent Shipments</h3>
+<h2 class="sectionTitle">Top Metrics</h2>
 
-              <table class="shipmentTable">
+<div class="metricsGrid">
 
-              <thead>
-              <tr>
-              <th>Order ID</th>
-              <th>AWB</th>
-              <th>City</th>
-              <th>Status</th>
-              <th>Date</th>
-              </tr>
-              </thead>
+<div class="metricCard">
+<h4>Total Orders</h4>
+<h2 id="totalOrders">0</h2>
+<canvas id="ordersChart"></canvas>
+</div>
 
-              <tbody id="recentShipments"></tbody>
+<div class="metricCard">
+<h4>Revenue</h4>
+<h2 id="revenue">₹0</h2>
+<canvas id="revenueChart"></canvas>
+</div>
 
-              </table>
+<div class="metricCard">
+<h4>Picked Orders</h4>
+<h2 id="pickedOrders">0</h2>
+<canvas id="pickedChart"></canvas>
+</div>
 
-              </div>
+</div>
 
-              `;
 
-            // Dashboard data load
-            loadDashboardSummary();
-            loadRecentShipments();
-            loadAnalytics();
+<h2 class="sectionTitle">Recent Shipments</h2>
 
-          
+<table class="shipmentTable">
+
+<thead>
+<tr>
+<th>Order ID</th>
+<th>AWB</th>
+<th>City</th>
+<th>Status</th>
+<th>Date</th>
+</tr>
+</thead>
+
+<tbody id="recentShipments"></tbody>
+
+</table>
+
+</div>
+
+`;
+
+          loadDashboardSummary();
+          loadRecentShipments();
+          loadAnalytics();
+
           break;
+
 
         case "track":
 
@@ -2523,31 +2664,30 @@
     }
 
 
-    async function loadAnalytics() {
+    function loadAnalytics() {
 
-      const res = await fetch(
-        "https://nxtship-backend.onrender.com/api/dashboard/analytics",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("customerToken")}`
-          }
-        }
-      );
+      const ctx1 = document.getElementById("ordersChart");
 
-      const data = await res.json();
-
-      const labels = data.analytics.map(a => "Month " + a._id);
-      const values = data.analytics.map(a => a.shipments);
-
-      const ctx = document.getElementById("shipmentChart");
-
-      new Chart(ctx, {
+      new Chart(ctx1, {
         type: "line",
         data: {
-          labels: labels,
+          labels: ["Jan", "Feb", "Mar", "Apr", "May"],
           datasets: [{
-            label: "Shipments",
-            data: values,
+            data: [5, 8, 6, 10, 12],
+            borderWidth: 2,
+            fill: false
+          }]
+        }
+      });
+
+      const ctx2 = document.getElementById("revenueChart");
+
+      new Chart(ctx2, {
+        type: "line",
+        data: {
+          labels: ["Jan", "Feb", "Mar", "Apr", "May"],
+          datasets: [{
+            data: [200, 400, 300, 600, 700],
             borderWidth: 2
           }]
         }
