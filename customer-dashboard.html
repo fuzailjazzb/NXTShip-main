@@ -659,80 +659,154 @@
     }
 
     .dashboardContainer {
-      padding: 20px;
+      padding: 12px;
     }
 
-    .sectionTitle {
-      margin: 25px 0 10px;
-      font-size: 18px;
-      font-weight: 600;
-    }
-
-    .walletAlert {
-      background: #fff4e5;
-      padding: 15px;
-      border-radius: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    .kpiGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
       margin-bottom: 20px;
     }
 
-    .rechargeBtn {
-      background: #2563eb;
-      color: white;
-      border: none;
-      padding: 8px 14px;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .cardGrid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-
-      margin-bottom: 25px;
-    }
-
-    .statCard,
-    .trackerCard {
+    .kpiCard {
       background: white;
       padding: 18px;
       border-radius: 10px;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
       text-align: center;
     }
 
-    .statCard h3,
-    .trackerCard h3 {
-      font-size: 26px;
-      margin-bottom: 5px;
-    }
-
-    .metricsGrid {
+    .trackerGrid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
     }
 
-    .metricCard {
+    .trackerCard {
+      padding: 16px;
+      border-radius: 10px;
+      color: white;
+      text-align: center;
+    }
+
+    .blue {
+      background: #2563eb
+    }
+
+    .green {
+      background: #16a34a
+    }
+
+    .yellow {
+      background: #f59e0b
+    }
+
+    .orange {
+      background: #ea580c
+    }
+
+    .chartBox {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      margin-bottom: 20px;
+    }
+
+    .activityBox {
       background: white;
       padding: 18px;
       border-radius: 10px;
-      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      margin-top: 20px;
     }
 
-    .shipmentTable {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 15px;
+    .quickActions {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
     }
 
-    .shipmentTable th,
-    .shipmentTable td {
-      padding: 10px;
-      border-bottom: 1px solid #eee;
-      font-size: 14px;
+    .quickActions button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .recentShipmentsGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+      margin-top: 12px;
+    }
+
+    .shipmentCard {
+      background: white;
+      padding: 16px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    @media(max-width:768px) {
+
+      .kpiGrid,
+      .trackerGrid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+    }
+
+    @media(max-width:768px) {
+      .shipmentTable thead {
+        display: none;
+      }
+
+      .shipmentTable tr {
+        display: block;
+        background: white;
+        margin-bottom: 15px;
+        padding: 15;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      .shipmentTable td {
+        display: block;
+        border: none;
+        padding: 4px 0;
+      }
+
+      .shipmentTable td::before {
+        font-weight: bold;
+        display: block;
+        color: #555;
+      }
+
+      .shipmentTable td:nth-child(1)::before {
+        content: "Order ID";
+      }
+
+      .shipmentTable td:nth-child(2)::before {
+        content: "AWB";
+      }
+
+      .shipmentTable td:nth-child(3)::before {
+        content: "City";
+      }
+
+      .shipmentTable td:nth-child(4)::before {
+        content: "Status";
+      }
+
+      .shipmentTable td:nth-child(5)::before {
+        content: "Date";
+      }
     }
 
     @media(max-width:768px) {
@@ -940,64 +1014,70 @@
 
         case "dashboard":
 
+          document.getElementById("pageTitle").innerText = "Dashboard";
+
           const content = document.getElementById("contentArea");
 
           content.innerHTML = `
 
 <div class="dashboardContainer">
 
+<!-- Wallet Alert -->
+
 <div class="walletAlert">
-⚠ Low Wallet Balance - Please Recharge
-<button class="rechargeBtn">Recharge</button>
+⚠ Wallet Balance: <b id="walletAmount">Loading...</b>
+<button onclick="loadSection('wallet')" class="rechargeBtn">
+Recharge
+</button>
 </div>
 
-<h2 class="sectionTitle">Action Required</h2>
+<!-- KPI Cards -->
 
-<div class="cardGrid">
+<div class="kpiGrid">
 
-<div class="statCard blue">
-<h3 id="newOrders">0</h3>
-<p>New Orders</p>
+<div class="kpiCard">
+<h3 id="totalOrders">0</h3>
+<p>Total Orders</p>
 </div>
 
-<div class="statCard red">
-<h3 id="rtoRisk">0</h3>
-<p>High RTO Risk</p>
+<div class="kpiCard">
+<h3 id="totalShipments">0</h3>
+<p>Total Shipments</p>
 </div>
 
-<div class="statCard purple">
-<h3 id="pickupScheduled">0</h3>
-<p>Pickup Scheduled</p>
+<div class="kpiCard">
+<h3 id="deliveredOrders">0</h3>
+<p>Delivered</p>
 </div>
 
-<div class="statCard orange">
-<h3 id="needsAttention">0</h3>
-<p>Needs Attention</p>
+<div class="kpiCard">
+<h3 id="walletBalance">₹0</h3>
+<p>Wallet Balance</p>
 </div>
 
 </div>
 
 
-<h2 class="sectionTitle">Live Tracker</h2>
+<!-- Shipment Tracker -->
 
-<div class="cardGrid">
+<div class="trackerGrid">
 
-<div class="trackerCard green">
+<div class="trackerCard blue">
 <h3 id="readyShip">0</h3>
 <p>Ready To Ship</p>
 </div>
 
-<div class="trackerCard blue">
+<div class="trackerCard yellow">
 <h3 id="inTransit">0</h3>
 <p>In Transit</p>
 </div>
 
-<div class="trackerCard yellow">
+<div class="trackerCard orange">
 <h3 id="outDelivery">0</h3>
 <p>Out For Delivery</p>
 </div>
 
-<div class="trackerCard dark">
+<div class="trackerCard green">
 <h3 id="deliveredToday">0</h3>
 <p>Delivered Today</p>
 </div>
@@ -1005,58 +1085,64 @@
 </div>
 
 
-<h2 class="sectionTitle">Top Metrics</h2>
+<!-- Analytics -->
 
-<div class="metricsGrid">
-
-<div class="metricCard">
-<h4>Total Orders</h4>
-<h2 id="totalOrders">0</h2>
-<canvas id="ordersChart"></canvas>
+<div class="chartBox">
+<h3>Shipment Analytics</h3>
+<canvas id="shipmentChart"></canvas>
 </div>
 
-<div class="metricCard">
-<h4>Revenue</h4>
-<h2 id="revenue">₹0</h2>
-<canvas id="revenueChart"></canvas>
-</div>
 
-<div class="metricCard">
-<h4>Picked Orders</h4>
-<h2 id="pickedOrders">0</h2>
-<canvas id="pickedChart"></canvas>
-</div>
+<!-- Activity Feed -->
+
+<div class="activityBox">
+
+<h3>Live Activity</h3>
+
+<ul id="activityFeed"></ul>
 
 </div>
 
 
-<h2 class="sectionTitle">Recent Shipments</h2>
+<!-- Quick Actions -->
 
-<table class="shipmentTable">
+<div class="quickActions">
 
-<thead>
-<tr>
-<th>Order ID</th>
-<th>AWB</th>
-<th>City</th>
-<th>Status</th>
-<th>Date</th>
-</tr>
-</thead>
+<button onclick="loadSection('shipment')">
+📦 Create Shipment
+</button>
 
-<tbody id="recentShipments"></tbody>
+<button onclick="loadSection('track')">
+🔍 Track Shipment
+</button>
 
-</table>
+<button onclick="loadSection('rate')">
+💰 Calculate Rate
+</button>
 
 </div>
 
+
+<!-- Recent Shipments -->
+
+<h3 style="margin-top:25px">Recent Shipments</h3>
+
+<div id="recentShipments" class="recentShipmentsGrid"></div>
+
+</div>
 `;
 
+          loadWalletBalance();
           loadDashboardSummary();
           loadRecentShipments();
           loadAnalytics();
+          loadActivityFeed();
 
           break;
+
+
+
+
 
 
         case "track":
