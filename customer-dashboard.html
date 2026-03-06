@@ -2817,25 +2817,12 @@ Track Here
 
       const feed = document.getElementById("activityFeed");
 
-      feed.innerHTML = `
-<div style="
-background:white;
-padding:16px;
-border-radius:12px;
-box-shadow:0 6px 20px rgba(0,0,0,0.08);
-font-size:14px;
-color:#333;
-">
-
-Loading latest shipment...
-
-</div>
-`;
+      feed.innerHTML = "Loading activity...";
 
       try {
 
         const res = await fetch(
-          "https://nxtship-backend.onrender.com/api/customer/shipments",
+          "https://nxtship-backend.onrender.com/api/dashboard/live-activity",
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("customerToken")}`
@@ -2845,100 +2832,138 @@ Loading latest shipment...
 
         const data = await res.json();
 
-        if (!data.shipments || data.shipments.length === 0) {
+        const smart = data.smartTracking;
 
-          feed.innerHTML = `
-<div style="
-padding:15px;
-background:#f8fafc;
-border-radius:10px;
-color:#666;
-text-align:center;
-">
-No shipments yet
-</div>
-`;
+        let timelineHTML = "";
 
-          return;
+        smart.timeline.forEach(scan => {
 
-        }
-
-        const last = data.shipments[0];
-
-        feed.innerHTML = `
-
-<li style="
-list-style:none;
-margin-top:10px;
-">
-
-<div style="
-background:white;
-border-radius:14px;
-padding:18px;
-box-shadow:0 8px 22px rgba(0,0,0,0.08);
-border-left:5px solid #2563eb;
-">
-
-<div style="
-font-size:13px;
-color:#64748b;
-margin-bottom:6px;
-">
-📦 Latest Shipment
-</div>
-
-<div style="
-font-weight:600;
-font-size:15px;
-margin-bottom:8px;
-">
-${last.pickupLocation || "Warehouse"} → ${last.city}
-</div>
+          timelineHTML += `
 
 <div style="
 display:flex;
+margin-bottom:10px;
+">
+
+<div style="
+width:10px;
+height:10px;
+background:#2563eb;
+border-radius:50%;
+margin-right:8px;
+margin-top:6px
+"></div>
+
+<div>
+
+<div style="
+font-weight:600;
+font-size:13px
+">
+${scan.status}
+</div>
+
+<div style="
+font-size:11px;
+color:#64748b
+">
+${scan.location || ""}
+</div>
+
+</div>
+
+</div>
+
+`;
+
+        });
+
+        feed.innerHTML = `
+
+<div style="
+background:white;
+padding:16px;
+border-radius:12px;
+box-shadow:0 8px 22px rgba(0,0,0,0.08);
+font-size:13px
+">
+
+<table style="
+width:100%;
+border-collapse:collapse;
+margin-bottom:14px
+">
+
+<tr style="
+font-weight:600;
+border-bottom:1px solid #eee
+">
+
+<td>Pickup</td>
+<td>Destination</td>
+<td>ETA</td>
+
+</tr>
+
+<tr>
+
+<td>Warehouse</td>
+
+<td>${smart.routeStations?.slice(-1)[0] || "-"}</td>
+
+<td>${smart.eta || "-"}</td>
+
+</tr>
+
+</table>
+
+<div style="
+border-top:1px solid #eee;
+padding-top:10px
+">
+
+<div style="
+font-weight:600;
+margin-bottom:8px
+">
+Status Timeline
+</div>
+
+${timelineHTML}
+
+</div>
+
+<div style="
+border-top:1px solid #eee;
+margin-top:10px;
+padding-top:10px;
+display:flex;
 justify-content:space-between;
-align-items:center;
-margin-top:8px;
+font-size:12px
 ">
 
-<span style="
-background:#e0f2fe;
-color:#0369a1;
-padding:4px 10px;
-border-radius:20px;
-font-size:12px;
-font-weight:500;
-">
-🚚 ${last.smartTracking?.status || last.status || "Booked"}
-</span>
+<div>
+🚚 Courier: ${smart.courier}
+</div>
 
-<span style="
-font-size:12px;
-color:#94a3b8;
-">
-${new Date(last.createdAt).toLocaleDateString()}
-</span>
-
+<div>
+👤 Rider: ${smart.rider?.name || "Not Assigned"}
 </div>
 
 </div>
 
-</li>
+</div>
 
 `;
 
       } catch (err) {
-
-        console.log(err);
 
         feed.innerHTML = `
 <div style="
 background:#fee2e2;
 padding:12px;
 border-radius:8px;
-color:#991b1b;
+color:#991b1b
 ">
 Failed to load activity
 </div>
