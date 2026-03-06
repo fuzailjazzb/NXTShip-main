@@ -630,6 +630,34 @@
       transition: width .4s ease;
     }
 
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+      text-align: center;
+    }
+
+    .shipmentTable {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    .shipmentTable th,
+    .shipmentTable td {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+    }
+
 
     @keyframes blink {
       0% {
@@ -822,7 +850,72 @@
       switch (section) {
 
         case "dashboard":
-          loadDashboard();
+          async function loadDashboard() {
+
+            const content = document.getElementById("contentArea");
+
+            content.innerHTML = `
+
+              <div class="dashboard">
+
+              <div class="cards">
+
+              <div class="card">
+              <h3 id="totalOrders">0</h3>
+              <p>Total Orders</p>
+              </div>
+
+              <div class="card">
+              <h3 id="totalShipments">0</h3>
+              <p>Total Shipments</p>
+              </div>
+
+              <div class="card">
+              <h3 id="deliveredOrders">0</h3>
+              <p>Delivered</p>
+              </div>
+
+              <div class="card">
+              <h3 id="walletBalance">₹0</h3>
+              <p>Wallet Balance</p>
+              </div>
+
+              </div>
+
+
+              <div class="chartBox">
+              <canvas id="shipmentChart"></canvas>
+              </div>
+
+
+              <h3 style="margin-top:25px">Recent Shipments</h3>
+
+              <table class="shipmentTable">
+
+              <thead>
+              <tr>
+              <th>Order ID</th>
+              <th>AWB</th>
+              <th>City</th>
+              <th>Status</th>
+              <th>Date</th>
+              </tr>
+              </thead>
+
+              <tbody id="recentShipments"></tbody>
+
+              </table>
+
+              </div>
+
+              `;
+
+            // Dashboard data load
+            loadDashboardSummary();
+            loadRecentShipments();
+            loadAnalytics();
+
+          }
           break;
 
         case "track":
@@ -2339,8 +2432,8 @@
                   <small>${new Date(t.time).toLocaleString()}</small>
                   </div>
                   `
-                )
-        .join("")} </p>
+        )
+            .join("")} </p>
         <p><b> Rider Name:</b> ${data.smartTracking.rider?.name || "Not Assigned Yet"} </p>
         <p><b> Rider Contact:</b> ${data.smartTracking.rider?.phone || "Will Appear on OFD"} </p>
       </div>
@@ -2404,6 +2497,94 @@
     function quickTrack(id) {
       document.getElementById("trackInput").value = id;
       trackShipment();
+    }
+
+
+    // DASHBOARD FUNCTIONS~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    async function loadDashboardSummary() {
+
+      const res = await fetch(
+        "https://nxtship-backend.onrender.com/api/dashboard/summary",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("customerToken")}`
+          }
+        }
+      );
+
+      const data = await res.json();
+
+      document.getElementById("totalOrders").innerText = data.orders;
+      document.getElementById("totalShipments").innerText = data.shipments;
+      document.getElementById("deliveredOrders").innerText = data.delivered;
+      document.getElementById("walletBalance").innerText = "₹" + data.walletBalance;
+
+    }
+
+    async function loadRecentShipments() {
+
+      const res = await fetch(
+        "https://nxtship-backend.onrender.com/api/dashboard/recent-shipments",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("customerToken")}`
+          }
+        }
+      );
+
+      const data = await res.json();
+
+      const table = document.getElementById("recentShipments");
+
+      table.innerHTML = "";
+
+      data.shipments.forEach(s => {
+
+        table.innerHTML += `
+      <tr>
+        <td>${s.orderId}</td>
+        <td>${s.waybill || "-"}</td>
+        <td>${s.city}</td>
+        <td>${s.status}</td>
+        <td>${new Date(s.createdAt).toLocaleDateString()}</td>
+      </tr>
+    `;
+
+      });
+
+    }
+
+    async function loadAnalytics() {
+
+      const res = await fetch(
+        "https://nxtship-backend.onrender.com/api/dashboard/analytics",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("customerToken")}`
+          }
+        }
+      );
+
+      const data = await res.json();
+
+      const labels = data.analytics.map(a => "Month " + a._id);
+      const values = data.analytics.map(a => a.shipments);
+
+      const ctx = document.getElementById("shipmentChart");
+
+      new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [{
+            label: "Shipments",
+            data: values,
+            borderWidth: 2
+          }]
+        }
+      });
+
     }
 
     // ✅ Logout
