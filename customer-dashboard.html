@@ -1200,7 +1200,7 @@ Track Here
           loadDashboardSummary();
           loadRecentShipments();
           loadAnalytics();
-          loadActivityFeed();
+          loadLiveActivity();
           loadNotifications();
           startNotificationSlider();
 
@@ -2813,16 +2813,138 @@ Track Here
     }
 
 
-    async function loadActivityFeed() {
+    async function loadLiveActivity() {
 
       const feed = document.getElementById("activityFeed");
 
       feed.innerHTML = `
-<li>📦 Shipment booked</li>
-<li>🚚 Shipment picked by courier</li>
-<li>📍 Package arrived at transit hub</li>
-<li>📬 Out for delivery</li>
+<div style="
+background:white;
+padding:16px;
+border-radius:12px;
+box-shadow:0 6px 20px rgba(0,0,0,0.08);
+font-size:14px;
+color:#333;
+">
+
+Loading latest shipment...
+
+</div>
 `;
+
+      try {
+
+        const res = await fetch(
+          "https://nxtship-backend.onrender.com/api/customer/shipments",
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("customerToken")}`
+            }
+          }
+        );
+
+        const data = await res.json();
+
+        if (!data.shipments || data.shipments.length === 0) {
+
+          feed.innerHTML = `
+<div style="
+padding:15px;
+background:#f8fafc;
+border-radius:10px;
+color:#666;
+text-align:center;
+">
+No shipments yet
+</div>
+`;
+
+          return;
+
+        }
+
+        const last = data.shipments[0];
+
+        feed.innerHTML = `
+
+<li style="
+list-style:none;
+margin-top:10px;
+">
+
+<div style="
+background:white;
+border-radius:14px;
+padding:18px;
+box-shadow:0 8px 22px rgba(0,0,0,0.08);
+border-left:5px solid #2563eb;
+">
+
+<div style="
+font-size:13px;
+color:#64748b;
+margin-bottom:6px;
+">
+📦 Latest Shipment
+</div>
+
+<div style="
+font-weight:600;
+font-size:15px;
+margin-bottom:8px;
+">
+${last.pickupLocation || "Warehouse"} → ${last.city}
+</div>
+
+<div style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-top:8px;
+">
+
+<span style="
+background:#e0f2fe;
+color:#0369a1;
+padding:4px 10px;
+border-radius:20px;
+font-size:12px;
+font-weight:500;
+">
+🚚 ${last.smartTracking?.status || last.status || "Booked"}
+</span>
+
+<span style="
+font-size:12px;
+color:#94a3b8;
+">
+${new Date(last.createdAt).toLocaleDateString()}
+</span>
+
+</div>
+
+</div>
+
+</li>
+
+`;
+
+      } catch (err) {
+
+        console.log(err);
+
+        feed.innerHTML = `
+<div style="
+background:#fee2e2;
+padding:12px;
+border-radius:8px;
+color:#991b1b;
+">
+Failed to load activity
+</div>
+`;
+
+      }
 
     }
 
