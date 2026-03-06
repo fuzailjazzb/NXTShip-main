@@ -2750,31 +2750,36 @@ Recharge
     }
 
 
+    async function loadActivityFeed() {
+
+      const feed = document.getElementById("activityFeed");
+
+      feed.innerHTML = `
+<li>📦 Shipment booked</li>
+<li>🚚 Shipment picked by courier</li>
+<li>📍 Package arrived at transit hub</li>
+<li>📬 Out for delivery</li>
+`;
+
+    }
+
+
     function loadAnalytics() {
 
-      const ctx1 = document.getElementById("ordersChart");
+      const ctx = document.getElementById("shipmentChart");
 
-      new Chart(ctx1, {
+      if (!ctx) return;
+
+      new Chart(ctx, {
         type: "line",
         data: {
-          labels: ["Jan", "Feb", "Mar", "Apr", "May"],
+          labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
           datasets: [{
-            data: [5, 8, 6, 10, 12],
+            label: "Shipments",
+            data: [4, 6, 5, 9, 7, 10, 8],
+            borderColor: "#2563eb",
             borderWidth: 2,
             fill: false
-          }]
-        }
-      });
-
-      const ctx2 = document.getElementById("revenueChart");
-
-      new Chart(ctx2, {
-        type: "line",
-        data: {
-          labels: ["Jan", "Feb", "Mar", "Apr", "May"],
-          datasets: [{
-            data: [200, 400, 300, 600, 700],
-            borderWidth: 2
           }]
         }
       });
