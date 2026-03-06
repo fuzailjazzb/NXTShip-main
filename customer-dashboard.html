@@ -1020,16 +1020,60 @@
 
 <div class="dashboardContainer">
 
-<!-- Wallet Alert -->
+<div class="dashboardContainer">
 
-<div class="walletAlert">
-⚠ Wallet Balance: <b id="walletAmount">Loading...</b>
-<button onclick="loadSection('wallet')" class="rechargeBtn">
+                                <!-- Notification Slider -->
+
+<div id="notificationSlider"
+style="
+background:#fff3cd;
+border-radius:8px;
+overflow:hidden;
+margin-bottom:15px;
+position:relative;
+">
+
+<div id="notificationTrack"
+style="
+display:flex;
+transition:0.5s;
+">
+
+<div style="min-width:100%;padding:12px;">
+⚠ Wallet Balance:
+<b id="walletBalance">Loading...</b>
+
+<button onclick="loadSection('wallet')"
+style="
+background:#2563eb;
+color:white;
+border:none;
+padding:5px 12px;
+border-radius:6px;
+cursor:pointer;
+margin-left:10px;
+">
 Recharge
 </button>
 </div>
 
-<!-- KPI Cards -->
+<div style="min-width:100%;padding:12px;">
+📦 Shipment booked successfully
+</div>
+
+<div style="min-width:100%;padding:12px;">
+🚚 Pickup scheduled today
+</div>
+
+<div style="min-width:100%;padding:12px;">
+⚖ Weight discrepancy detected
+</div>
+
+</div>
+
+</div>
+
+                                  <!-- KPI Cards -->
 
 <div class="kpiGrid">
 
@@ -1056,7 +1100,7 @@ Recharge
 </div>
 
 
-<!-- Shipment Tracker -->
+                                        <!-- Shipment Tracker -->
 
 <div class="trackerGrid">
 
@@ -1083,7 +1127,7 @@ Recharge
 </div>
 
 
-<!-- Analytics -->
+                                              <!-- Analytics -->
 
 <div class="chartBox">
 <h3>Shipment Analytics</h3>
@@ -1102,7 +1146,7 @@ Recharge
 </div>
 
 
-<!-- Quick Actions -->
+                                            <!-- Quick Actions -->
 
 <div class="quickActions">
 
@@ -1121,7 +1165,7 @@ Recharge
 </div>
 
 
-<!-- Recent Shipments -->
+                                          <!-- Recent Shipments -->
 
 <h3 style="margin-top:25px">Recent Shipments</h3>
 
@@ -1135,6 +1179,8 @@ Recharge
           loadRecentShipments();
           loadAnalytics();
           loadActivityFeed();
+          loadNotifications();
+          startNotificationSlider();
 
           break;
 
@@ -2780,6 +2826,42 @@ Recharge
 
     }
 
+
+    // DASHBOARD NOTIFICATIONS
+
+    let notificationIndex = 0;
+
+    function startNotificationSlider() {
+
+      const track = document.getElementById("notificationTrack");
+
+      if (!track) return;
+
+      const items = track.children.length;
+
+      setInterval(() => {
+
+        notificationIndex++;
+
+        if (notificationIndex >= items) {
+
+          notificationIndex = 0;
+
+        }
+
+        track.style.transform =
+          `translateX(-${notificationIndex * 100}%)`;
+
+      }, 4000);
+
+    }
+
+
+    // LOAD NOIFICATION FROM API
+
+    function loadNotifications() {
+      console.log("Loading Notification from api");
+    }
     // ✅ Logout
     function logout() {
       console.log("🚪 Logging Out...");
