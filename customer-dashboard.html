@@ -2522,38 +2522,6 @@
 
     }
 
-    async function loadRecentShipments() {
-
-      const res = await fetch(
-        "https://nxtship-backend.onrender.com/api/dashboard/recent-shipments",
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("customerToken")}`
-          }
-        }
-      );
-
-      const data = await res.json();
-
-      const table = document.getElementById("recentShipments");
-
-      table.innerHTML = "";
-
-      data.shipments.forEach(s => {
-
-        table.innerHTML += `
-      <tr>
-        <td>${s.orderId}</td>
-        <td>${s.waybill || "-"}</td>
-        <td>${s.city}</td>
-        <td>${s.status}</td>
-        <td>${new Date(s.createdAt).toLocaleDateString()}</td>
-      </tr>
-    `;
-
-      });
-
-    }
 
     async function loadAnalytics() {
 
