@@ -1115,7 +1115,7 @@ Track Here
 </div>
 
 <div class="kpiCard">
-<b id="walletBalance">Loading...</b>
+<h3 id="balanceWallet">₹0</h3>
 <p>Wallet Balance</p>
 </div>
 
@@ -2808,6 +2808,7 @@ Track Here
       document.getElementById("totalShipments").innerText = data.shipments;
       document.getElementById("deliveredOrders").innerText = data.delivered;
       document.getElementById("walletBalance").innerText = "₹" + data.walletBalance;
+      document.getElementById("balanceWallet").innerText = "₹" + data.walletBalance;
 
     }
 
