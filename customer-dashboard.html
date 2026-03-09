@@ -1871,6 +1871,8 @@ border-radius:10px;
 
     function openCourierPopup(couriers, payload) {
 
+      window.currentShipmentpayload = payload
+
       const popup = document.getElementById("courierPopup");
       const list = document.getElementById("courierList");
 
@@ -1898,7 +1900,7 @@ Delivery: ${courier.deliveryDays} days
 
 <br><br>
 
-<button onclick='bookSelectedCourier("${courier.name}", ${JSON.stringify(payload)})'>
+<button onclick='bookSelectedCourier("${courier.name}")'>
 Select
 </button>
 
