@@ -1919,10 +1919,6 @@ Select
 
     async function bookSelectedCourier(courier, payload) {
 
-      document.getElementById("bookingLoader").style.display = "none";
-      document.getElementById("bookBtn").disabled = false;
-      document.getElementById("bookBtn").innerText = "Create Shipment";
-
       payload.courier = courier;
 
       showPopup("📦 Booking shipment...");
@@ -1949,6 +1945,10 @@ Select
       }
 
       showPopup(`✅ Shipment Created\nAWB: ${data.waybill}`);
+
+      document.getElementById("bookingLoader").style.display = "none";
+      document.getElementById("bookBtn").disabled = false;
+      document.getElementById("bookBtn").innerText = "Create Shipment";
 
       closeCourierPopup();
 
