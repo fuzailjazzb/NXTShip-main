@@ -1914,20 +1914,14 @@ Select
 
     }
 
-    function selectCourier(courierName) {
-      console.log("Selected Courier: ", courierName);
-
-      // popup close
-      document.getElementById("courierPopup").style.display = "none";
-
-      // shipment book API
-
-      createShipment(courierName);
-    }
 
     // booking after recommendations
 
     async function bookSelectedCourier(courier, payload) {
+
+      document.getElementById("bookingLoader").style.display = "none";
+      document.getElementById("bookBtn").disabled = false;
+      document.getElementById("bookBtn").innerText = "Create Shipment";
 
       payload.courier = courier;
 
