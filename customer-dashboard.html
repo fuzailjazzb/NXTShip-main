@@ -1290,6 +1290,39 @@ Track Here
 <div id="shipmentMessage"></div>
 
 </div>
+
+                                  <!-- Courier Selection Popup -->
+
+<div id="courierPopup" style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.5);
+align-items:center;
+justify-content:center;
+z-index:999;
+">
+
+<div style="
+background:white;
+padding:20px;
+width:400px;
+border-radius:10px;
+">
+
+<h3>Select Courier</h3>
+
+<div id="courierList"></div>
+
+<br>
+
+<button onclick="closeCourierPopup()">Cancel</button>
+
+</div>
+</div>
 `;
 
           break;
@@ -1833,15 +1866,91 @@ Track Here
     }
 
     function closeCourierPopup() {
-      document.getElementById("courierPopup").style.display="none";
+      document.getElementById("courierPopup").style.display = "none";
+    }
+
+    function openCourierPopup(couriers, payload) {
+
+      const popup = document.getElementById("courierPopup");
+      const list = document.getElementById("courierList");
+
+      list.innerHTML = "";
+
+      couriers.forEach(courier => {
+
+        const div = document.createElement("div");
+
+        div.style.border = "1px solid #ddd";
+        div.style.padding = "10px";
+        div.style.marginBottom = "10px";
+
+        div.innerHTML = `
+
+<b>${courier.name}</b>
+
+<br>
+
+Price: ₹${courier.price}
+
+<br>
+
+Delivery: ${courier.deliveryDays} days
+
+<br><br>
+
+<button onclick='bookSelectedCourier("${courier.name}", ${JSON.stringify(payload)})'>
+Select
+</button>
+
+`;
+
+        list.appendChild(div);
+
+      });
+
+      popup.style.display = "flex";
+
+    }
+
+
+    // booking after recommendations
+
+    async function bookSelectedCourier(courier, payload) {
+
+      payload.courier = courier;
+
+      showPopup("📦 Booking shipment...");
+
+      const res = await fetch(
+        "https://nxtship-backend.onrender.com/api/shipment/book",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("customerToken")}`
+          },
+          body: JSON.stringify(payload)
+        }
+      );
+
+      const data = await res.json();
+
+      if (!data.success) {
+
+        showPopup("❌ Shipment Failed");
+        return;
+
+      }
+
+      showPopup(`✅ Shipment Created\nAWB: ${data.waybill}`);
+
+      closeCourierPopup();
+
     }
 
 
 
-
-
-
-
+    
 
     async function addMoneyToWallet() {
 
@@ -2553,7 +2662,7 @@ Track Here
 
 
 
-    async function createShipment(selectedCourier="delhivery") {
+    async function createShipment(selectedCourier = "delhivery") {
 
       const btn = document.getElementById("bookBtn");
       const loader = document.getElementById("bookingLoader");
@@ -2566,30 +2675,38 @@ Track Here
       loader.style.display = "inline";
       btn.innerText = "Booking Shipment...";
 
+
+
+      showPopup("⏳ Creating Shipment... Please wait");
+
+      const payload = {
+        customerName: document.getElementById("receiverName")?.value || "",
+        address: document.getElementById("receiverAddress")?.value || "",
+        pincode: document.getElementById("toPincode")?.value || "",
+        city: document.getElementById("receiverCity")?.value || "",
+        state: document.getElementById("receiverState")?.value || "",
+        phone: document.getElementById("receiverPhone")?.value || "",
+
+        productName: document.getElementById("productName")?.value || "General Item",
+        weight: document.getElementById("weight")?.value || "0.5",
+
+        length: document.getElementById("length")?.value || "10",
+        breadth: document.getElementById("breadth")?.value || "10",
+        height: document.getElementById("height")?.value || "10",
+
+        orderValue: document.getElementById("orderValue")?.value || 0,
+        paymentMode: document.getElementById("paymentType")?.value || "Pre-paid",
+
+        courier: selectedCourier,
+        orderId: "ORD-" + Date.now()
+      };
+
+      showPopup("Fetching Courier options...");
+
       try {
 
-        showPopup("⏳ Creating Shipment... Please wait");
-
-        const payload = {
-          customerName: document.getElementById("receiverName")?.value || "",
-          address: document.getElementById("receiverAddress")?.value || "",
-          pincode: document.getElementById("toPincode")?.value || "",
-          city: document.getElementById("receiverCity")?.value || "",
-          state: document.getElementById("receiverState")?.value || "",
-          phone: document.getElementById("receiverPhone")?.value || "",
-          productName: document.getElementById("productName")?.value || "General Item",
-          weight: document.getElementById("weight")?.value || "0.5",
-          length: document.getElementById("length")?.value || "10",
-          breadth: document.getElementById("breadth")?.value || "10",
-          height: document.getElementById("height")?.value || "10",
-          orderValue: document.getElementById("orderValue")?.value || 0,
-          paymentMode: document.getElementById("paymentType")?.value || "Pre-paid",
-          courier: selectedCourier,
-          orderId: "ORD-" + Date.now()
-        };
-
         const res = await fetch(
-          "https://nxtship-backend.onrender.com/api/customer/shipment/book",
+          "https://nxtship-backend.onrender.com/api/shipment/courier/rates",
           {
             method: "POST",
             headers: {
@@ -2602,31 +2719,22 @@ Track Here
 
         const data = await res.json();
 
-        if (!res.ok) {
-          showPopup("❌ " + (data.message || "Shipment Failed"));
+        if (!data.success) {
+
+          showPopup("❌ Failed to get courier rates");
           return;
+
         }
 
-        // ✅ SUCCESS FEEDBACK
-        showPopup(`✅ Shipment Created AWB: ${data.waybill}`);
-
-        // small delay → smoother UX
-        setTimeout(() => {
-          showShipmentSuccess(data);
-        }, 600);
+        openCourierPopup(data.couriers, payload);
 
       } catch (err) {
-        console.log("Shipment Error:", err);
-        showPopup("❌ Server Error. Please try again.");
+
+        console.log(err);
+        showPopup("❌ Server Error");
+
       }
 
-      finally {
-        // 🔄 Restore button safely
-        btn.disabled = false;
-        btn.dataset.loading = "false";
-        loader.style.display = "none";
-        btn.innerText = "🚀 Book Shipment";
-      }
     }
 
 
