@@ -1282,7 +1282,7 @@ Track Here
 
 <br><br>
 
-<button id="bookBtn" onclick="createShipment()">🚀 Create Shipment</button>
+<button id="bookBtn" onclick="showCourierOptions()">🚀 Create Shipment</button>
 <span id="bookingLoader" style="display:none;">
   Booking Shipment...
 </span>
@@ -1774,6 +1774,74 @@ Track Here
           content.innerHTML = `<h2>❌ Section Not Found</h2>`;
       }
     }
+
+    ////////// Recommendations
+
+    async function showCourierOptions() {
+
+      const payload = {
+        pincode: document.getElementById("toPincode").value,
+        weight: document.getElementById("weight").value || 0.5
+      };
+
+      const res = await fetch("https://nxtship-backend.onrender.com/api/shipment/courier/rates",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("customerToken")}`
+
+          },
+        }
+      );
+
+      const data = await res.json();
+
+      renderCourierOptions(data.couriers);
+    }
+
+    function renderCourierOptions(couriers) {
+
+      const list = document.getElementById("courierList");
+
+      list.innerHTML = "";
+
+      couriers.forEach(c => {
+
+        list.innerHTML += `
+
+                        <div style="border:1px solid #ddd; padding:10px; margin-bottom:10px; border-radius:6px">
+
+                          <h4>${c.name}</h4>
+
+                          <p>Price: ₹${c.price}</p>
+
+                          <p>Delivery: ${c.deliveryDays} days</p>
+
+                          <button onclick="selectCourier('${c.name}')">
+                          Ship with ${c.name}
+                          </button>
+
+                        </div>
+
+                      `;
+
+      });
+
+      document.getElementById("courierPopup").style.display = "block";
+
+    }
+
+    function closeCourierPopup() {
+      document.getElementById("courierPopup").style.display="none";
+    }
+
+
+
+
+
+
+
 
     async function addMoneyToWallet() {
 
@@ -2480,7 +2548,12 @@ Track Here
     }
 
 
-    async function createShipment() {
+
+
+
+
+
+    async function createShipment(selectedCourier="delhivery") {
 
       const btn = document.getElementById("bookBtn");
       const loader = document.getElementById("bookingLoader");
@@ -2511,6 +2584,7 @@ Track Here
           height: document.getElementById("height")?.value || "10",
           orderValue: document.getElementById("orderValue")?.value || 0,
           paymentMode: document.getElementById("paymentType")?.value || "Pre-paid",
+          courier: selectedCourier,
           orderId: "ORD-" + Date.now()
         };
 
@@ -3044,6 +3118,16 @@ Failed to load activity
       loadSection("dashboard");
     };
   </script>
+
+  <div id="courierPopup"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5);">
+    <div style="background: white; width: 500px; margin: 100px auto; padding: 20px; border-radius: 10px;">
+      <h3>Select Courier Partner</h3>
+      <div id="courierList"></div>
+      <br>
+      <button onclick="closeCourierPopup()">Cancel</button>
+    </div>
+  </div>
 
 </body>
 
