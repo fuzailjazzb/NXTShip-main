@@ -2011,7 +2011,7 @@ Verify GST
     async function loadWarehouses() {
 
       try{
-      const res = await fetch("/api/warehouse");
+      const res = await fetch("https://nxtship-backend.onrender.com/api/warehouse");
 
       if (!res.ok) {
         console.log("warehouse API error", res.status);
