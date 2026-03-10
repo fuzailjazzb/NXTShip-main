@@ -2010,9 +2010,17 @@ Verify GST
     // load warehouses
     async function loadWarehouses() {
 
+      try{
       const res = await fetch("/api/warehouse");
 
+      if (!res.ok) {
+        console.log("warehouse API error", res.status);
+        return;
+      }
+
       const data = await res.json();
+
+      console.log("warehouse", data);
 
       let html = "";
 
@@ -2037,6 +2045,10 @@ margin-bottom:10px;
 `;
 
       });
+
+      }catch(err) {
+        console.log("warehouse fetch error", err);
+      }
 
       document.getElementById("warehouseList").innerHTML = html;
 
