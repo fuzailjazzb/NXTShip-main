@@ -1817,6 +1817,8 @@ border-radius:10px;
         weight: document.getElementById("weight").value || 0.5
       };
 
+      window.shipmentPayload = payload;
+
       const res = await fetch("https://nxtship-backend.onrender.com/api/shipment/courier/rates",
         {
           method: "POST",
@@ -1917,7 +1919,9 @@ Select
 
     // booking after recommendations
 
-    async function bookSelectedCourier(courier, payload) {
+    async function bookSelectedCourier(courier) {
+
+      const payload = window.shipmentPayload;
 
       payload.courier = courier;
 
@@ -1945,11 +1949,6 @@ Select
       }
 
       showPopup(`✅ Shipment Created\nAWB: ${data.waybill}`);
-
-      document.getElementById("bookingLoader").style.display = "none";
-      document.getElementById("bookBtn").disabled = false;
-      document.getElementById("bookBtn").innerText = "Create Shipment";
-
       closeCourierPopup();
 
     }
