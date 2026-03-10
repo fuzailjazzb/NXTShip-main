@@ -2010,23 +2010,27 @@ Verify GST
     // load warehouses
     async function loadWarehouses() {
 
-      try{
-      const res = await fetch("https://nxtship-backend.onrender.com/api/warehouse");
+      try {
+        const res = await fetch("https://nxtship-backend.onrender.com/api/warehouse", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("customerToken")}`
+          },
+        });
 
-      if (!res.ok) {
-        console.log("warehouse API error", res.status);
-        return;
-      }
+        if (!res.ok) {
+          console.log("warehouse API error", res.status);
+          return;
+        }
 
-      const data = await res.json();
+        const data = await res.json();
 
-      console.log("warehouse", data);
+        console.log("warehouse", data);
 
-      let html = "";
+        let html = "";
 
-      data.warehouses.forEach(w => {
+        data.warehouses.forEach(w => {
 
-        html += `
+          html += `
 <div style="
 background:white;
 padding:15px;
@@ -2044,9 +2048,9 @@ margin-bottom:10px;
 </div>
 `;
 
-      });
+        });
 
-      }catch(err) {
+      } catch (err) {
         console.log("warehouse fetch error", err);
       }
 
