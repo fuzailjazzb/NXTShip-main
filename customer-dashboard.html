@@ -2031,12 +2031,12 @@ Verify GST
         data.warehouses.forEach(w => {
 
           html += `
+
 <div style="
-background:white;
-padding:15px;
-border-radius:8px;
 border:1px solid #eee;
+padding:12px;
 margin-bottom:10px;
+border-radius:8px;
 ">
 
 <b>${w.name}</b>
@@ -2045,7 +2045,18 @@ margin-bottom:10px;
 
 <p>${w.city} - ${w.pincode}</p>
 
+${w.isDefault ? `<span style="color:green">Default</span>` : ""}
+
+<br><br>
+
+<button onclick="editWarehouse('${w._id}')">Edit</button>
+
+<button onclick="deleteWarehouse('${w._id}')">Delete</button>
+
+<button onclick="setDefault('${w._id}')">Set Default</button>
+
 </div>
+
 `;
 
         });
@@ -2058,7 +2069,7 @@ margin-bottom:10px;
 
     }
 
-    // add warehouse popup
+    // add and open warehouse popup
     function openWarehouseForm() {
 
       document.body.innerHTML += `
@@ -2091,6 +2102,7 @@ width:350px;
 <input id="wPincode" placeholder="Pincode"><br><br>
 
 <button onclick="saveWarehouse()">Save</button>
+<button onclick="closeWarehousePopup()">Cancel</button>
 
 </div>
 
@@ -2099,36 +2111,88 @@ width:350px;
 
     }
 
+    // close warehouse popup
+    function closeWarehousePopup(){
+      document.getElementById("warehousePopup").remove();
+    }
+    
     // save warehouse
     async function saveWarehouse() {
 
-      const payload = {
+      try {
 
-        name: document.getElementById("wName").value,
+        const payload = {
 
-        address: document.getElementById("wAddress").value,
+          name: document.getElementById("wName").value,
+          address: document.getElementById("wAddress").value,
+          city: document.getElementById("wCity").value,
+          state: document.getElementById("wState").value,
+          pincode: document.getElementById("wPincode").value
 
-        city: document.getElementById("wCity").value,
+        };
 
-        state: document.getElementById("wState").value,
+        const res = await fetch(
+          "https://nxtship-backend.onrender.com/api/warehouse",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + localStorage.getItem("customerToken")
+            },
+            body: JSON.stringify(payload)
+          }
+        );
 
-        pincode: document.getElementById("wPincode").value
+        const data = await res.json();
 
-      };
+        console.log("Warehouse created:", data);
 
-      await fetch("/api/warehouse", {
+        document.getElementById("warehousePopup").remove();
 
-        method: "POST",
+        
 
-        headers: {
-          "Content-Type": "application/json"
-        },
+        loadWarehouses();
 
-        body: JSON.stringify(payload)
+      } catch (err) {
 
-      });
+        console.log("Warehouse create error:", err);
 
-      location.reload();
+      }
+
+    }
+
+
+    // delete warehouse
+    async function deleteWarehouse(id) {
+
+      await fetch(
+        "https://nxtship-backend.onrender.com/api/warehouse/" + id,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("customerToken")
+          }
+        }
+      );
+
+      loadWarehouses();
+
+    }
+
+    // set default warehouse
+    async function setDefault(id) {
+
+      await fetch(
+        "https://nxtship-backend.onrender.com/api/warehouse/default/" + id,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("customerToken")
+          }
+        }
+      );
+
+      loadWarehouses();
 
     }
 
