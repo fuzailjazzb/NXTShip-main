@@ -1825,14 +1825,113 @@ border-radius:10px;
           break;
 
         case "settings":
-          document.getElementById("pageTitle").innerText = "Settings";
 
-          content.innerHTML = `
-          <h2>⚙️ Settings</h2>
+          document.getElementById("content").innerHTML = `
 
-          <!-- Account Settings Placeholder -->
-          <p>Account settings will appear here.</p>
-        `;
+<div style="padding:25px">
+
+<h2 style="
+margin-bottom:20px;
+font-size:22px;
+font-weight:600;
+">Settings</h2>
+
+<div style="
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:20px;
+">
+
+<div style="background:#fff;padding:18px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.08);cursor:pointer;">
+<b>Profile Details</b>
+<p style="font-size:13px;color:#555;margin-top:5px">
+View, edit your profile information
+</p>
+</div>
+
+<div style="background:#fff;padding:18px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.08);cursor:pointer;">
+<b>Company KYC</b>
+<p style="font-size:13px;color:#555;margin-top:5px">
+Upload and verify business documents
+</p>
+</div>
+
+<div style="background:#fff;padding:18px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.08);cursor:pointer;">
+<b>Warehouse Addresses</b>
+<p style="font-size:13px;color:#555;margin-top:5px">
+Manage all your warehouse addresses
+</p>
+</div>
+
+<div style="background:#fff;padding:18px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.08);cursor:pointer;">
+<b>GSTIN Billings</b>
+<p style="font-size:13px;color:#555;margin-top:5px">
+Choose Central or State GST
+</p>
+</div>
+
+<div style="background:#fff;padding:18px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.08);cursor:pointer;">
+<b>Warehouse Allocation</b>
+<p style="font-size:13px;color:#555;margin-top:5px">
+Assign Pickup & RTO Warehouse
+</p>
+</div>
+
+<div style="background:#fff;padding:18px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.08);cursor:pointer;">
+<b>Invoicing & Label</b>
+<p style="font-size:13px;color:#555;margin-top:5px">
+Manage invoice preferences
+</p>
+</div>
+
+<div style="background:#fff;padding:18px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.08);cursor:pointer;">
+<b>Catalogue</b>
+<p style="font-size:13px;color:#555;margin-top:5px">
+Import & manage product catalogue
+</p>
+</div>
+
+<div style="background:#fff;padding:18px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.08);cursor:pointer;">
+<b>Return Quality Check</b>
+<p style="font-size:13px;color:#555;margin-top:5px">
+QC settings for return orders
+</p>
+</div>
+
+<div style="background:#fff;padding:18px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.08);cursor:pointer;">
+<b>Integrations</b>
+<p style="font-size:13px;color:#555;margin-top:5px">
+Manage API integrations
+</p>
+</div>
+
+<div style="background:#fff;padding:18px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.08);cursor:pointer;">
+<b>Rate Card</b>
+<p style="font-size:13px;color:#555;margin-top:5px">
+View courier pricing details
+</p>
+</div>
+
+<div style="background:#fff;padding:18px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.08);cursor:pointer;">
+<b>User Management</b>
+<p style="font-size:13px;color:#555;margin-top:5px">
+Create and manage users
+</p>
+</div>
+
+<div style="background:#fff;padding:18px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.08);cursor:pointer;">
+<b>Webhooks</b>
+<p style="font-size:13px;color:#555;margin-top:5px">
+Configure webhook notifications
+</p>
+</div>
+
+</div>
+
+</div>
+
+`;
+
           break;
 
         default:
@@ -1850,7 +1949,7 @@ border-radius:10px;
       console.log("selected warehouse", selectedWarehouse);
 
       const warehouseMap = {
-        NXTship:"500055",
+        NXTship: "500055",
       };
       console.log("warehouse map", warehouseMap);
 
@@ -1860,7 +1959,7 @@ border-radius:10px;
 
       const ratePayload = {
         fromPincode: fromPincode,
-        toPincode:document.getElementById("toPincode")?.value || "",
+        toPincode: document.getElementById("toPincode")?.value || "",
         weight: document.getElementById("weight")?.value || "0.5",
         paymentType: document.getElementById("paymentType")?.value || "Prepaid"
       };
