@@ -1915,38 +1915,83 @@ ${settingsCard("🪝", "Webhooks", "Webhook notifications", "webhooks")}
 
           break;
 
+
+        ////////////        sub-settings
         case "warehouse":
 
           content.innerHTML = `
 
-<div style="padding:20px">
-
 <h2>Warehouse Addresses</h2>
+
+<button onclick="openWarehouseForm()" style="
+background:#007bff;
+color:white;
+border:none;
+padding:10px 15px;
+border-radius:6px;
+cursor:pointer;
+margin-bottom:15px;
+">
+
++ Add Warehouse
+
+</button>
+
+<div id="warehouseList"></div>
+
+`;
+
+          loadWarehouses();
+
+          break;
+
+        case "kyc":
+
+          content.innerHTML = `
+
+<h2>Company KYC</h2>
+
+<input type="file">
+
+<br><br>
+
+<button style="
+background:#28a745;
+color:white;
+padding:10px 14px;
+border:none;
+border-radius:6px;
+">
+
+Upload Document
+
+</button>
+
+`;
+
+          break;
+
+        case "gst":
+
+          content.innerHTML = `
+
+<h2>GSTIN Billing</h2>
+
+<input placeholder="Enter GST Number">
+
+<br><br>
 
 <button style="
 background:#007bff;
 color:white;
-border:none;
 padding:10px 14px;
+border:none;
 border-radius:6px;
-cursor:pointer;
-margin-bottom:15px;
-">+ Add Warehouse</button>
-
-<div style="
-background:white;
-padding:15px;
-border-radius:8px;
-border:1px solid #eee;
 ">
 
-<p><b>NXTShip Warehouse</b></p>
-<p>Pincode: 500055</p>
-<p>Hyderabad</p>
+Verify GST
 
-</div>
-
-</div>
+</button>
 
 `;
 
@@ -1955,6 +2000,120 @@ border:1px solid #eee;
         default:
           content.innerHTML = `<h2>❌ Section Not Found</h2>`;
       }
+    }
+
+    ////////// FUNCTIONS STARTS HERE```````````````````````````````````````````````````````````
+
+
+    ////////// SUB-SETTINGS FUNCTIONS
+
+    // load warehouses
+    async function loadWarehouses() {
+
+      const res = await fetch("/api/warehouse");
+
+      const data = await res.json();
+
+      let html = "";
+
+      data.warehouses.forEach(w => {
+
+        html += `
+<div style="
+background:white;
+padding:15px;
+border-radius:8px;
+border:1px solid #eee;
+margin-bottom:10px;
+">
+
+<b>${w.name}</b>
+
+<p>${w.address}</p>
+
+<p>${w.city} - ${w.pincode}</p>
+
+</div>
+`;
+
+      });
+
+      document.getElementById("warehouseList").innerHTML = html;
+
+    }
+
+    // add warehouse popup
+    function openWarehouseForm() {
+
+      document.body.innerHTML += `
+
+<div id="warehousePopup" style="
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.4);
+display:flex;
+align-items:center;
+justify-content:center;
+">
+
+<div style="
+background:white;
+padding:20px;
+border-radius:10px;
+width:350px;
+">
+
+<h3>Add Warehouse</h3>
+
+<input id="wName" placeholder="Warehouse Name"><br><br>
+<input id="wAddress" placeholder="Address"><br><br>
+<input id="wCity" placeholder="City"><br><br>
+<input id="wState" placeholder="State"><br><br>
+<input id="wPincode" placeholder="Pincode"><br><br>
+
+<button onclick="saveWarehouse()">Save</button>
+
+</div>
+
+</div>
+`;
+
+    }
+
+    // save warehouse
+    async function saveWarehouse() {
+
+      const payload = {
+
+        name: document.getElementById("wName").value,
+
+        address: document.getElementById("wAddress").value,
+
+        city: document.getElementById("wCity").value,
+
+        state: document.getElementById("wState").value,
+
+        pincode: document.getElementById("wPincode").value
+
+      };
+
+      await fetch("/api/warehouse", {
+
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify(payload)
+
+      });
+
+      location.reload();
+
     }
 
     ////////// Recommendations
