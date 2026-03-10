@@ -1813,8 +1813,25 @@ border-radius:10px;
     async function showCourierOptions() {
 
       const payload = {
-        pincode: document.getElementById("toPincode").value,
-        weight: document.getElementById("weight").value || 0.5
+        customerName: document.getElementById("receiverName")?.value || "",
+        address: document.getElementById("receiverAddress")?.value || "",
+        pincode: document.getElementById("toPincode")?.value || "",
+        city: document.getElementById("receiverCity")?.value || "",
+        state: document.getElementById("receiverState")?.value || "",
+        phone: document.getElementById("receiverPhone")?.value || "",
+
+        productName: document.getElementById("productName")?.value || "General Item",
+        weight: document.getElementById("weight")?.value || "0.5",
+
+        length: document.getElementById("length")?.value || "10",
+        breadth: document.getElementById("breadth")?.value || "10",
+        height: document.getElementById("height")?.value || "10",
+
+        orderValue: document.getElementById("orderValue")?.value || 0,
+        paymentMode: document.getElementById("paymentType")?.value || "Pre-paid",
+
+        courier: selectedCourier,
+        orderId: "ORD-" + Date.now()
       };
 
       window.shipmentPayload = payload;
@@ -1921,9 +1938,13 @@ Select
 
     async function bookSelectedCourier(courier) {
 
+      console.log("booking payload", payload);
+
       const payload = window.shipmentPayload;
 
       payload.courier = courier;
+
+
 
       showPopup("📦 Booking shipment...");
 
@@ -1939,8 +1960,10 @@ Select
         }
       );
 
+      console.log("response from delhivery:", res);
       const data = await res.json();
 
+      console.log("response data from delhivery:", data);
       if (!data.success) {
 
         showPopup("❌ Shipment Failed");
