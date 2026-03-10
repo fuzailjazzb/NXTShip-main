@@ -2049,7 +2049,7 @@ ${w.isDefault ? `<span style="color:green">Default</span>` : ""}
 
 <br><br>
 
-<button onclick="editWarehouse('${w._id}')">Edit</button>
+<button onclick="editWarehouse('${w._id}','${w.name}','${w.address}','${w.city}'.'${w.state}','${w.pincode}')">Edit</button>
 
 <button onclick="deleteWarehouse('${w._id}')">Delete</button>
 
@@ -2112,11 +2112,11 @@ width:350px;
     }
 
     // close warehouse popup
-    function closeWarehousePopup(){
+    function closeWarehousePopup() {
       document.getElementById("warehousePopup").remove();
     }
-    
-    // save warehouse
+
+    // create warehouse
     async function saveWarehouse() {
 
       try {
@@ -2149,7 +2149,7 @@ width:350px;
 
         document.getElementById("warehousePopup").remove();
 
-        
+
 
         loadWarehouses();
 
@@ -2160,7 +2160,6 @@ width:350px;
       }
 
     }
-
 
     // delete warehouse
     async function deleteWarehouse(id) {
@@ -2179,6 +2178,49 @@ width:350px;
 
     }
 
+    // edit warehouse
+    function editWarehouse(id, name, address, city, state, pincode) {
+
+      document.body.innerHTML += `
+
+<div id="editWarehousePopup" style="
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.4);
+display:flex;
+align-items:center;
+justify-content:center;
+">
+
+<div style="
+background:white;
+padding:20px;
+border-radius:10px;
+width:350px;
+">
+
+<h3>Edit Warehouse</h3>
+
+<input id="editName" value="${name}"><br><br>
+<input id="editAddress" value="${address}"><br><br>
+<input id="editCity" value="${city}"><br><br>
+<input id="editState" value="${state}"><br><br>
+<input id="editPincode" value="${pincode}"><br><br>
+
+<button onclick="updateWarehouse('${id}')">Update</button>
+
+<button onclick="closeEditWarehouse()">Cancel</button>
+
+</div>
+
+</div>
+
+`;
+
+    }
     // set default warehouse
     async function setDefault(id) {
 
@@ -2195,6 +2237,9 @@ width:350px;
       loadWarehouses();
 
     }
+
+
+
 
     ////////// Recommendations
 
