@@ -2223,10 +2223,42 @@ width:350px;
     }
 
     // edit warehouse popup
-    function closeEditWarehouse(){
+    function closeEditWarehouse() {
       document.getElementById("editWarehousePopup").remove();
     }
-    
+
+    // update warehouse request
+    async function updateWarehouse(id) {
+
+      const payload = {
+
+        name: document.getElementById("editName").value,
+        address: document.getElementById("editAddress").value,
+        city: document.getElementById("editCity").value,
+        state: document.getElementById("editState").value,
+        pincode: document.getElementById("editPincode").value
+
+      };
+
+      await fetch(
+        "https://nxtship-backend.onrender.com/api/warehouse/" + id,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + localStorage.getItem("customerToken")
+          },
+          body: JSON.stringify(payload)
+        }
+      );
+
+      document.getElementById("editWarehousePopup").remove();
+
+      loadWarehouses();
+
+    }
+
+
     // set default warehouse
     async function setDefault(id) {
 
