@@ -993,6 +993,40 @@
     `;
     }
 
+    // settings cards
+    function settingsCard(icon, title, desc, section) {
+
+      return `
+<div onclick="loadSection('${section}',this)" style="
+background:#fff;
+padding:18px;
+border-radius:10px;
+border:1px solid #eee;
+cursor:pointer;
+transition:0.2s;
+box-shadow:0 2px 8px rgba(0,0,0,0.05);
+">
+
+<div style="font-size:22px">${icon}</div>
+
+<h3 style="
+margin-top:8px;
+font-size:15px;
+font-weight:600;
+">${title}</h3>
+
+<p style="
+font-size:13px;
+color:#666;
+margin-top:4px;
+">${desc}</p>
+
+</div>
+`;
+
+    }
+
+
     // ✅ Load Sections Dynamically
     function loadSection(section, element) {
       console.log("📌 Loading Section:", section);
@@ -1826,107 +1860,89 @@ border-radius:10px;
 
         case "settings":
 
-           document.getElementById("pageTitle").innerText = "Settings";
+          document.getElementById("pageTitle").innerText = "Settings";
 
           content.innerHTML = `
 
-<div style="padding:25px">
+<div style="
+padding:20px;
+max-width:1100px;
+margin:auto;
+box-sizing:border-box;
+">
 
 <h2 style="
 margin-bottom:20px;
-font-size:22px;
+font-size:20px;
 font-weight:600;
 ">Settings</h2>
 
 <div style="
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-gap:20px;
+grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+gap:18px;
 ">
 
-<div style="background:#fff;padding:18px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.08);cursor:pointer;">
-<b>Profile Details</b>
-<p style="font-size:13px;color:#555;margin-top:5px">
-View, edit your profile information
-</p>
+${settingsCard("👤", "Profile Details", "Manage your profile", "profile")}
+
+${settingsCard("🏢", "Company KYC", "Upload business documents", "kyc")}
+
+${settingsCard("🏭", "Warehouse Addresses", "Manage warehouses", "warehouse")}
+
+${settingsCard("🧾", "GSTIN Billings", "Configure GST billing", "gst")}
+
+${settingsCard("📦", "Warehouse Allocation", "Assign pickup warehouse", "allocation")}
+
+${settingsCard("🧾", "Invoicing & Label", "Invoice preferences", "invoice")}
+
+${settingsCard("📦", "Catalogue", "Manage products", "catalogue")}
+
+${settingsCard("🔍", "Return Quality Check", "QC settings", "qc")}
+
+${settingsCard("🔗", "Integrations", "API integrations", "integration")}
+
+${settingsCard("💰", "Rate Card", "Courier pricing", "ratecard")}
+
+${settingsCard("👥", "User Management", "Manage users", "users")}
+
+${settingsCard("🪝", "Webhooks", "Webhook notifications", "webhooks")}
+
 </div>
 
-<div style="background:#fff;padding:18px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.08);cursor:pointer;">
-<b>Company KYC</b>
-<p style="font-size:13px;color:#555;margin-top:5px">
-Upload and verify business documents
-</p>
 </div>
 
-<div style="background:#fff;padding:18px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.08);cursor:pointer;">
-<b>Warehouse Addresses</b>
-<p style="font-size:13px;color:#555;margin-top:5px">
-Manage all your warehouse addresses
-</p>
-</div>
+`;
 
-<div style="background:#fff;padding:18px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.08);cursor:pointer;">
-<b>GSTIN Billings</b>
-<p style="font-size:13px;color:#555;margin-top:5px">
-Choose Central or State GST
-</p>
-</div>
+          break;
 
-<div style="background:#fff;padding:18px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.08);cursor:pointer;">
-<b>Warehouse Allocation</b>
-<p style="font-size:13px;color:#555;margin-top:5px">
-Assign Pickup & RTO Warehouse
-</p>
-</div>
+        case "warehouse":
 
-<div style="background:#fff;padding:18px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.08);cursor:pointer;">
-<b>Invoicing & Label</b>
-<p style="font-size:13px;color:#555;margin-top:5px">
-Manage invoice preferences
-</p>
-</div>
+          content.innerHTML = `
 
-<div style="background:#fff;padding:18px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.08);cursor:pointer;">
-<b>Catalogue</b>
-<p style="font-size:13px;color:#555;margin-top:5px">
-Import & manage product catalogue
-</p>
-</div>
+<div style="padding:20px">
 
-<div style="background:#fff;padding:18px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.08);cursor:pointer;">
-<b>Return Quality Check</b>
-<p style="font-size:13px;color:#555;margin-top:5px">
-QC settings for return orders
-</p>
-</div>
+<h2>Warehouse Addresses</h2>
 
-<div style="background:#fff;padding:18px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.08);cursor:pointer;">
-<b>Integrations</b>
-<p style="font-size:13px;color:#555;margin-top:5px">
-Manage API integrations
-</p>
-</div>
+<button style="
+background:#007bff;
+color:white;
+border:none;
+padding:10px 14px;
+border-radius:6px;
+cursor:pointer;
+margin-bottom:15px;
+">+ Add Warehouse</button>
 
-<div style="background:#fff;padding:18px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.08);cursor:pointer;">
-<b>Rate Card</b>
-<p style="font-size:13px;color:#555;margin-top:5px">
-View courier pricing details
-</p>
-</div>
+<div style="
+background:white;
+padding:15px;
+border-radius:8px;
+border:1px solid #eee;
+">
 
-<div style="background:#fff;padding:18px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.08);cursor:pointer;">
-<b>User Management</b>
-<p style="font-size:13px;color:#555;margin-top:5px">
-Create and manage users
-</p>
-</div>
-
-<div style="background:#fff;padding:18px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,0.08);cursor:pointer;">
-<b>Webhooks</b>
-<p style="font-size:13px;color:#555;margin-top:5px">
-Configure webhook notifications
-</p>
-</div>
+<p><b>NXTShip Warehouse</b></p>
+<p>Pincode: 500055</p>
+<p>Hyderabad</p>
 
 </div>
 
