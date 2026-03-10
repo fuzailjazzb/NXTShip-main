@@ -2050,12 +2050,11 @@ margin-bottom:10px;
 
         });
 
+        document.getElementById("warehouseList").innerHTML = html;
+
       } catch (err) {
         console.log("warehouse fetch error", err);
       }
-
-      console.log("html value", html);
-      document.getElementById("warehouseList").innerHTML = html;
 
     }
 
