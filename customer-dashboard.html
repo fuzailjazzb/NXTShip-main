@@ -1254,6 +1254,42 @@ Track Here
 
 <h2>Create Shipment</h2>
 
+<div style="margin-bottom:15px; width:100%;">
+  
+  <label for="warehouseSelect" 
+  style="font-size:14px; font-weight:600; display:block; margin-bottom:6px;">
+    Select Warehouse
+  </label>
+
+  <select id="warehouseSelect"
+  style="
+    width:100%;
+    padding:10px;
+    border-radius:6px;
+    border:1px solid #ccc;
+    font-size:14px;
+    box-sizing:border-box;
+    background:#fff;
+  ">
+  
+    <option value="">Choose Warehouse</option>
+
+    <option value="patna">
+      Patna Warehouse - 800006
+    </option>
+
+    <option value="delhi">
+      Delhi Warehouse - 110001
+    </option>
+
+    <option value="mumbai">
+      Mumbai Warehouse - 400001
+    </option>
+
+  </select>
+
+</div>
+
 <h3>Receiver Details</h3>
 
 <input id="receiverName" placeholder="Receiver Name"/>
@@ -1816,10 +1852,19 @@ border-radius:10px;
 
     async function showCourierOptions() {
 
+      const selectedWarehouse = document.getElementById("warehouseSelect")?.value || "NXTship";
+
+      const warehouseMap = {
+        NXTship:"500055",
+      };
+
+      const fromPincode = warehouseMap[selectedWarehouse];
+
       const payload = {
         customerName: document.getElementById("receiverName")?.value || "",
         address: document.getElementById("receiverAddress")?.value || "",
         pincode: document.getElementById("toPincode")?.value || "",
+        fromPincode: fromPincode,
         city: document.getElementById("receiverCity")?.value || "",
         state: document.getElementById("receiverState")?.value || "",
         phone: document.getElementById("receiverPhone")?.value || "",
