@@ -1844,13 +1844,19 @@ border-radius:10px;
 
     async function showCourierOptions() {
 
+      console.log("show courier option called");
+
       const selectedWarehouse = document.getElementById("warehouseSelect")?.value || "NXTship";
+      console.log("selected warehouse", selectedWarehouse);
 
       const warehouseMap = {
         NXTship:"500055",
       };
+      console.log("warehouse map", warehouseMap);
 
       const fromPincode = warehouseMap[selectedWarehouse];
+
+      console.log("from pincode", fromPincode);
 
       const ratePayload = {
         fromPincode: fromPincode,
@@ -1858,6 +1864,8 @@ border-radius:10px;
         weight: document.getElementById("weight")?.value || "0.5",
         paymentType: document.getElementById("paymentType")?.value || "Prepaid"
       };
+
+      console.log("rate payload : ", ratePayload);
 
       const payload = {
         customerName: document.getElementById("receiverName")?.value || "",
@@ -1882,6 +1890,8 @@ border-radius:10px;
 
       window.shipmentPayload = payload;
 
+      console.log("API response sending");
+
       const res = await fetch("https://nxtship-backend.onrender.com/api/shipment/courier/rates",
         {
           method: "POST",
@@ -1895,6 +1905,8 @@ border-radius:10px;
       );
 
       const data = await res.json();
+      console.log("APII Response", data);
+      console.log("courier options", data.couriers);
 
       renderCourierOptions(data.couriers);
     }
