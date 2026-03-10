@@ -1938,13 +1938,11 @@ Select
 
     async function bookSelectedCourier(courier) {
 
-      console.log("booking payload", payload);
-
       const payload = window.shipmentPayload;
 
       payload.courier = courier;
 
-
+      console.log("booking payload", payload);
 
       showPopup("📦 Booking shipment...");
 
@@ -1960,10 +1958,8 @@ Select
         }
       );
 
-      console.log("response from delhivery:", res);
       const data = await res.json();
 
-      console.log("response data from delhivery:", data);
       if (!data.success) {
 
         showPopup("❌ Shipment Failed");
