@@ -1852,11 +1852,17 @@ border-radius:10px;
 
       const fromPincode = warehouseMap[selectedWarehouse];
 
+      const ratePayload = {
+        fromPincode: fromPincode,
+        toPincode:document.getElementById("toPincode")?.value || "",
+        weight: document.getElementById("weight")?.value || "0.5",
+        paymentType: document.getElementById("paymentType")?.value || "Prepaid"
+      };
+
       const payload = {
         customerName: document.getElementById("receiverName")?.value || "",
         address: document.getElementById("receiverAddress")?.value || "",
         pincode: document.getElementById("toPincode")?.value || "",
-        fromPincode: fromPincode,
         city: document.getElementById("receiverCity")?.value || "",
         state: document.getElementById("receiverState")?.value || "",
         phone: document.getElementById("receiverPhone")?.value || "",
@@ -1884,6 +1890,7 @@ border-radius:10px;
             Authorization: `Bearer ${localStorage.getItem("customerToken")}`
 
           },
+          body: JSON.stringify(ratePayload)
         }
       );
 
