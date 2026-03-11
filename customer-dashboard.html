@@ -7,6 +7,7 @@
   <title>NXT Ship Customer Dashboard</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script>
     /* ================================
        SAFE DOM HELPERS
@@ -1997,6 +1998,44 @@ Verify GST
 
           break;
 
+        case "invoice":
+
+          content.innerHTML = `
+
+<div style="padding:20px">
+
+<h2>Label Generator</h2>
+
+<input 
+id="shipmentId"
+placeholder="Enter Shipment ID"
+style="
+padding:8px;
+width:220px;
+border:1px solid #ccc;
+border-radius:6px;
+">
+
+<button onclick="generateLabel()"
+style="
+padding:8px 12px;
+background:#2563eb;
+color:white;
+border:none;
+border-radius:6px;
+margin-left:5px;
+">
+Generate Label
+</button>
+
+<div id="labelPreview" style="margin-top:20px"></div>
+
+</div>
+
+`;
+
+          break;
+
         default:
           content.innerHTML = `<h2>❌ Section Not Found</h2>`;
       }
@@ -2258,7 +2297,6 @@ width:350px;
 
     }
 
-
     // set default warehouse
     async function setDefault(id) {
 
@@ -2276,6 +2314,181 @@ width:350px;
 
     }
 
+    // invoice & label template
+    async function generateLabel() {
+
+      const shipmentId = document.getElementById("shipmentId").value;
+
+      const res = await fetch(
+        "https://nxtship-backend.onrender.com/api/customer/shipment/" + shipmentId,
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("customerToken")
+          }
+        }
+      );
+
+      const data = await res.json();
+
+      const s = data.shipment;
+
+      const html = `
+
+<div id="labelContainer" style="
+width:800px;
+border:2px solid black;
+padding:15px;
+font-family:Arial;
+background:white;
+">
+
+<div style="display:flex;justify-content:space-between">
+
+<div>
+
+<b>Deliver To:</b><br>
+
+${s.receiverName}<br>
+${s.receiverAddress}<br>
+${s.receiverCity} ${s.receiverState}<br>
+${s.toPincode}
+
+</div>
+
+<div>
+
+<img src="logo.png" width="120">
+
+</div>
+
+</div>
+
+<hr>
+
+<div style="display:flex;justify-content:space-between">
+
+<div>
+
+<h1>${s.paymentType}</h1>
+
+Collectable Value: ₹${s.codAmount || 0}
+
+</div>
+
+<div style="text-align:center">
+
+<b>${s.courier}</b><br>
+
+<img src="https://barcode.tec-it.com/barcode.ashx?data=${s.awb}&code=Code128">
+
+<br>
+
+AWB: ${s.awb}<br>
+
+Routing Code: ${s.routingCode || "NA"}
+
+</div>
+
+</div>
+
+<hr>
+
+<div style="display:flex;justify-content:space-between">
+
+<div>
+
+Order ID : ${s.orderId}
+
+<br>
+
+<img src="https://barcode.tec-it.com/barcode.ashx?data=${s.orderId}&code=Code128">
+
+</div>
+
+<div>
+
+Order Date : ${s.orderDate}
+
+<br>
+
+Declared Value : ₹${s.amount}
+
+</div>
+
+</div>
+
+<hr>
+
+<div style="display:flex;justify-content:space-between">
+
+<div>
+
+<b>Shipped By</b><br>
+
+${s.warehouseName}<br>
+${s.warehouseAddress}
+
+</div>
+
+<div>
+
+<b>RTO Details</b><br>
+
+${s.rtoAddress}
+
+</div>
+
+</div>
+
+<hr>
+
+<div style="font-size:12px">
+
+<b>Terms & Conditions</b><br>
+
+1. Visit carrier website for terms.<br>
+2. Do not accept damaged package.<br>
+3. Contact seller for disputes.<br>
+
+</div>
+
+</div>
+
+<div style="margin-top:15px">
+
+<button onclick="printLabel()">Print</button>
+
+<button onclick="downloadLabel()">Download PDF</button>
+
+</div>
+
+`;
+
+      document.getElementById("labelPreview").innerHTML = html;
+
+    }
+
+    // print label and invoice
+    function printLabel() {
+
+      const html = document.getElementById("labelContainer").innerHTML;
+
+      const win = window.open("");
+
+      win.document.write(html);
+
+      win.print();
+
+    }
+
+    // download label & invoice
+    function downloadLabel() {
+
+      const element = document.getElementById("labelContainer");
+
+      html2pdf().from(element).save("shipping-label.pdf");
+
+    }
 
 
 
