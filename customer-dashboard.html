@@ -2319,9 +2319,12 @@ width:350px;
 
       const shipmentId = document.getElementById("shipmentId").value;
 
+      console.log("generating label for : ", shipmentId);
+
       const res = await fetch(
-        "https://nxtship-backend.onrender.com/api/customer/shipment/" + shipmentId,
+        "https://nxtship-backend.onrender.com/api/courier/label" + shipmentId,
         {
+          method:"GET",
           headers: {
             Authorization: "Bearer " + localStorage.getItem("customerToken")
           }
