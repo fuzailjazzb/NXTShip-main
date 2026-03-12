@@ -2322,7 +2322,7 @@ width:350px;
 
       console.log("generating label for : ", shipmentId);
 
-      const shipmentData = await fetch(
+      const shipmentRes = await fetch(
         "https://nxtship-backend.onrender.com/api/customer/track/${shipmentId}",
         {
           method: "GET",
@@ -2332,7 +2332,23 @@ width:350px;
         }
       );
 
-      const s = data.shipment;
+      console.log("SHIPMENT API STATUS:", shipmentRes.status);
+
+      const shipmentData = await shipmentRes.json();
+      console.log("SHIPMENT API FULL RESPONSE", shipmentData);
+
+      const s = shipmentData.shipment;
+
+      if (!s) {
+        console.error("shipment Object Is Missing");
+        alert("shipmentData not found");
+        return;
+      }
+
+      console.log("Reciever Name :", s.receiverName);
+      console.log("Address :", s.address);
+      console.log("City :", s.city);
+      console.log("Waybill :", s.waybill);
 
 
       const res = await fetch(
@@ -2345,7 +2361,10 @@ width:350px;
         }
       );
 
+      console.log("Label Api Status: ", res.status);
+
       const data = await res.json();
+      console.log("Label API Response: ", data);
 
 
       const html = `
