@@ -2345,14 +2345,23 @@ width:350px;
         return;
       }
 
-      console.log("Reciever Name :", s.receiverName);
+      console.log("Reciever Name :", s.customerName);
       console.log("Address :", s.address);
       console.log("City :", s.city);
+
+      const awb = s.waybill || s.awb;
+
       console.log("Waybill :", s.waybill);
+
+      if (!awb) {
+        console.error("AWB Not Found");
+        alert("AWB is missing");
+        return;
+      }
 
 
       const res = await fetch(
-        "https://nxtship-backend.onrender.com/api/courier/label/" + s.waybill,
+        "https://nxtship-backend.onrender.com/api/courier/label/" + awb,
         {
           method: "GET",
           headers: {
@@ -2418,7 +2427,7 @@ Collectable Value: ₹${s.orderValue || 0}
 
 <br>
 
-AWB: ${s.awb}<br>
+AWB: ${awb}<br>
 
 Routing Code: ${s.routingCode || "NA"}
 
