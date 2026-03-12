@@ -2318,52 +2318,93 @@ width:350px;
     // invoice & label template
     async function generateLabel() {
 
-      const shipmentId = document.getElementById("shipmentId").value;
+      console.log("========== LABEL GENERATION START ==========");
 
-      console.log("generating label for : ", shipmentId);
+      const inputElement = document.getElementById("shipmentId");
 
-      const shipmentRes = await fetch(
-        "https://nxtship-backend.onrender.com/label-api/courier/" + shipmentId,
-        {
+      console.log("Input Element:", inputElement);
+
+      const shipmentId = inputElement.value;
+
+      console.log("ShipmentId value:", shipmentId);
+      console.log("ShipmentId type:", typeof shipmentId);
+
+      if (!shipmentId) {
+        console.error("ShipmentId missing from input");
+        alert("Please enter shipmentId");
+        return;
+      }
+
+      const apiUrl =
+        "https://nxtship-backend.onrender.com/label-api/courier/" + shipmentId;
+
+      console.log("Calling API:", apiUrl);
+
+      try {
+
+        const shipmentRes = await fetch(apiUrl, {
           method: "GET",
           headers: {
             Authorization: "Bearer " + localStorage.getItem("customerToken")
           }
+        });
+
+        console.log("Fetch completed");
+        console.log("Response status:", shipmentRes.status);
+        console.log("Response ok:", shipmentRes.ok);
+
+        const shipmentData = await shipmentRes.json();
+
+        console.log("Full API response:", shipmentData);
+
+        if (!shipmentData) {
+          console.error("shipmentData is undefined");
+          alert("API returned empty response");
+          return;
         }
-      );
 
-      console.log("SHIPMENT API STATUS:", shipmentRes.status);
+        const s = shipmentData.shipment;
 
-      const shipmentData = await shipmentRes.json();
-      console.log("SHIPMENT API FULL RESPONSE", shipmentData);
+        console.log("Shipment object:", s);
 
-      const s = shipmentData.shipment;
+        if (!s) {
+          console.error("Shipment object missing inside API response");
+          alert("Shipment data not found");
+          return;
+        }
 
-      if (!s) {
-        console.error("shipment Object Is Missing");
-        alert("shipmentData not found");
-        return;
-      }
+        console.log("Receiver Name:", s.customerName);
+        console.log("Address:", s.address);
+        console.log("City:", s.city);
+        console.log("State:", s.state);
+        console.log("Pincode:", s.pincode);
 
-      console.log("Reciever Name :", s.customerName);
-      console.log("Address :", s.address);
-      console.log("City :", s.city);
+        console.log("Waybill field:", s.waybill);
+        console.log("AWB field:", s.awb);
 
-      const awb = s.waybill || s.awb;
+        const awb = s.waybill || s.awb;
 
-      console.log("Waybill :", s.waybill);
+        console.log("Final AWB used:", awb);
 
-      if (!awb) {
-        console.error("AWB Not Found");
-        alert("AWB is missing");
-        return;
-      }
+        if (!awb) {
+          console.error("AWB missing from shipment object");
+          alert("AWB is missing");
+          return;
+        }
 
+        console.log("Courier:", s.courier);
+        console.log("OrderId:", s.orderId);
+        console.log("OrderValue:", s.orderValue);
+        console.log("PaymentMode:", s.paymentMode);
 
-      
+        console.log("Warehouse:", s.warehouseName);
+        console.log("Warehouse Address:", s.warehouseAddress);
 
+        console.log("RTO Address:", s.rtoAddress);
 
-      const html = `
+        console.log("Creating label HTML...");
+
+        const html = `
 
 <div id="labelContainer" style="
 width:800px;
@@ -2410,7 +2451,7 @@ Collectable Value: ₹${s.orderValue || 0}
 
 <b>${s.courier}</b><br>
 
-<img src="https://barcode.tec-it.com/barcode.ashx?data=${s.awb}&code=Code128">
+<img src="https://barcode.tec-it.com/barcode.ashx?data=${awb}&code=Code128">
 
 <br>
 
@@ -2495,8 +2536,20 @@ ${s.rtoAddress}
 
 `;
 
-      document.getElementById("labelPreview").innerHTML = html;
+        console.log("HTML generated successfully");
 
+        document.getElementById("labelPreview").innerHTML = html;
+
+        console.log("Label injected into DOM");
+
+        console.log("========== LABEL GENERATION END ==========");
+
+      } catch (error) {
+
+        console.error("Fetch failed:", error);
+
+        alert("Label generation failed");
+      }
     }
 
     // print label and invoice
