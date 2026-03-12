@@ -2383,10 +2383,10 @@ background:white;
 
 <b>Deliver To:</b><br>
 
-${s.receiverName}<br>
-${s.receiverAddress}<br>
-${s.receiverCity} ${s.receiverState}<br>
-${s.toPincode}
+${s.customerName}<br>
+${s.address}<br>
+${s.city} ${s.state}<br>
+${s.pincode}
 
 </div>
 
@@ -2404,9 +2404,9 @@ ${s.toPincode}
 
 <div>
 
-<h1>${s.paymentType}</h1>
+<h1>${s.paymentMode}</h1>
 
-Collectable Value: ₹${s.codAmount || 0}
+Collectable Value: ₹${s.orderValue || 0}
 
 </div>
 
@@ -2442,11 +2442,11 @@ Order ID : ${s.orderId}
 
 <div>
 
-Order Date : ${s.orderDate}
+Order Date : ${new Date(s.createdAt).toLocaleDateString("en-IN")}
 
 <br>
 
-Declared Value : ₹${s.amount}
+Declared Value : ₹${s.orderValue}
 
 </div>
 
