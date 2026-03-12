@@ -2323,7 +2323,7 @@ width:350px;
       console.log("generating label for : ", shipmentId);
 
       const shipmentRes = await fetch(
-        "https://nxtship-backend.onrender.com/api/customer/track/" + shipmentId,
+        "https://nxtship-backend.onrender.com/label-api/courier/label/" + shipmentId,
         {
           method: "GET",
           headers: {
