@@ -2008,12 +2008,13 @@ Verify GST
 
 <input 
 id="shipmentId"
-placeholder="Enter Shipment ID"
+placeholder="Enter AWB No. Only"
 style="
 padding:8px;
 width:220px;
 border:1px solid #ccc;
 border-radius:6px;
+
 ">
 
 <button onclick="generateLabel()"
@@ -2321,10 +2322,23 @@ width:350px;
 
       console.log("generating label for : ", shipmentId);
 
+      const shipmentData = await fetch(
+        "https://nxtship-backend.onrender.com/api/customer/shipments/",
+        {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("customerToken")
+          }
+        }
+      );
+
+      const s = data.shipment;
+
+
       const res = await fetch(
         "https://nxtship-backend.onrender.com/api/courier/label/" + shipmentId,
         {
-          method:"GET",
+          method: "GET",
           headers: {
             Authorization: "Bearer " + localStorage.getItem("customerToken")
           }
@@ -2333,7 +2347,6 @@ width:350px;
 
       const data = await res.json();
 
-      const s = data.shipment;
 
       const html = `
 
