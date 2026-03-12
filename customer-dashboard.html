@@ -2360,20 +2360,7 @@ width:350px;
       }
 
 
-      const res = await fetch(
-        "https://nxtship-backend.onrender.com/api/courier/label/" + awb,
-        {
-          method: "GET",
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("customerToken")
-          }
-        }
-      );
-
-      console.log("Label Api Status: ", res.status);
-
-      const data = await res.json();
-      console.log("Label API Response: ", data);
+      
 
 
       const html = `
