@@ -1359,7 +1359,7 @@ Track Here
 <div id="courierPopup" style="
 display:none;
 position:fixed;
-top:20%;
+top:0;
 left:50%;
 transform:translateX(-50%);
 width:100%;
@@ -2590,8 +2590,6 @@ ${s.rtoAddress}
 
     async function showCourierOptions() {
 
-      document.getElementById("courierPopup").style.display = "block";
-
       console.log("show courier option called");
 
       const selectedWarehouse = document.getElementById("warehouseSelect")?.value || "NXTship";
@@ -2696,6 +2694,8 @@ ${s.rtoAddress}
     }
 
     function openCourierPopup(couriers, payload) {
+
+      document.getElementById("courierPopup").style.display = "block";
 
       window.currentShipmentpayload = payload
 
