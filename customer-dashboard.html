@@ -2096,8 +2096,9 @@ ${w.isDefault ? `<span style="color:green">Default</span>` : ""}
         if (!data.warehouses || data.warehouses.length === 0) {
 
           dropdown.innerHTML += `
-<option value="create">➕ Create Warehouse</option>
-`;
+          <option value="create">No Warehouse Found</option>
+          <option value="create">➕ Create Warehouse</option>
+          `;
 
           return;
 
