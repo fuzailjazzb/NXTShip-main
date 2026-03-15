@@ -1308,6 +1308,7 @@ Track Here
   ">
   
     <option value="">Loading Warehouses...</option>
+    
 
   </select>
 
@@ -2115,6 +2116,12 @@ ${w.name} (${w.pincode})
         dropdown.innerHTML += `
 <option value="create">➕ Create New Warehouse</option>
 `;
+
+        dropdown.addEventListener("change", function(){
+          if (this.value==="create") {
+            loadSection("warehouse");
+          }
+        });
 
       } catch (err) {
 
