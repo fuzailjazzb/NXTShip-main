@@ -1292,9 +1292,7 @@ Track Here
 
 <div style="margin-bottom:15px; width:100%;">
   
-  <label for="warehouseSelect" 
-  style="font-size:14px; font-weight:600; display:block; margin-bottom:6px;">
-    Select Warehouse
+  <label> Select Warehouse
   </label>
 
   <select id="warehouseSelect"
@@ -1305,14 +1303,11 @@ Track Here
     border:1px solid #ccc;
     font-size:14px;
     box-sizing:border-box;
+    margin-bottom:15px;
     background:#fff;
   ">
   
-    <option value="">Choose Warehouse</option>
-
-    <option value="NXTship">
-      NXTship Warehouse - 500055
-    </option>
+    <option value="">Loading Warehouses...</option>
 
   </select>
 
@@ -1359,7 +1354,7 @@ Track Here
 
 
 `;
-
+setTimeout(getWarehouses, 300);
           break;
 
         case "rate":
@@ -2076,6 +2071,63 @@ ${w.isDefault ? `<span style="color:green">Default</span>` : ""}
       }
 
     }
+
+    // get warehouses for search
+    async function getWarehouses() {
+
+      const dropdown = document.getElementById("warehouseSelect");
+
+      try {
+
+        const res = await fetch(
+          "https://nxtship-backend.onrender.com/api/warehouse",
+          {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("customerToken")
+            }
+          }
+        );
+
+        const data = await res.json();
+
+        dropdown.innerHTML = `<option value="">Select Warehouse</option>`;
+
+        if (!data.warehouses || data.warehouses.length === 0) {
+
+          dropdown.innerHTML += `
+<option value="create">➕ Create Warehouse</option>
+`;
+
+          return;
+
+        }
+
+        data.warehouses.forEach(w => {
+
+          dropdown.innerHTML += `
+<option value="${w.pincode}">
+${w.name} (${w.pincode})
+</option>
+`;
+
+        });
+
+        dropdown.innerHTML += `
+<option value="create">➕ Create New Warehouse</option>
+`;
+
+      } catch (err) {
+
+        console.error("warehouse load error", err);
+
+        dropdown.innerHTML = `
+<option value="">Failed to load warehouses</option>
+`;
+
+      }
+
+    }
+
 
     // add and open warehouse popup
     function openWarehouseForm() {
@@ -4003,6 +4055,8 @@ Failed to load activity
     }
 
 
+
+
     // LOAD NOIFICATION FROM API
 
     function loadNotifications() {
@@ -4030,7 +4084,7 @@ Failed to load activity
     top:50%;;
     left:50%;
     transform: translate(-50%,-50%);
-    width:90%;
+    width:80%;
     max-width: 420px;
     overflow: auto;
     max-height: 90vh;;
