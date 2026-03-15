@@ -2619,15 +2619,17 @@ ${s.rtoAddress}
 
       console.log("show courier option called");
 
-      const selectedWarehouse = document.getElementById("warehouseSelect")?.value || "NXTship";
+      const warehouseSelect = document.getElementById("warehouseSelect");
+
+      if (!warehouseSelect || !warehouseSelect.value) {
+        alert("Please Select a Warehouse First");
+        return;
+      }
+
       console.log("selected warehouse", selectedWarehouse);
 
-      const warehouseMap = {
-        NXTship: "500055",
-      };
-      console.log("warehouse map", warehouseMap);
 
-      const fromPincode = warehouseMap[selectedWarehouse];
+      const fromPincode = warehouseSelect.value;
 
       console.log("from pincode", fromPincode);
 
@@ -2660,6 +2662,8 @@ ${s.rtoAddress}
 
         orderId: "ORD-" + Date.now()
       };
+
+      console.log("product payload", payload);
 
       window.shipmentPayload = payload;
 
