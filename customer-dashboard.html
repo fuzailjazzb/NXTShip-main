@@ -2590,6 +2590,8 @@ ${s.rtoAddress}
 
     async function showCourierOptions() {
 
+      document.getElementById("courierPopup").style.display = "block";
+
       console.log("show courier option called");
 
       const selectedWarehouse = document.getElementById("warehouseSelect")?.value || "NXTship";
