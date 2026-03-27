@@ -2750,49 +2750,107 @@ Select
 
     async function bookSelectedCourier(courier) {
 
-      const productPayload = window.shipmentPayload;
-      const ratePayload = window.ratePayload;
-      const selectedWarehouseId = document.getElementById("warehouse")?.value;
+  console.log("========== 🚀 BOOKING START ==========");
 
-      console.log("Selected warehouse : ", selectedWarehouseId);
+  const productPayload = window.shipmentPayload || {};
+  const ratePayload = window.ratePayload || {};
 
-      // FINAL MERGE PAYLOAD
-      const payload = {
-        ...ratePayload,
-        ...productPayload,
-        warehouseId: selectedWarehouseId,
-        courier: courier.toLowerCase()
-      };
+  const dropdown = document.getElementById("warehouseSelect");
 
-      console.log("booking payload", payload);
+  if (!dropdown) {
+    console.error("❌ Warehouse dropdown not found");
+    alert("Warehouse dropdown missing");
+    return;
+  }
 
-      showPopup("📦 Booking shipment...");
+  const selectedOption = dropdown.options[dropdown.selectedIndex];
 
-      const res = await fetch(
-        "https://nxtship-backend.onrender.com/api/shipment/book",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("customerToken")}`
-          },
-          body: JSON.stringify(payload)
-        }
-      );
+  const warehouseId = selectedOption?.value;
+  const fromPincode = selectedOption?.getAttribute("data-pincode");
 
-      const data = await res.json();
+  console.log("✅ Selected WarehouseId:", warehouseId);
+  console.log("✅ Selected Pincode:", fromPincode);
 
-      if (!data.success) {
+  if (!warehouseId) {
+    alert("Please select warehouse");
+    return;
+  }
 
-        showPopup("❌ Shipment Failed");
-        return;
+  if (!fromPincode) {
+    alert("Invalid warehouse pincode");
+    return;
+  }
 
+  /* =========================
+     ✅ FIX RATE PAYLOAD
+  ========================== */
+
+  const safeRatePayload = {
+    ...ratePayload,
+    fromPincode: fromPincode || ratePayload.fromPincode || "",
+  };
+
+  console.log("📦 Rate Payload:", safeRatePayload);
+  console.log("📦 Product Payload:", productPayload);
+
+  /* =========================
+     ✅ FINAL MERGE PAYLOAD
+  ========================== */
+
+  const payload = {
+    ...safeRatePayload,
+    ...productPayload,
+
+    warehouseId: warehouseId,
+    courier: courier?.toLowerCase() || "delhivery",
+  };
+
+  console.log("🔥 FINAL BOOKING PAYLOAD:", payload);
+
+  showPopup("📦 Booking shipment...");
+
+  try {
+
+    const res = await fetch(
+      "https://nxtship-backend.onrender.com/api/shipment/book",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("customerToken")}`
+        },
+        body: JSON.stringify(payload)
       }
+    );
 
-      showPopup(`✅ Shipment Created\nAWB: ${data.waybill}`);
-      closeCourierPopup();
+    console.log("📡 Response status:", res.status);
 
+    const data = await res.json();
+
+    console.log("📦 API Response:", data);
+
+    if (!res.ok || !data.success) {
+      console.error("❌ Booking failed:", data);
+      showPopup(`❌ Shipment Failed\n${data.message || "Unknown error"}`);
+      return;
     }
+
+    console.log("✅ BOOKING SUCCESS");
+
+    showPopup(`✅ Shipment Created\nAWB: ${data.waybill}`);
+
+    closeCourierPopup();
+
+  } catch (error) {
+
+    console.error("❌ FETCH ERROR:", error);
+    showPopup("❌ Network error");
+
+  }
+
+  console.log("========== ✅ BOOKING END ==========");
+}
+
 
 
     async function addMoneyToWallet() {
