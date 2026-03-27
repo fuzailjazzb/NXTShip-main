@@ -2607,6 +2607,8 @@ ${pickup.address || ""}
 
       console.log("rate payload : ", ratePayload);
 
+      window.ratePayload = ratePayload;
+
       const payload = {
         customerName: document.getElementById("receiverName")?.value || "",
         address: document.getElementById("receiverAddress")?.value || "",
@@ -2653,6 +2655,7 @@ ${pickup.address || ""}
       renderCourierOptions(data.couriers);
     }
 
+    
     function renderCourierOptions(couriers) {
 
       const list = document.getElementById("courierList");
@@ -2685,9 +2688,11 @@ ${pickup.address || ""}
 
     }
 
+
     function closeCourierPopup() {
       document.getElementById("courierPopup").style.display = "none";
     }
+
 
     function openCourierPopup(couriers, payload) {
 
@@ -2741,9 +2746,19 @@ Select
 
     async function bookSelectedCourier(courier) {
 
-      const payload = window.shipmentPayload;
+      const productPayload = window.shipmentPayload;
+      const ratePayload = window.ratePayload;
+      const selectedWarehouseId = document.getElementById("warehouse")?.value;
 
-      payload.courier = courier.toLowerCase();
+      console.log("Selected warehouse : ", selectedWarehouseId);
+
+      // FINAL MERGE PAYLOAD
+      const payload = {
+        ...ratePayload,
+        ...productPayload,
+        warehouseId: selectedWarehouseId,
+        courier: courier.toLowerCase()
+      };
 
       console.log("booking payload", payload);
 
@@ -2774,9 +2789,6 @@ Select
       closeCourierPopup();
 
     }
-
-
-
 
 
     async function addMoneyToWallet() {
