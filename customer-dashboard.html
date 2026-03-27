@@ -2344,106 +2344,65 @@ width:350px;
     }
 
     // invoice & label template
-    async function generateLabel() {
+   async function generateLabel() {
 
-      console.log("========== LABEL GENERATION START ==========");
+  console.log("========== LABEL GENERATION START ==========");
 
-      const inputElement = document.getElementById("shipmentId");
+  const inputElement = document.getElementById("shipmentId");
+  const shipmentId = inputElement.value;
 
-      console.log("Input Element:", inputElement);
+  console.log("ShipmentId value:", shipmentId);
 
-      const shipmentId = inputElement.value;
+  if (!shipmentId) {
+    alert("Please enter shipmentId");
+    return;
+  }
 
-      console.log("ShipmentId value:", shipmentId);
-      console.log("ShipmentId type:", typeof shipmentId);
+  const apiUrl =
+    "https://nxtship-backend.onrender.com/label-api/courier/" + shipmentId;
 
-      if (!shipmentId) {
-        console.error("ShipmentId missing from input");
-        alert("Please enter shipmentId");
-        return;
+  console.log("Calling API:", apiUrl);
+
+  try {
+
+    const shipmentRes = await fetch(apiUrl, {
+      method: "GET",
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("customerToken")
       }
+    });
 
-      const apiUrl =
-        "https://nxtship-backend.onrender.com/label-api/courier/" + shipmentId;
+    const shipmentData = await shipmentRes.json();
 
-      console.log("Calling API:", apiUrl);
+    console.log("Full API response:", shipmentData);
 
-      try {
+    const s = shipmentData?.shipment || {};
+    const label = shipmentData?.label || {};
 
-        const shipmentRes = await fetch(apiUrl, {
-          method: "GET",
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("customerToken")
-          }
-        });
+    /* ===============================
+       ✅ NULL FIX (MAIN CHANGE)
+    =============================== */
 
-        console.log("Fetch completed");
-        console.log("Response status:", shipmentRes.status);
-        console.log("Response ok:", shipmentRes.ok);
+    const delivery = label?.shipmentData?.delivery || s.delivery || {};
+    const pickup = label?.shipmentData?.pickup || s.pickup || {};
+    const product = label?.shipmentData?.product || s.product || {};
 
-        const shipmentData = await shipmentRes.json();
+    const awb = s.waybill || s.awb;
 
-        console.log("Full API response:", shipmentData);
+    if (!awb) {
+      alert("AWB is missing");
+      return;
+    }
 
-        if (!shipmentData) {
-          console.error("shipmentData is undefined");
-          alert("API returned empty response");
-          return;
-        }
+    console.log("Delivery:", delivery);
+    console.log("Pickup:", pickup);
+    console.log("Product:", product);
 
-        const s = shipmentData.shipment;
-        const label = shipmentData.label;
+    /* ===============================
+       UI SAME (NO CHANGE)
+    =============================== */
 
-        console.log("Shipment object:", s);
-        console.log("Label object:", label);
-
-        if (!s) {
-          console.error("Shipment object missing inside API response");
-          alert("Shipment data not found");
-          return;
-        }
-
-        // IMPORTANT FIX
-        const delivery = label?.shipmentData?.delivery || {};
-        const pickup = label?.shipmentData?.pickup || {};
-        const product = label?.shipmentData?.product || {};
-
-        console.log("Delivery object:", delivery);
-        console.log("Pickup object:", pickup);
-        console.log("Product object:", product);
-
-        console.log("Receiver Name:", delivery.name);
-        console.log("Address:", delivery.address);
-        console.log("City:", delivery.city);
-        console.log("State:", delivery.state);
-        console.log("Pincode:", delivery.pincode);
-
-        console.log("Waybill field:", s.waybill);
-        console.log("AWB field:", s.awb);
-
-        const awb = s.waybill || s.awb;
-
-        console.log("Final AWB used:", awb);
-
-        if (!awb) {
-          console.error("AWB missing from shipment object");
-          alert("AWB is missing");
-          return;
-        }
-
-        console.log("Courier:", s.courier);
-        console.log("OrderId:", s.orderId);
-        console.log("OrderValue:", product.orderValue);
-        console.log("PaymentMode:", s.paymentMode);
-
-        console.log("Warehouse:", pickup.name);
-        console.log("Warehouse Address:", pickup.address);
-
-        console.log("RTO Address:", pickup.address);
-
-        console.log("Creating label HTML...");
-
-        const html = `
+    const html = `
 
 <div id="labelContainer" style="
 width:100%;
@@ -2461,7 +2420,7 @@ margin: auto;
 
 <b>Deliver To:</b><br>
 
-${delivery.name || ""}<br>
+${delivery.name || delivery.customerName || ""}<br>
 ${delivery.address || ""}<br>
 ${delivery.city || ""} ${delivery.state || ""}<br>
 ${delivery.pincode || ""}
@@ -2584,21 +2543,16 @@ ${pickup.address || ""}
 
 `;
 
-        console.log("HTML generated successfully");
+    document.getElementById("labelPreview").innerHTML = html;
 
-        document.getElementById("labelPreview").innerHTML = html;
+    console.log("========== LABEL GENERATION END ==========");
 
-        console.log("Label injected into DOM");
+  } catch (error) {
 
-        console.log("========== LABEL GENERATION END ==========");
-
-      } catch (error) {
-
-        console.error("Fetch failed:", error);
-
-        alert("Label generation failed");
-      }
-    }
+    console.error("Fetch failed:", error);
+    alert("Label generation failed");
+  }
+}
 
     // print label and invoice
     function printLabel() {
