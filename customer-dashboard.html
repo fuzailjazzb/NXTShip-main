@@ -2107,7 +2107,7 @@ ${w.isDefault ? `<span style="color:green">Default</span>` : ""}
         data.warehouses.forEach(w => {
 
           dropdown.innerHTML += `
-<option value="${w._id}">
+<option value="${w._id}" data-pincode="${w.pincode}">
 ${w.name} (${w.pincode})
 </option>
 `;
@@ -2344,65 +2344,65 @@ width:350px;
     }
 
     // invoice & label template
-   async function generateLabel() {
+    async function generateLabel() {
 
-  console.log("========== LABEL GENERATION START ==========");
+      console.log("========== LABEL GENERATION START ==========");
 
-  const inputElement = document.getElementById("shipmentId");
-  const shipmentId = inputElement.value;
+      const inputElement = document.getElementById("shipmentId");
+      const shipmentId = inputElement.value;
 
-  console.log("ShipmentId value:", shipmentId);
+      console.log("ShipmentId value:", shipmentId);
 
-  if (!shipmentId) {
-    alert("Please enter shipmentId");
-    return;
-  }
-
-  const apiUrl =
-    "https://nxtship-backend.onrender.com/label-api/courier/" + shipmentId;
-
-  console.log("Calling API:", apiUrl);
-
-  try {
-
-    const shipmentRes = await fetch(apiUrl, {
-      method: "GET",
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("customerToken")
+      if (!shipmentId) {
+        alert("Please enter shipmentId");
+        return;
       }
-    });
 
-    const shipmentData = await shipmentRes.json();
+      const apiUrl =
+        "https://nxtship-backend.onrender.com/label-api/courier/" + shipmentId;
 
-    console.log("Full API response:", shipmentData);
+      console.log("Calling API:", apiUrl);
 
-    const s = shipmentData?.shipment || {};
-    const label = shipmentData?.label || {};
+      try {
 
-    /* ===============================
-       ✅ NULL FIX (MAIN CHANGE)
-    =============================== */
+        const shipmentRes = await fetch(apiUrl, {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("customerToken")
+          }
+        });
 
-    const delivery = label?.shipmentData?.delivery || s.delivery || {};
-    const pickup = label?.shipmentData?.pickup || s.pickup || {};
-    const product = label?.shipmentData?.product || s.product || {};
+        const shipmentData = await shipmentRes.json();
 
-    const awb = s.waybill || s.awb;
+        console.log("Full API response:", shipmentData);
 
-    if (!awb) {
-      alert("AWB is missing");
-      return;
-    }
+        const s = shipmentData?.shipment || {};
+        const label = shipmentData?.label || {};
 
-    console.log("Delivery:", delivery);
-    console.log("Pickup:", pickup);
-    console.log("Product:", product);
+        /* ===============================
+           ✅ NULL FIX (MAIN CHANGE)
+        =============================== */
 
-    /* ===============================
-       UI SAME (NO CHANGE)
-    =============================== */
+        const delivery = label?.shipmentData?.delivery || s.delivery || {};
+        const pickup = label?.shipmentData?.pickup || s.pickup || {};
+        const product = label?.shipmentData?.product || s.product || {};
 
-    const html = `
+        const awb = s.waybill || s.awb;
+
+        if (!awb) {
+          alert("AWB is missing");
+          return;
+        }
+
+        console.log("Delivery:", delivery);
+        console.log("Pickup:", pickup);
+        console.log("Product:", product);
+
+        /* ===============================
+           UI SAME (NO CHANGE)
+        =============================== */
+
+        const html = `
 
 <div id="labelContainer" style="
 width:100%;
@@ -2543,16 +2543,16 @@ ${pickup.address || ""}
 
 `;
 
-    document.getElementById("labelPreview").innerHTML = html;
+        document.getElementById("labelPreview").innerHTML = html;
 
-    console.log("========== LABEL GENERATION END ==========");
+        console.log("========== LABEL GENERATION END ==========");
 
-  } catch (error) {
+      } catch (error) {
 
-    console.error("Fetch failed:", error);
-    alert("Label generation failed");
-  }
-}
+        console.error("Fetch failed:", error);
+        alert("Label generation failed");
+      }
+    }
 
     // print label and invoice
     function printLabel() {
@@ -2594,9 +2594,13 @@ ${pickup.address || ""}
       console.log("selected warehouse", warehouseSelect);
 
 
-      const fromPincode = warehouseSelect.value;
+      const selectedOption = warehouseSelect.options[warehouseSelect.selectedIndex];
 
-      console.log("from pincode", fromPincode);
+      const warehouseId = selectedOption.value; // for booking
+      const fromPincode = selectedOption.getAttribute("data-pincode"); // for rate checking
+
+      console.log("WarehouseId : ", warehouseId);
+      console.log("From Pincode : ", fromPincode);
 
       const ratePayload = {
         fromPincode: fromPincode,
