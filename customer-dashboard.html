@@ -2107,7 +2107,7 @@ ${w.isDefault ? `<span style="color:green">Default</span>` : ""}
         data.warehouses.forEach(w => {
 
           dropdown.innerHTML += `
-<option value="${w.pincode}">
+<option value="${w._id}">
 ${w.name} (${w.pincode})
 </option>
 `;
@@ -2655,7 +2655,7 @@ ${pickup.address || ""}
       renderCourierOptions(data.couriers);
     }
 
-    
+
     function renderCourierOptions(couriers) {
 
       const list = document.getElementById("courierList");
