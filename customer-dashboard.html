@@ -2697,11 +2697,20 @@ ${pickup.address || ""}
       document.getElementById("courierPopup").style.display = "none";
     }
 
+    window.DEBUG = {
+  couriers: null,
+  lastClicked: null
+};
 
     function openCourierPopup(couriers, payload) {
 
       document.getElementById("courierPopup").style.display = "block";
 
+      console.log("========== 📦 OPEN COURIER POPUP ==========");
+      console.log("📦 Incoming couriers:", couriers);
+      console.log("📦 Payload:", payload);
+
+      window.DEBUG.couriers = couriers; // 🔥 store for debug
       window.currentShipmentpayload = payload;
       window.shipfastCouriers = couriers; // 🔥 store globally
 
@@ -2712,6 +2721,8 @@ ${pickup.address || ""}
 
       couriers.forEach((courier, index) => {
 
+        console.log(`🔍 Courier[${index}]:`, courier);
+
         const div = document.createElement("div");
 
         div.style.border = "1px solid #ddd";
@@ -2719,6 +2730,7 @@ ${pickup.address || ""}
         div.style.marginBottom = "10px";
 
         const isShipfast = courier.carrier_id !== undefined;
+        console.log(`➡️ isShipfast:`, isShipfast);
 
         div.innerHTML = `
 
@@ -2756,6 +2768,11 @@ Select
   console.log("========== 🚀 BOOKING START ==========");
   console.log("📥 Incoming courier param:", courier);
   console.log("📥 Courier type:", typeof courier);
+  console.log("📦 DEBUG couriers:", window.DEBUG.couriers);
+  console.log("📦 shipfastCouriers:", window.shipfastCouriers);
+
+    let finalCourier = courier;
+    let carrier_id = null;
 
   const productPayload = window.shipmentPayload || {};
   const ratePayload = window.ratePayload || {};
@@ -2792,9 +2809,6 @@ Select
     return;
   }
 
-  let finalCourier = courier;
-  let carrier_id = null;
-
   console.log("🔍 Starting courier detection...");
 
   /* =========================
@@ -2814,7 +2828,7 @@ Select
       console.error("❌ No courier found at this index");
     }
 
-    if (selected?.courierType === "shipfast") {
+    if (selected?.carrier_id) {
       console.log("⚡ Shipfast detected");
 
       finalCourier = "shipfast";
@@ -2833,6 +2847,12 @@ Select
     finalCourier = courier?.toLowerCase();
 
     console.log("✅ finalCourier (normalized):", finalCourier);
+
+    if (finalCourier === "shipfast" && !carrier_id) {
+    console.error("❌ Shipfast but no carrier_id → STOP");
+    alert("Shipfast error: carrier_id missing");
+    return;
+  }
   }
 
 
