@@ -2754,9 +2754,14 @@ Select
     async function bookSelectedCourier(courier) {
 
   console.log("========== 🚀 BOOKING START ==========");
+  console.log("📥 Incoming courier param:", courier);
+  console.log("📥 Courier type:", typeof courier);
 
   const productPayload = window.shipmentPayload || {};
   const ratePayload = window.ratePayload || {};
+
+  console.log("📦 Global shipmentPayload:", productPayload);
+  console.log("📦 Global ratePayload:", ratePayload);
 
   const dropdown = document.getElementById("warehouseSelect");
 
@@ -2773,41 +2778,61 @@ Select
 
   console.log("✅ Selected WarehouseId:", warehouseId);
   console.log("✅ Selected Pincode:", fromPincode);
+  console.log("📍 Selected Option Object:", selectedOption);
 
   if (!warehouseId) {
+    console.error("❌ WarehouseId missing");
     alert("Please select warehouse");
     return;
   }
 
   if (!fromPincode) {
+    console.error("❌ fromPincode missing");
     alert("Invalid warehouse pincode");
     return;
   }
 
   let finalCourier = courier;
-let carrier_id = null;
+  let carrier_id = null;
 
-/* =========================
-   🔥 SHIPFAST ONLY
-========================== */
+  console.log("🔍 Starting courier detection...");
 
-if (typeof courier === "number") {
+  /* =========================
+     🔥 SHIPFAST ONLY
+  ========================== */
 
-  const selected = window.shipfastCouriers[courier];
+  if (typeof courier === "number") {
 
-  if (selected?.courierType === "shipfast") {
-    console.log("⚡ Shipfast detected");
+    console.log("📦 Shipfast index received:", courier);
+    console.log("📦 shipfastCouriers global:", window.shipfastCouriers);
 
-    finalCourier = "shipfast";
-    carrier_id = selected.carrier_id;
+    const selected = window.shipfastCouriers?.[courier];
+
+    console.log("📦 Selected courier object:", selected);
+
+    if (!selected) {
+      console.error("❌ No courier found at this index");
+    }
+
+    if (selected?.courierType === "shipfast") {
+      console.log("⚡ Shipfast detected");
+
+      finalCourier = "shipfast";
+      carrier_id = selected.carrier_id;
+
+      console.log("✅ carrier_id set:", carrier_id);
+    } else {
+      console.warn("⚠️ courierType not shipfast:", selected?.courierType);
+    }
+
+  } else {
+
+    console.log("📦 Non-shipfast courier detected:", courier);
+
+    finalCourier = courier?.toLowerCase();
+
+    console.log("✅ finalCourier (normalized):", finalCourier);
   }
-
-} else {
-
-  // existing behavior
-  finalCourier = courier?.toLowerCase();
-
-}
 
   /* =========================
      ✅ FIX RATE PAYLOAD
@@ -2818,7 +2843,7 @@ if (typeof courier === "number") {
     fromPincode: fromPincode || ratePayload.fromPincode || "",
   };
 
-  console.log("📦 Rate Payload:", safeRatePayload);
+  console.log("📦 Safe Rate Payload:", safeRatePayload);
   console.log("📦 Product Payload:", productPayload);
 
   /* =========================
@@ -2836,9 +2861,19 @@ if (typeof courier === "number") {
 
   console.log("🔥 FINAL BOOKING PAYLOAD:", payload);
 
+  if (!payload.courier) {
+    console.error("❌ Courier missing in payload");
+  }
+
+  if (payload.courier === "shipfast" && !payload.carrier_id) {
+    console.error("❌ Shipfast selected but carrier_id missing");
+  }
+
   showPopup("📦 Booking shipment...");
 
   try {
+
+    console.log("📡 Sending request to backend...");
 
     const res = await fetch(
       "https://nxtship-backend.onrender.com/api/shipment/book",
@@ -2865,6 +2900,7 @@ if (typeof courier === "number") {
     }
 
     console.log("✅ BOOKING SUCCESS");
+    console.log("📦 AWB:", data.waybill);
 
     showPopup(`✅ Shipment Created\nAWB: ${data.waybill}`);
 
