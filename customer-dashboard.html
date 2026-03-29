@@ -2702,20 +2702,23 @@ ${pickup.address || ""}
 
       document.getElementById("courierPopup").style.display = "block";
 
-      window.currentShipmentpayload = payload
+      window.currentShipmentpayload = payload;
+      window.shipfastCouriers = couriers; // 🔥 store globally
 
       const popup = document.getElementById("courierPopup");
       const list = document.getElementById("courierList");
 
       list.innerHTML = "";
 
-      couriers.forEach(courier => {
+      couriers.forEach((courier, index) => {
 
         const div = document.createElement("div");
 
         div.style.border = "1px solid #ddd";
         div.style.padding = "10px";
         div.style.marginBottom = "10px";
+
+        const isShipfast = courier.courierType === "shipfast";
 
         div.innerHTML = `
 
@@ -2731,7 +2734,7 @@ Delivery: ${courier.deliveryDays} days
 
 <br><br>
 
-<button onclick='bookSelectedCourier("${courier.name}")'>
+<button onclick='bookSelectedCourier(${isShipfast ? index : `"${courier.name}"`})'>
 Select
 </button>
 
@@ -2781,6 +2784,31 @@ Select
     return;
   }
 
+  let finalCourier = courier;
+let carrier_id = null;
+
+/* =========================
+   🔥 SHIPFAST ONLY
+========================== */
+
+if (typeof courier === "number") {
+
+  const selected = window.shipfastCouriers[courier];
+
+  if (selected?.courierType === "shipfast") {
+    console.log("⚡ Shipfast detected");
+
+    finalCourier = "shipfast";
+    carrier_id = selected.carrier_id;
+  }
+
+} else {
+
+  // existing behavior
+  finalCourier = courier?.toLowerCase();
+
+}
+
   /* =========================
      ✅ FIX RATE PAYLOAD
   ========================== */
@@ -2802,7 +2830,8 @@ Select
     ...productPayload,
 
     warehouseId: warehouseId,
-    courier: courier?.toLowerCase() || "delhivery",
+    courier: finalCourier,
+    carrier_id: carrier_id
   };
 
   console.log("🔥 FINAL BOOKING PAYLOAD:", payload);
