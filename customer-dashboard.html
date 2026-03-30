@@ -2662,35 +2662,37 @@ ${pickup.address || ""}
 
     function renderCourierOptions(couriers) {
 
-      const list = document.getElementById("courierList");
+  const list = document.getElementById("courierList");
+  list.innerHTML = "";
 
-      list.innerHTML = "";
+  // 🔥 store globally (IMPORTANT)
+  window.shipfastCouriers = couriers;
 
-      couriers.forEach(c => {
+  couriers.forEach((c, index) => {
 
-        list.innerHTML += `
+    const isShipfast = c.carrier_id !== undefined;
 
-                        <div style="border:1px solid #ddd; padding:10px; margin-bottom:10px; border-radius:6px">
+    list.innerHTML += `
 
-                          <h4>${c.name}</h4>
+      <div style="border:1px solid #ddd; padding:10px; margin-bottom:10px; border-radius:6px">
 
-                          <p>Price: ₹${c.price}</p>
+        <h4>${c.name}</h4>
 
-                          <p>Delivery: ${c.deliveryDays} days</p>
+        <p>Price: ₹${c.price}</p>
 
-                          <button onclick="bookSelectedCourier('${c.name}')">
-                          Ship with ${c.name}
-                          </button>
+        <p>Delivery: ${c.deliveryDays} days</p>
 
-                        </div>
+        <button onclick='bookSelectedCourier(${isShipfast ? index : `"${c.name}"`})'>
+          Ship with ${c.name}
+        </button>
 
-                      `;
+      </div>
 
-      });
+    `;
+  });
 
-      document.getElementById("courierPopup").style.display = "block";
-
-    }
+  document.getElementById("courierPopup").style.display = "block";
+}
 
 
     function closeCourierPopup() {
