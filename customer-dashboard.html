@@ -2630,7 +2630,7 @@ ${pickup.address || ""}
 
   try {
 
-    const res = await fetch("https://nxtship-backend.onrender.com/api/kyc/submit/get", {
+    const res = await fetch("https://nxtship-backend.onrender.com/api/kyc/submit", {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("customerToken")}`
       }
