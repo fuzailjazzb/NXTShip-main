@@ -1912,8 +1912,49 @@ margin-bottom:15px;
 
         case "kyc":
 
-  content.innerHTML = ` 
-        <div id="kycContainer"></div>`;
+  content.innerHTML = `
+
+<h2>Company KYC</h2>
+
+<div id="kycStatusBox" style="margin-bottom:10px;"></div>
+
+<!-- Document Type -->
+<select id="kycType" style="width:100%; padding:8px; margin-bottom:10px;">
+  <option value="">Select Document</option>
+  <option value="aadhaar">Aadhaar</option>
+  <option value="pan">PAN</option>
+  <option value="gst">GST</option>
+  <option value="bank">Bank</option>
+</select>
+
+<input type="text" id="docName" placeholder="Name"
+style="width:100%; padding:8px; margin-bottom:10px;" />
+
+<input type="text" id="docNumber" placeholder="Document Number"
+style="width:100%; padding:8px; margin-bottom:10px;" />
+
+<input type="file" id="docFile" style="margin-bottom:10px;" />
+
+<!-- Preview -->
+<img id="previewImg" style="width:120px; display:none; margin-bottom:10px;" />
+
+<!-- Old Doc Preview -->
+<div id="oldDocPreview" style="margin-bottom:10px;"></div>
+
+<button onclick="submitKyc()" style="
+background:#28a745;
+color:white;
+padding:10px;
+border:none;
+border-radius:6px;
+width:100%;
+">
+
+✅ Verify & Upload
+
+</button>
+
+`;
 
   setTimeout(() => {
     setupKycPreview();
