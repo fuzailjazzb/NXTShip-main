@@ -2630,7 +2630,7 @@ ${pickup.address || ""}
 
   try {
 
-    const res = await fetch("/api/kyc/get", {
+    const res = await fetch("https://nxtship-backend.onrender.com/api/kyc/submit/get", {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("customerToken")}`
       }
@@ -2703,6 +2703,129 @@ ${pickup.address || ""}
   }
 }
 
+    // SUBMIT KYC
+    async function submitKyc() {
+
+  console.log("========== 🚀 KYC SUBMIT START ==========");
+
+  const btn = event.target;
+
+  const type = document.getElementById("kycType")?.value;
+  const name = document.getElementById("docName")?.value;
+  const number = document.getElementById("docNumber")?.value;
+  const file = document.getElementById("docFile")?.files[0];
+
+  console.log("📦 KYC INPUT:");
+  console.log("type:", type);
+  console.log("name:", name);
+  console.log("number:", number);
+  console.log("file:", file);
+
+  /* =========================
+     ❌ VALIDATION
+  ========================== */
+
+  if (!type || !name || !number || !file) {
+    console.error("❌ Missing fields");
+    alert("Please fill all fields + upload document");
+    return;
+  }
+
+  // file validation
+  if (!file.type.startsWith("image/")) {
+    alert("Only image allowed");
+    return;
+  }
+
+  if (file.size > 2 * 1024 * 1024) {
+    alert("Max 2MB allowed");
+    return;
+  }
+
+  /* =========================
+     📦 FORM DATA
+  ========================== */
+
+  const formData = new FormData();
+
+  formData.append("type", type);
+  formData.append("name", name);
+  formData.append("number", number);
+  formData.append("document", file);
+
+  console.log("📦 FormData ready");
+
+  /* =========================
+     🔒 BUTTON DISABLE
+  ========================== */
+
+  btn.disabled = true;
+  btn.innerText = "⏳ Verifying...";
+
+  try {
+
+    console.log("📡 Sending KYC request...");
+
+    const res = await fetch("https://nxtship-backend.onrender.com/api/kyc/submit", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("customerToken")}`
+      },
+      body: formData
+    });
+
+    console.log("📡 Response status:", res.status);
+
+    const data = await res.json();
+
+    console.log("📦 API Response:", data);
+
+    if (!res.ok || !data.success) {
+
+      console.error("❌ KYC failed:", data);
+
+      alert(data.message || "KYC failed");
+
+      btn.disabled = false;
+      btn.innerText = "✅ Verify & Upload";
+
+      return;
+    }
+
+    console.log("✅ KYC SUCCESS");
+
+    alert("✅ KYC Submitted Successfully");
+
+    /* =========================
+       🔄 RELOAD STATUS
+    ========================== */
+
+    if (typeof loadKycStatus === "function") {
+      loadKycStatus();
+    }
+
+    /* =========================
+       🔄 RESET FORM
+    ========================== */
+
+    document.getElementById("docFile").value = "";
+    document.getElementById("previewImg").style.display = "none";
+
+    btn.innerText = "✅ Verified";
+
+  } catch (error) {
+
+    console.error("❌ FETCH ERROR:", error);
+
+    alert("Network error");
+
+    btn.disabled = false;
+    btn.innerText = "✅ Verify & Upload";
+
+  }
+
+  console.log("========== ✅ KYC SUBMIT END ==========");
+}
 
 
     ////////// Recommendations
