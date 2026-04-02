@@ -2610,6 +2610,8 @@ ${pickup.address || ""}
   const fileInput = document.getElementById("docFile");
   const preview = document.getElementById("previewImg");
 
+  if (!fileInput) return;
+
   fileInput.addEventListener("change", () => {
 
     const file = fileInput.files[0];
@@ -2626,11 +2628,11 @@ ${pickup.address || ""}
 
     async function loadKycStatus() {
 
-  console.log("📡 Loading KYC status...");
+  const BASE_URL = "https://nxtship-backend.onrender.com";
 
   try {
 
-    const res = await fetch("https://nxtship-backend.onrender.com/api/kyc/get", {
+    const res = await fetch(`${BASE_URL}/api/kyc/get`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem("customerToken")}`
       }
@@ -2638,113 +2640,120 @@ ${pickup.address || ""}
 
     const data = await res.json();
 
-    console.log("📦 KYC DATA:", data);
+    const container = document.getElementById("content");
 
-    if (!data.success || !data.data) return;
+    /* =========================
+       🆕 NO KYC → SHOW FORM
+    ========================== */
+
+    if (!data.data) {
+      renderKycForm();
+      return;
+    }
 
     const kyc = data.data;
 
     /* =========================
-       🎯 STATUS SHOW
+       🟡 PENDING / VERIFIED
     ========================== */
 
-    const statusBox = document.getElementById("kycStatusBox");
+    if (kyc.status === "pending" || kyc.status === "verified") {
 
-    let statusText = "";
-    let color = "";
+      container.innerHTML = `
 
-    if (kyc.status === "pending") {
-      statusText = "🟡 Pending";
-      color = "#ffc107";
+<h2>Company KYC</h2>
+
+<div style="padding:10px; background:${kyc.status === "pending" ? "#ffc107" : "#28a745"}; color:black; border-radius:6px;">
+  KYC Status: ${kyc.status === "pending" ? "🟡 Pending" : "🟢 Verified"}
+</div>
+
+<br>
+
+<p><b>Document:</b> ${kyc.type}</p>
+<p><b>Name:</b> ${kyc.details?.name}</p>
+<p><b>Number:</b> ${kyc.details?.number}</p>
+
+<br>
+
+<img src="${BASE_URL}/${kyc.documentUrl}" 
+style="width:150px; border-radius:8px;" />
+
+`;
+
+      return;
     }
 
-    if (kyc.status === "verified") {
-      statusText = "🟢 Verified";
-      color = "#28a745";
-    }
+    /* =========================
+       🔴 REJECTED → EDIT MODE
+    ========================== */
 
     if (kyc.status === "rejected") {
-      statusText = "🔴 Rejected";
-      color = "#dc3545";
+
+      renderKycForm(kyc); // 🔥 pass old data
     }
-
-    statusBox.innerHTML = `
-      <div style="padding:8px; background:${color}; color:white; border-radius:6px;">
-        KYC Status: ${statusText}
-      </div>
-    `;
-
-    /* =========================
-       📸 OLD DOCUMENT PREVIEW
-    ========================== */
-
-    const previewBox = document.getElementById("oldDocPreview");
-
-    if (kyc.documentUrl) {
-
-      previewBox.innerHTML = `
-        <p>Uploaded Document:</p>
-        <img src="/${kyc.documentUrl}" style="width:120px; border-radius:6px;" />
-      `;
-    }
-
-    /* =========================
-       🧠 AUTO FILL (BONUS)
-    ========================== */
-
-    document.getElementById("kycType").value = kyc.type;
-    document.getElementById("docName").value = kyc.details?.name || "";
-    document.getElementById("docNumber").value = kyc.details?.number || "";
 
   } catch (err) {
 
-    console.log("❌ Error loading KYC:", err);
+    console.log("❌ Load error:", err);
 
   }
 }
 
+    // RENDER KYC FORM
+    function renderKycForm(kyc = null) {
+
+  const container = document.getElementById("content");
+
+  container.innerHTML = `
+
+<h2>Company KYC</h2>
+
+${kyc ? `<div style="color:red;">❌ KYC Rejected - Please re-upload</div><br>` : ""}
+
+<select id="kycType">
+  <option value="">Select</option>
+  <option value="aadhaar" ${kyc?.type === "aadhaar" ? "selected" : ""}>Aadhaar</option>
+  <option value="pan" ${kyc?.type === "pan" ? "selected" : ""}>PAN</option>
+</select>
+
+<br><br>
+
+<input id="docName" placeholder="Name" value="${kyc?.details?.name || ""}" />
+
+<br><br>
+
+<input id="docNumber" placeholder="Number" value="${kyc?.details?.number || ""}" />
+
+<br><br>
+
+<input type="file" id="docFile" />
+
+<br><br>
+
+<img id="previewImg" style="width:120px; display:none;" />
+
+<br><br>
+
+<button onclick="submitKyc()">Submit KYC</button>
+
+`;
+
+  setupKycPreview();
+}
+
+
     // SUBMIT KYC
     async function submitKyc() {
 
-  console.log("========== 🚀 KYC SUBMIT START ==========");
-
-  const btn = event.target;
-
-  const type = document.getElementById("kycType")?.value;
-  const name = document.getElementById("docName")?.value;
-  const number = document.getElementById("docNumber")?.value;
-  const file = document.getElementById("docFile")?.files[0];
-
-  console.log("📦 KYC INPUT:");
-  console.log("type:", type);
-  console.log("name:", name);
-  console.log("number:", number);
-  console.log("file:", file);
-
-  /* =========================
-     ❌ VALIDATION
-  ========================== */
+  const type = document.getElementById("kycType").value;
+  const name = document.getElementById("docName").value;
+  const number = document.getElementById("docNumber").value;
+  const file = document.getElementById("docFile").files[0];
 
   if (!type || !name || !number || !file) {
-    console.error("❌ Missing fields");
-    alert("Please fill all fields + upload document");
+    alert("All fields required");
     return;
   }
-
-  // file validation
-  if (!file.type.startsWith("image/")) {
-    alert("Only image allowed");
-    return;
-  }
-
-  if (file.size > 2 * 1024 * 1024) {
-    alert("Max 2MB allowed");
-    return;
-  }
-
-  /* =========================
-     📦 FORM DATA
-  ========================== */
 
   const formData = new FormData();
 
@@ -2753,78 +2762,24 @@ ${pickup.address || ""}
   formData.append("number", number);
   formData.append("document", file);
 
-  console.log("📦 FormData ready");
+  const res = await fetch("https://nxtship-backend.onrender.com/api/kyc/submit", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("customerToken")}`
+    },
+    body: formData
+  });
 
-  /* =========================
-     🔒 BUTTON DISABLE
-  ========================== */
+  const data = await res.json();
 
-  btn.disabled = true;
-  btn.innerText = "⏳ Verifying...";
-
-  try {
-
-    console.log("📡 Sending KYC request...");
-
-    const res = await fetch("https://nxtship-backend.onrender.com/api/kyc/submit", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("customerToken")}`
-      },
-      body: formData
-    });
-
-    console.log("📡 Response status:", res.status);
-
-    const data = await res.json();
-
-    console.log("📦 API Response:", data);
-
-    if (!res.ok || !data.success) {
-
-      console.error("❌ KYC failed:", data);
-
-      alert(data.message || "KYC failed");
-
-      btn.disabled = false;
-      btn.innerText = "✅ Verify & Upload";
-
-      return;
-    }
-
-    console.log("✅ KYC SUCCESS");
-
-    alert("✅ KYC Submitted Successfully");
-
-    /* =========================
-       🔄 RELOAD STATUS
-    ========================== */
-
-    if (typeof loadKycStatus === "function") {
-      loadKycStatus();
-    }
-
-    /* =========================
-       🔄 RESET FORM
-    ========================== */
-
-    document.getElementById("docFile").value = "";
-    document.getElementById("previewImg").style.display = "none";
-
-    btn.innerText = "✅ Verified";
-
-  } catch (error) {
-
-    console.error("❌ FETCH ERROR:", error);
-
-    alert("Network error");
-
-    btn.disabled = false;
-    btn.innerText = "✅ Verify & Upload";
-
+  if (!data.success) {
+    alert("Failed");
+    return;
   }
 
-  console.log("========== ✅ KYC SUBMIT END ==========");
+  alert("KYC Submitted");
+
+  loadKycStatus(); // 🔥 refresh
 }
 
 
