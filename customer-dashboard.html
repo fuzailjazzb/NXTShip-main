@@ -1912,29 +1912,56 @@ margin-bottom:15px;
 
         case "kyc":
 
-          content.innerHTML = `
+  content.innerHTML = `
 
 <h2>Company KYC</h2>
 
-<input type="file">
+<div id="kycStatusBox" style="margin-bottom:10px;"></div>
 
-<br><br>
+<!-- Document Type -->
+<select id="kycType" style="width:100%; padding:8px; margin-bottom:10px;">
+  <option value="">Select Document</option>
+  <option value="aadhaar">Aadhaar</option>
+  <option value="pan">PAN</option>
+  <option value="gst">GST</option>
+  <option value="bank">Bank</option>
+</select>
 
-<button style="
+<input type="text" id="docName" placeholder="Name"
+style="width:100%; padding:8px; margin-bottom:10px;" />
+
+<input type="text" id="docNumber" placeholder="Document Number"
+style="width:100%; padding:8px; margin-bottom:10px;" />
+
+<input type="file" id="docFile" style="margin-bottom:10px;" />
+
+<!-- Preview -->
+<img id="previewImg" style="width:120px; display:none; margin-bottom:10px;" />
+
+<!-- Old Doc Preview -->
+<div id="oldDocPreview" style="margin-bottom:10px;"></div>
+
+<button onclick="submitKyc()" style="
 background:#28a745;
 color:white;
-padding:10px 14px;
+padding:10px;
 border:none;
 border-radius:6px;
+width:100%;
 ">
 
-Upload Document
+✅ Verify & Upload
 
 </button>
 
 `;
 
-          break;
+  setTimeout(() => {
+    setupKycPreview();
+    loadKycStatus();
+  }, 100);
+
+  break;
 
         case "gst":
 
@@ -2575,6 +2602,106 @@ ${pickup.address || ""}
       html2pdf().from(element).save("shipping-label.pdf");
 
     }
+
+    // IMAGE PREVIEW FUNCTION
+
+    function setupKycPreview() {
+
+  const fileInput = document.getElementById("docFile");
+  const preview = document.getElementById("previewImg");
+
+  fileInput.addEventListener("change", () => {
+
+    const file = fileInput.files[0];
+
+    if (!file) return;
+
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = "block";
+
+  });
+}
+
+    // LOAD KYC STATUS + OLD DOC
+
+    async function loadKycStatus() {
+
+  console.log("📡 Loading KYC status...");
+
+  try {
+
+    const res = await fetch("/api/kyc/get", {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("customerToken")}`
+      }
+    });
+
+    const data = await res.json();
+
+    console.log("📦 KYC DATA:", data);
+
+    if (!data.success || !data.data) return;
+
+    const kyc = data.data;
+
+    /* =========================
+       🎯 STATUS SHOW
+    ========================== */
+
+    const statusBox = document.getElementById("kycStatusBox");
+
+    let statusText = "";
+    let color = "";
+
+    if (kyc.status === "pending") {
+      statusText = "🟡 Pending";
+      color = "#ffc107";
+    }
+
+    if (kyc.status === "verified") {
+      statusText = "🟢 Verified";
+      color = "#28a745";
+    }
+
+    if (kyc.status === "rejected") {
+      statusText = "🔴 Rejected";
+      color = "#dc3545";
+    }
+
+    statusBox.innerHTML = `
+      <div style="padding:8px; background:${color}; color:white; border-radius:6px;">
+        KYC Status: ${statusText}
+      </div>
+    `;
+
+    /* =========================
+       📸 OLD DOCUMENT PREVIEW
+    ========================== */
+
+    const previewBox = document.getElementById("oldDocPreview");
+
+    if (kyc.documentUrl) {
+
+      previewBox.innerHTML = `
+        <p>Uploaded Document:</p>
+        <img src="/${kyc.documentUrl}" style="width:120px; border-radius:6px;" />
+      `;
+    }
+
+    /* =========================
+       🧠 AUTO FILL (BONUS)
+    ========================== */
+
+    document.getElementById("kycType").value = kyc.type;
+    document.getElementById("docName").value = kyc.details?.name || "";
+    document.getElementById("docNumber").value = kyc.details?.number || "";
+
+  } catch (err) {
+
+    console.log("❌ Error loading KYC:", err);
+
+  }
+}
 
 
 
