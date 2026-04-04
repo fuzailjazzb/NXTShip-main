@@ -1912,52 +1912,28 @@ margin-bottom:15px;
 
         case "kyc":
 
+  console.log("📦 Loading Section: KYC");
+
+  const content = document.getElementById("content");
+
+  if (!content) {
+    console.error("❌ Content div not found");
+    return;
+  }
+
+  /* =========================
+     🧱 BASE CONTAINER
+  ========================== */
+
   content.innerHTML = `
+    <div id="kycContainer"></div>
+  `;
 
-<h2>Company KYC</h2>
-
-<div id="kycStatusBox" style="margin-bottom:10px;"></div>
-
-<!-- Document Type -->
-<select id="kycType" style="width:100%; padding:8px; margin-bottom:10px;">
-  <option value="">Select Document</option>
-  <option value="aadhaar">Aadhaar</option>
-  <option value="pan">PAN</option>
-  <option value="gst">GST</option>
-  <option value="bank">Bank</option>
-</select>
-
-<input type="text" id="docName" placeholder="Name"
-style="width:100%; padding:8px; margin-bottom:10px;" />
-
-<input type="text" id="docNumber" placeholder="Document Number"
-style="width:100%; padding:8px; margin-bottom:10px;" />
-
-<input type="file" id="docFile" style="margin-bottom:10px;" />
-
-<!-- Preview -->
-<img id="previewImg" style="width:120px; display:none; margin-bottom:10px;" />
-
-<!-- Old Doc Preview -->
-<div id="oldDocPreview" style="margin-bottom:10px;"></div>
-
-<button onclick="submitKyc()" style="
-background:#28a745;
-color:white;
-padding:10px;
-border:none;
-border-radius:6px;
-width:100%;
-">
-
-✅ Verify & Upload
-
-</button>
-
-`;
+  /* =========================
+     🚀 LOAD DATA AFTER RENDER
+  ========================== */
 
   setTimeout(() => {
-    setupKycPreview();
     loadKycStatus();
   }, 100);
 
@@ -2603,6 +2579,9 @@ ${pickup.address || ""}
 
     }
 
+
+
+
     // IMAGE PREVIEW FUNCTION
 
     function setupKycPreview() {
@@ -2630,6 +2609,15 @@ ${pickup.address || ""}
 
   const BASE_URL = "https://nxtship-backend.onrender.com";
 
+  const container = document.getElementById("kycContainer");
+
+  if (!container) {
+    console.error("❌ kycContainer not found");
+    return;
+  }
+
+  console.log("📡 Loading KYC status...");
+
   try {
 
     const res = await fetch(`${BASE_URL}/api/kyc/get`, {
@@ -2640,15 +2628,10 @@ ${pickup.address || ""}
 
     const data = await res.json();
 
-    const container = document.getElementById("content");
-
-    if (!container) {
-      console.log("Content div not found");
-      return;
-    }
+    console.log("📦 KYC DATA:", data);
 
     /* =========================
-       🆕 NO KYC → SHOW FORM
+       🆕 NO KYC
     ========================== */
 
     if (!data.data) {
@@ -2689,17 +2672,16 @@ style="width:150px; border-radius:8px;" />
     }
 
     /* =========================
-       🔴 REJECTED → EDIT MODE
+       🔴 REJECTED
     ========================== */
 
     if (kyc.status === "rejected") {
-
-      renderKycForm(kyc); // 🔥 pass old data
+      renderKycForm(kyc);
     }
 
   } catch (err) {
 
-    console.log("❌ Load error:", err);
+    console.error("❌ Load error:", err);
 
   }
 }
@@ -2707,13 +2689,13 @@ style="width:150px; border-radius:8px;" />
     // RENDER KYC FORM
     function renderKycForm(kyc = null) {
 
-  const container = document.getElementById("content");
+  const container = document.getElementById("kycContainer");
 
   container.innerHTML = `
 
 <h2>Company KYC</h2>
 
-${kyc ? `<div style="color:red;">❌ KYC Rejected - Please re-upload</div><br>` : ""}
+${kyc ? `<div style="color:red;">❌ KYC Rejected - Re-upload required</div><br>` : ""}
 
 <select id="kycType">
   <option value="">Select</option>
@@ -2767,6 +2749,8 @@ ${kyc ? `<div style="color:red;">❌ KYC Rejected - Please re-upload</div><br>` 
   formData.append("number", number);
   formData.append("document", file);
 
+  try {
+
   const res = await fetch("https://nxtship-backend.onrender.com/api/kyc/submit", {
     method: "POST",
     headers: {
@@ -2777,6 +2761,8 @@ ${kyc ? `<div style="color:red;">❌ KYC Rejected - Please re-upload</div><br>` 
 
   const data = await res.json();
 
+  console.log("Response : ", data);
+
   if (!data.success) {
     alert("Failed");
     return;
@@ -2785,7 +2771,11 @@ ${kyc ? `<div style="color:red;">❌ KYC Rejected - Please re-upload</div><br>` 
   alert("KYC Submitted");
 
   loadKycStatus(); // 🔥 refresh
-}
+      } catch (err) {
+          console.log("Submit error : ", err);
+        }
+  }
+
 
 
     ////////// Recommendations
