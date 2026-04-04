@@ -1914,24 +1914,11 @@ margin-bottom:15px;
 
   console.log("📦 Loading Section: KYC");
 
-  const content = document.getElementById("content");
-
-  if (!content) {
-    console.error("❌ Content div not found");
-    return;
-  }
-
-  /* =========================
-     🧱 BASE CONTAINER
-  ========================== */
+  document.getElementById("pageTitle").innerText = "KYC Status";
 
   content.innerHTML = `
     <div id="kycContainer"></div>
   `;
-
-  /* =========================
-     🚀 LOAD DATA AFTER RENDER
-  ========================== */
 
   setTimeout(() => {
     loadKycStatus();
