@@ -1997,81 +1997,127 @@ Generate Label
 
   content.innerHTML = `
 
-  <h2>🔗 Integrations Panel</h2>
+  <div style="padding:20px; font-family:Segoe UI; color:#1e293b; background:#f8fafc;">
 
-  <!-- 🛒 STORE CONNECTION -->
-  <div class="card">
-    <h3>🛒 Store Integrations</h3>
+    <h2 style="margin-bottom:20px;">🔗 Integrations Panel</h2>
 
-    <select id="storeType">
-      <option value="woocommerce">WooCommerce</option>
-      <option value="shopify">Shopify (Coming Soon)</option>
-    </select>
+    <!-- 🛒 STORE -->
+    <div style="background:#fff; padding:18px; border-radius:14px; margin-bottom:18px; box-shadow:0 4px 20px rgba(0,0,0,0.06);">
+      <h3 style="margin-bottom:12px;">🛒 Store Integrations</h3>
 
-    <input type="text" id="storeUrl" placeholder="Store URL"/>
-    <input type="text" id="consumerKey" placeholder="Consumer Key"/>
-    <input type="text" id="consumerSecret" placeholder="Consumer Secret"/>
+      <select id="storeType" style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #e2e8f0;">
+        <option value="woocommerce">WooCommerce</option>
+        <option value="shopify">Shopify (Coming Soon)</option>
+      </select>
 
-    <button onclick="connectStore()">Connect Store</button>
-    <button onclick="syncOrders()">🔄 Sync Orders</button>
+      <input type="text" id="storeUrl" placeholder="Store URL"
+        style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #e2e8f0;"/>
 
-    <p id="storeStatus"></p>
-  </div>
+      <input type="text" id="consumerKey" placeholder="Consumer Key"
+        style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #e2e8f0;"/>
 
-  <br>
+      <input type="text" id="consumerSecret" placeholder="Consumer Secret"
+        style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #e2e8f0;"/>
 
-  <!-- 🚚 SHIPPING APIs -->
-  <div class="card">
-    <h3>🚚 Shipping APIs</h3>
+      <div style="display:flex; gap:10px; margin-top:10px;">
+        <button onclick="connectStore()" style="flex:1; background:#2563eb; color:#fff; padding:10px; border:none; border-radius:8px; cursor:pointer;">
+          Connect Store
+        </button>
 
-    <label><input type="checkbox" id="shipfastToggle" checked> Shipfast</label><br>
-    <label><input type="checkbox" id="delhiveryToggle"> Delhivery</label><br>
-    <label><input type="checkbox" id="ekartToggle"> Ekart</label><br>
+        <button onclick="syncOrders()" style="flex:1; background:#e2e8f0; color:#1e293b; padding:10px; border:none; border-radius:8px; cursor:pointer;">
+          🔄 Sync
+        </button>
+      </div>
 
-    <button onclick="saveCourierSettings()">Save Settings</button>
-  </div>
+      <p id="storeStatus" style="margin-top:8px; font-size:13px; color:#16a34a;"></p>
+    </div>
 
-  <br>
+    <!-- 🚚 SHIPPING -->
+    <div style="background:#fff; padding:18px; border-radius:14px; margin-bottom:18px; box-shadow:0 4px 20px rgba(0,0,0,0.06);">
+      <h3 style="margin-bottom:12px;">🚚 Shipping APIs</h3>
 
-  <!-- 🔐 API KEY -->
-  <div class="card">
-    <h3>🔐 API Key</h3>
+      <label style="display:block; margin-bottom:8px;">
+        <input type="checkbox" id="shipfastToggle" checked> Shipfast
+      </label>
 
-    <input type="text" id="apiKey" readonly />
-    <button onclick="generateApiKey()">Generate</button>
-    <button onclick="copyApiKey()">Copy</button>
-  </div>
+      <label style="display:block; margin-bottom:8px;">
+        <input type="checkbox" id="delhiveryToggle"> Delhivery
+      </label>
 
-  <br>
+      <label style="display:block; margin-bottom:8px;">
+        <input type="checkbox" id="ekartToggle"> Ekart
+      </label>
 
-  <!-- ⚙️ AUTOMATION -->
-  <div class="card">
-    <h3>⚙️ Automation</h3>
+      <button onclick="saveCourierSettings()" style="margin-top:10px; width:100%; background:#2563eb; color:#fff; padding:10px; border:none; border-radius:8px;">
+        Save Settings
+      </button>
+    </div>
 
-    <label><input type="checkbox" id="autoShip"> Auto Create Shipment</label><br>
-    <label><input type="checkbox" id="autoAssign"> Auto Assign Courier</label><br>
+    <!-- 🔐 API KEY -->
+    <div style="background:#fff; padding:18px; border-radius:14px; margin-bottom:18px; box-shadow:0 4px 20px rgba(0,0,0,0.06);">
+      <h3 style="margin-bottom:12px;">🔐 API Key</h3>
 
-    <button onclick="saveAutomation()">Save</button>
-  </div>
+      <input type="text" id="apiKey" readonly
+        style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #e2e8f0; background:#f1f5f9;"/>
 
-  <br>
+      <div style="display:flex; gap:10px;">
+        <button onclick="generateApiKey()" style="flex:1; background:#2563eb; color:#fff; padding:10px; border:none; border-radius:8px;">
+          Generate
+        </button>
 
-  <!-- 🔁 FAILED ORDERS -->
-  <div class="card">
-    <h3>🔁 Failed Orders</h3>
+        <button onclick="copyApiKey()" style="flex:1; background:#e2e8f0; color:#1e293b; padding:10px; border:none; border-radius:8px;">
+          Copy
+        </button>
+      </div>
+    </div>
 
-    <button onclick="retryFailedOrders()">Retry Failed Orders</button>
-    <div id="failedOrders"></div>
-  </div>
+    <!-- ⚙️ AUTOMATION -->
+    <div style="background:#fff; padding:18px; border-radius:14px; margin-bottom:18px; box-shadow:0 4px 20px rgba(0,0,0,0.06);">
+      <h3 style="margin-bottom:12px;">⚙️ Automation</h3>
 
-  <br>
+      <label style="display:block; margin-bottom:8px;">
+        <input type="checkbox" id="autoShip"> Auto Create Shipment
+      </label>
 
-  <!-- 📊 ANALYTICS -->
-  <div class="card">
-    <h3>📊 Analytics</h3>
+      <label style="display:block; margin-bottom:8px;">
+        <input type="checkbox" id="autoAssign"> Auto Assign Courier
+      </label>
 
-    <p>Orders Synced: <span id="ordersCount">0</span></p>
-    <p>Shipments Created: <span id="shipmentCount">0</span></p>
+      <button onclick="saveAutomation()" style="margin-top:10px; width:100%; background:#2563eb; color:#fff; padding:10px; border:none; border-radius:8px;">
+        Save
+      </button>
+    </div>
+
+    <!-- 🔁 FAILED -->
+    <div style="background:#fff; padding:18px; border-radius:14px; margin-bottom:18px; box-shadow:0 4px 20px rgba(0,0,0,0.06);">
+      <h3 style="margin-bottom:12px;">🔁 Failed Orders</h3>
+
+      <button onclick="retryFailedOrders()" style="width:100%; background:#dc2626; color:#fff; padding:10px; border:none; border-radius:8px;">
+        Retry Failed Orders
+      </button>
+
+      <div id="failedOrders"></div>
+    </div>
+
+    <!-- 📊 ANALYTICS -->
+    <div style="background:#fff; padding:18px; border-radius:14px; box-shadow:0 4px 20px rgba(0,0,0,0.06);">
+      <h3 style="margin-bottom:12px;">📊 Analytics</h3>
+
+      <div style="display:flex; gap:10px;">
+
+        <div style="flex:1; background:#f1f5f9; padding:12px; border-radius:10px; text-align:center;">
+          <p style="margin:0; font-size:13px;">Orders Synced</p>
+          <h2 id="ordersCount" style="margin:5px 0;">0</h2>
+        </div>
+
+        <div style="flex:1; background:#f1f5f9; padding:12px; border-radius:10px; text-align:center;">
+          <p style="margin:0; font-size:13px;">Shipments Created</p>
+          <h2 id="shipmentCount" style="margin:5px 0;">0</h2>
+        </div>
+
+      </div>
+    </div>
+
   </div>
 
   `;
