@@ -2019,34 +2019,24 @@ Generate Label
       <input type="text" id="consumerSecret" placeholder="Consumer Secret"
         style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #e2e8f0;"/>
 
-      <div style="display:flex; gap:10px; margin-top:10px;">
-        <button onclick="connectStore()" style="flex:1; background:#2563eb; color:#fff; padding:10px; border:none; border-radius:8px; cursor:pointer;">
-          Connect Store
-        </button>
-
-        <button onclick="syncOrders()" style="flex:1; background:#e2e8f0; color:#1e293b; padding:10px; border:none; border-radius:8px; cursor:pointer;">
-          🔄 Sync
-        </button>
-      </div>
+      <button onclick="connectStore()" style="width:100%; background:#2563eb; color:#fff; padding:10px; border:none; border-radius:8px;">
+        Connect Store
+      </button>
 
       <p id="storeStatus" style="margin-top:8px; font-size:13px; color:#16a34a;"></p>
+
+      <!-- 🔥 SAVED STORES -->
+      <div id="savedStores" style="margin-top:15px;"></div>
+
     </div>
 
     <!-- 🚚 SHIPPING -->
     <div style="background:#fff; padding:18px; border-radius:14px; margin-bottom:18px; box-shadow:0 4px 20px rgba(0,0,0,0.06);">
-      <h3 style="margin-bottom:12px;">🚚 Shipping APIs</h3>
+      <h3>🚚 Shipping APIs</h3>
 
-      <label style="display:block; margin-bottom:8px;">
-        <input type="checkbox" id="shipfastToggle" checked> Shipfast
-      </label>
-
-      <label style="display:block; margin-bottom:8px;">
-        <input type="checkbox" id="delhiveryToggle"> Delhivery
-      </label>
-
-      <label style="display:block; margin-bottom:8px;">
-        <input type="checkbox" id="ekartToggle"> Ekart
-      </label>
+      <label><input type="checkbox" id="shipfastToggle" checked> Shipfast</label><br>
+      <label><input type="checkbox" id="delhiveryToggle"> Delhivery</label><br>
+      <label><input type="checkbox" id="ekartToggle"> Ekart</label><br>
 
       <button onclick="saveCourierSettings()" style="margin-top:10px; width:100%; background:#2563eb; color:#fff; padding:10px; border:none; border-radius:8px;">
         Save Settings
@@ -2055,33 +2045,23 @@ Generate Label
 
     <!-- 🔐 API KEY -->
     <div style="background:#fff; padding:18px; border-radius:14px; margin-bottom:18px; box-shadow:0 4px 20px rgba(0,0,0,0.06);">
-      <h3 style="margin-bottom:12px;">🔐 API Key</h3>
+      <h3>🔐 API Key</h3>
 
       <input type="text" id="apiKey" readonly
         style="width:100%; padding:10px; margin-bottom:10px; border-radius:8px; border:1px solid #e2e8f0; background:#f1f5f9;"/>
 
       <div style="display:flex; gap:10px;">
-        <button onclick="generateApiKey()" style="flex:1; background:#2563eb; color:#fff; padding:10px; border:none; border-radius:8px;">
-          Generate
-        </button>
-
-        <button onclick="copyApiKey()" style="flex:1; background:#e2e8f0; color:#1e293b; padding:10px; border:none; border-radius:8px;">
-          Copy
-        </button>
+        <button onclick="generateApiKey()" style="flex:1; background:#2563eb; color:#fff; padding:10px; border:none; border-radius:8px;">Generate</button>
+        <button onclick="copyApiKey()" style="flex:1; background:#e2e8f0; padding:10px; border:none; border-radius:8px;">Copy</button>
       </div>
     </div>
 
     <!-- ⚙️ AUTOMATION -->
     <div style="background:#fff; padding:18px; border-radius:14px; margin-bottom:18px; box-shadow:0 4px 20px rgba(0,0,0,0.06);">
-      <h3 style="margin-bottom:12px;">⚙️ Automation</h3>
+      <h3>⚙️ Automation</h3>
 
-      <label style="display:block; margin-bottom:8px;">
-        <input type="checkbox" id="autoShip"> Auto Create Shipment
-      </label>
-
-      <label style="display:block; margin-bottom:8px;">
-        <input type="checkbox" id="autoAssign"> Auto Assign Courier
-      </label>
+      <label><input type="checkbox" id="autoShip"> Auto Create Shipment</label><br>
+      <label><input type="checkbox" id="autoAssign"> Auto Assign Courier</label><br>
 
       <button onclick="saveAutomation()" style="margin-top:10px; width:100%; background:#2563eb; color:#fff; padding:10px; border:none; border-radius:8px;">
         Save
@@ -2090,7 +2070,7 @@ Generate Label
 
     <!-- 🔁 FAILED -->
     <div style="background:#fff; padding:18px; border-radius:14px; margin-bottom:18px; box-shadow:0 4px 20px rgba(0,0,0,0.06);">
-      <h3 style="margin-bottom:12px;">🔁 Failed Orders</h3>
+      <h3>🔁 Failed Orders</h3>
 
       <button onclick="retryFailedOrders()" style="width:100%; background:#dc2626; color:#fff; padding:10px; border:none; border-radius:8px;">
         Retry Failed Orders
@@ -2101,29 +2081,25 @@ Generate Label
 
     <!-- 📊 ANALYTICS -->
     <div style="background:#fff; padding:18px; border-radius:14px; box-shadow:0 4px 20px rgba(0,0,0,0.06);">
-      <h3 style="margin-bottom:12px;">📊 Analytics</h3>
+      <h3>📊 Analytics</h3>
 
       <div style="display:flex; gap:10px;">
-
         <div style="flex:1; background:#f1f5f9; padding:12px; border-radius:10px; text-align:center;">
-          <p style="margin:0; font-size:13px;">Orders Synced</p>
-          <h2 id="ordersCount" style="margin:5px 0;">0</h2>
+          <p>Orders</p>
+          <h2 id="ordersCount">0</h2>
         </div>
 
         <div style="flex:1; background:#f1f5f9; padding:12px; border-radius:10px; text-align:center;">
-          <p style="margin:0; font-size:13px;">Shipments Created</p>
-          <h2 id="shipmentCount" style="margin:5px 0;">0</h2>
+          <p>Shipments</p>
+          <h2 id="shipmentCount">0</h2>
         </div>
-
       </div>
     </div>
 
   </div>
-
   `;
 
   loadIntegrationData();
-
   break;
 
         default:
@@ -2237,18 +2213,87 @@ async function retryFailedOrders() {
 
 async function loadIntegrationData() {
 
+  const token = localStorage.getItem("customerToken");
+
   const res = await fetch("https://nxtship-backend.onrender.com/api/integrations", {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("customerToken")}`
           },
         });
 
-  const data = await res.json();
+  const result = await res.json();
+  const data = result.data;
 
-  document.getElementById("ordersCount").innerText = data.orders || 0;
-  document.getElementById("shipmentCount").innerText = data.shipments || 0;
+  document.getElementById("ordersCount").innerText = result.orders || 0;
+  document.getElementById("shipmentCount").innerText = result.shipments || 0;
+
+  const container = document.getElementById("savedStores");
+
+  if (!data || !data.stores || data.stores.length === 0) {
+    container.innerHTML = `<p>No store connected</p>`;
+    return;
+  }
+
+  container.innerHTML = data.stores.map((store, i) => `
+    <div style="border:1px solid #e2e8f0; padding:12px; border-radius:10px; margin-top:10px; background:#f8fafc;">
+
+      <div style="display:flex; justify-content:space-between;">
+        <b>${store.type}</b>
+        <span style="color:green;">✅ Connected</span>
+      </div>
+
+      <p style="font-size:13px;">${store.url}</p>
+
+      <p style="font-size:12px; color:#64748b;">
+        Last Sync: ${store.lastSync || "Never"}
+      </p>
+
+      <label style="font-size:13px;">
+        <input type="checkbox" ${store.autoSync ? "checked" : ""} 
+          onchange="toggleAutoSync(${i}, this.checked)">
+        Auto Sync
+      </label>
+
+      <div style="margin-top:8px; display:flex; gap:8px;">
+        <button onclick="syncOrders()" style="flex:1; background:#2563eb; color:#fff; border:none; padding:6px; border-radius:6px;">
+          Sync
+        </button>
+
+        <button onclick="deleteStore(${i})" style="flex:1; background:#dc2626; color:#fff; border:none; padding:6px; border-radius:6px;">
+          Delete
+        </button>
+      </div>
+
+    </div>
+  `).join("");
+
 }
 
+async function deleteStore(index) {
+
+  const token = localStorage.getItem("customerToken");
+
+  await fetch("https://nxtship-backend.onrender.com/api/integrations/store/" + index, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` }
+  });
+
+  loadIntegrationData();
+}
+
+async function toggleAutoSync(index, value) {
+
+  const token = localStorage.getItem("customerToken");
+
+  await fetch("https://nxtship-backend.onrender.com/api/integrations/autosync", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    },
+    body: JSON.stringify({ index, value })
+  });
+}
     ////////// SUB-SETTINGS FUNCTIONS
 
     // load warehouses
