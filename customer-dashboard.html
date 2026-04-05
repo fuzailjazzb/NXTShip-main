@@ -2095,7 +2095,7 @@ Generate Label
   const key = document.getElementById("consumerKey").value;
   const secret = document.getElementById("consumerSecret").value;
 
-  const res = await fetch("/api/integrations/store", {
+  const res = await fetch("https://nxtship-backend.onrender.com/api/integrations/store", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ storeUrl, key, secret })
@@ -2107,7 +2107,7 @@ Generate Label
 }
 
 async function syncOrders() {
-  await fetch("/api/integrations/sync");
+  await fetch("https://nxtship-backend.onrender.com/api/integrations/sync");
   alert("Orders Synced!");
 }
 
@@ -2119,7 +2119,7 @@ async function saveCourierSettings() {
     ekart: document.getElementById("ekartToggle").checked
   };
 
-  await fetch("/api/integrations/courier", {
+  await fetch("https://nxtship-backend.onrender.com/api/integrations/courier", {
     method: "POST",
     headers: {"Content-Type":"application/json"},
     body: JSON.stringify(settings)
@@ -2129,7 +2129,7 @@ async function saveCourierSettings() {
 }
 
 async function generateApiKey() {
-  const res = await fetch("/api/integrations/apikey");
+  const res = await fetch("https://nxtship-backend.onrender.com/api/integrations/apikey");
   const data = await res.json();
 
   document.getElementById("apiKey").value = data.key;
@@ -2148,7 +2148,7 @@ async function saveAutomation() {
     autoAssign: document.getElementById("autoAssign").checked
   };
 
-  await fetch("/api/integrations/automation", {
+  await fetch("https://nxtship-backend.onrender.com/api/integrations/automation", {
     method: "POST",
     headers: {"Content-Type":"application/json"},
     body: JSON.stringify(settings)
@@ -2158,13 +2158,13 @@ async function saveAutomation() {
 }
 
 async function retryFailedOrders() {
-  await fetch("/api/integrations/retry");
+  await fetch("https://nxtship-backend.onrender.com/api/integrations/retry");
   alert("Retry triggered!");
 }
 
 async function loadIntegrationData() {
 
-  const res = await fetch("/api/integrations");
+  const res = await fetch("https://nxtship-backend.onrender.com/api/integrations");
   const data = await res.json();
 
   document.getElementById("ordersCount").innerText = data.orders || 0;
