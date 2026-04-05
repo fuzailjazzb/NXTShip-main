@@ -2114,6 +2114,54 @@ Generate Label
   loadIntegrationData();
   break;
 
+        case "webhooks":
+
+  document.getElementById("pageTitle").innerText = "Webhooks";
+
+  content.innerHTML = `
+
+  <h2 style="color:#111;">🔗 Webhooks Panel</h2>
+
+  <div style="background:#fff; padding:15px; border-radius:10px; box-shadow:0 4px 12px rgba(0,0,0,0.1); margin-bottom:15px;">
+    <h3 style="color:#333;">🌐 Webhook URL</h3>
+    <input type="text" id="webhookUrl" readonly style="width:100%; padding:8px;" />
+    <br><br>
+    <button onclick="copyWebhook()">Copy URL</button>
+  </div>
+
+  <div style="background:#fff; padding:15px; border-radius:10px; margin-bottom:15px;">
+    <h3>⚙️ Events</h3>
+
+    <label><input type="checkbox" id="orderCreated" checked> Order Created</label><br>
+    <label><input type="checkbox" id="orderUpdated"> Order Updated</label><br>
+    <label><input type="checkbox" id="orderCancelled"> Order Cancelled</label><br>
+    <label><input type="checkbox" id="paymentSuccess"> Payment Success</label><br>
+
+    <br>
+    <button onclick="saveWebhookSettings()">Save Events</button>
+  </div>
+
+  <div style="background:#fff; padding:15px; border-radius:10px; margin-bottom:15px;">
+    <h3>🤖 Auto Actions</h3>
+
+    <label><input type="checkbox" id="autoShip"> Auto Create Shipment</label><br>
+    <label><input type="checkbox" id="autoAssign"> Auto Assign Courier</label><br>
+
+    <br>
+    <button onclick="saveWebhookActions()">Save Actions</button>
+  </div>
+
+  <div style="background:#fff; padding:15px; border-radius:10px;">
+    <h3>📜 Webhook Logs</h3>
+    <div id="webhookLogs"></div>
+  </div>
+
+  `;
+
+  loadWebhookData();
+
+  break;
+
         default:
           content.innerHTML = `<h2>❌ Section Not Found</h2>`;
       }
@@ -2128,6 +2176,110 @@ Generate Label
 ================================ */
 
 const BASE_URL = "https://nxtship-backend.onrender.com";
+
+function getToken() {
+  return localStorage.getItem("customerToken");
+}
+
+/* ================= LOAD ================= */
+
+async function loadWebhookData() {
+  const res = await fetch(`${BASE_URL}/api/webhooks`, {
+    headers: {
+      Authorization: `Bearer ${getToken()}`
+    }
+  });
+
+  const data = await res.json();
+
+  document.getElementById("webhookUrl").value =
+    `${BASE_URL}/api/webhooks/order`;
+
+  if (data.settings) {
+    document.getElementById("orderCreated").checked = data.settings.orderCreated;
+    document.getElementById("orderUpdated").checked = data.settings.orderUpdated;
+    document.getElementById("orderCancelled").checked = data.settings.orderCancelled;
+    document.getElementById("paymentSuccess").checked = data.settings.paymentSuccess;
+  }
+
+  if (data.actions) {
+    document.getElementById("autoShip").checked = data.actions.autoShip;
+    document.getElementById("autoAssign").checked = data.actions.autoAssign;
+  }
+
+  renderWebhookLogs(data.logs || []);
+}
+
+/* ================= SAVE EVENTS ================= */
+
+async function saveWebhookSettings() {
+
+  const settings = {
+    orderCreated: document.getElementById("orderCreated").checked,
+    orderUpdated: document.getElementById("orderUpdated").checked,
+    orderCancelled: document.getElementById("orderCancelled").checked,
+    paymentSuccess: document.getElementById("paymentSuccess").checked
+  };
+
+  await fetch(`${BASE_URL}/api/webhooks/settings`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(settings)
+  });
+
+  alert("Webhook settings saved ✅");
+}
+
+/* ================= SAVE ACTIONS ================= */
+
+async function saveWebhookActions() {
+
+  const actions = {
+    autoShip: document.getElementById("autoShip").checked,
+    autoAssign: document.getElementById("autoAssign").checked
+  };
+
+  await fetch(`${BASE_URL}/api/webhooks/actions`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(actions)
+  });
+
+  alert("Auto actions saved 🚀");
+}
+
+/* ================= LOGS ================= */
+
+function renderWebhookLogs(logs) {
+
+  const container = document.getElementById("webhookLogs");
+
+  container.innerHTML = logs.map(log => `
+    <div style="padding:8px; border-bottom:1px solid #eee;">
+      <b>${log.event}</b> - 
+      <span style="color:${log.status === "success" ? "green" : "red"}">
+        ${log.status}
+      </span>
+      <br>
+      <small>${new Date(log.createdAt).toLocaleString()}</small>
+    </div>
+  `).join("");
+}
+
+/* ================= COPY ================= */
+
+function copyWebhook() {
+  const input = document.getElementById("webhookUrl");
+  input.select();
+  document.execCommand("copy");
+  alert("Copied!");
+}
 
 /* ================================
    🛒 CONNECT STORE (Woo + Shopify)
