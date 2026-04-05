@@ -2141,6 +2141,11 @@ Generate Label
   const key = document.getElementById("consumerKey").value;
   const secret = document.getElementById("consumerSecret").value;
 
+  if (!storeUrl || !key || !secret) {
+    alert("please fill all details first");
+    return;
+  }
+
   const res = await fetch("https://nxtship-backend.onrender.com/api/integrations/store", {
     method: "POST",
     headers: { 
