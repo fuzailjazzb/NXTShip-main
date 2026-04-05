@@ -1991,6 +1991,95 @@ Generate Label
 
           break;
 
+        case "integration":
+
+  document.getElementById("pageTitle").innerText = "Integrations";
+
+  content.innerHTML = `
+
+  <h2>🔗 Integrations Panel</h2>
+
+  <!-- 🛒 STORE CONNECTION -->
+  <div class="card">
+    <h3>🛒 Store Integrations</h3>
+
+    <select id="storeType">
+      <option value="woocommerce">WooCommerce</option>
+      <option value="shopify">Shopify (Coming Soon)</option>
+    </select>
+
+    <input type="text" id="storeUrl" placeholder="Store URL"/>
+    <input type="text" id="consumerKey" placeholder="Consumer Key"/>
+    <input type="text" id="consumerSecret" placeholder="Consumer Secret"/>
+
+    <button onclick="connectStore()">Connect Store</button>
+    <button onclick="syncOrders()">🔄 Sync Orders</button>
+
+    <p id="storeStatus"></p>
+  </div>
+
+  <br>
+
+  <!-- 🚚 SHIPPING APIs -->
+  <div class="card">
+    <h3>🚚 Shipping APIs</h3>
+
+    <label><input type="checkbox" id="shipfastToggle" checked> Shipfast</label><br>
+    <label><input type="checkbox" id="delhiveryToggle"> Delhivery</label><br>
+    <label><input type="checkbox" id="ekartToggle"> Ekart</label><br>
+
+    <button onclick="saveCourierSettings()">Save Settings</button>
+  </div>
+
+  <br>
+
+  <!-- 🔐 API KEY -->
+  <div class="card">
+    <h3>🔐 API Key</h3>
+
+    <input type="text" id="apiKey" readonly />
+    <button onclick="generateApiKey()">Generate</button>
+    <button onclick="copyApiKey()">Copy</button>
+  </div>
+
+  <br>
+
+  <!-- ⚙️ AUTOMATION -->
+  <div class="card">
+    <h3>⚙️ Automation</h3>
+
+    <label><input type="checkbox" id="autoShip"> Auto Create Shipment</label><br>
+    <label><input type="checkbox" id="autoAssign"> Auto Assign Courier</label><br>
+
+    <button onclick="saveAutomation()">Save</button>
+  </div>
+
+  <br>
+
+  <!-- 🔁 FAILED ORDERS -->
+  <div class="card">
+    <h3>🔁 Failed Orders</h3>
+
+    <button onclick="retryFailedOrders()">Retry Failed Orders</button>
+    <div id="failedOrders"></div>
+  </div>
+
+  <br>
+
+  <!-- 📊 ANALYTICS -->
+  <div class="card">
+    <h3>📊 Analytics</h3>
+
+    <p>Orders Synced: <span id="ordersCount">0</span></p>
+    <p>Shipments Created: <span id="shipmentCount">0</span></p>
+  </div>
+
+  `;
+
+  loadIntegrationData();
+
+  break;
+
         default:
           content.innerHTML = `<h2>❌ Section Not Found</h2>`;
       }
@@ -1998,6 +2087,89 @@ Generate Label
 
     ////////// FUNCTIONS STARTS HERE```````````````````````````````````````````````````````````
 
+    //////// API Integrations
+
+    async function connectStore() {
+
+  const storeUrl = document.getElementById("storeUrl").value;
+  const key = document.getElementById("consumerKey").value;
+  const secret = document.getElementById("consumerSecret").value;
+
+  const res = await fetch("/api/integrations/store", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ storeUrl, key, secret })
+  });
+
+  const data = await res.json();
+
+  document.getElementById("storeStatus").innerText = data.message;
+}
+
+async function syncOrders() {
+  await fetch("/api/integrations/sync");
+  alert("Orders Synced!");
+}
+
+async function saveCourierSettings() {
+
+  const settings = {
+    shipfast: document.getElementById("shipfastToggle").checked,
+    delhivery: document.getElementById("delhiveryToggle").checked,
+    ekart: document.getElementById("ekartToggle").checked
+  };
+
+  await fetch("/api/integrations/courier", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify(settings)
+  });
+
+  alert("Saved!");
+}
+
+async function generateApiKey() {
+  const res = await fetch("/api/integrations/apikey");
+  const data = await res.json();
+
+  document.getElementById("apiKey").value = data.key;
+}
+
+function copyApiKey() {
+  const input = document.getElementById("apiKey");
+  input.select();
+  document.execCommand("copy");
+}
+
+async function saveAutomation() {
+
+  const settings = {
+    autoShip: document.getElementById("autoShip").checked,
+    autoAssign: document.getElementById("autoAssign").checked
+  };
+
+  await fetch("/api/integrations/automation", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify(settings)
+  });
+
+  alert("Automation Saved");
+}
+
+async function retryFailedOrders() {
+  await fetch("/api/integrations/retry");
+  alert("Retry triggered!");
+}
+
+async function loadIntegrationData() {
+
+  const res = await fetch("/api/integrations");
+  const data = await res.json();
+
+  document.getElementById("ordersCount").innerText = data.orders || 0;
+  document.getElementById("shipmentCount").innerText = data.shipments || 0;
+}
 
     ////////// SUB-SETTINGS FUNCTIONS
 
