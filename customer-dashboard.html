@@ -2097,7 +2097,9 @@ Generate Label
 
   const res = await fetch("https://nxtship-backend.onrender.com/api/integrations/store", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { 
+      Authorization: `Bearer ${localStorage.getItem("customerToken")}`,
+      "Content-Type": "application/json" },
     body: JSON.stringify({ storeUrl, key, secret })
   });
 
@@ -2107,7 +2109,12 @@ Generate Label
 }
 
 async function syncOrders() {
-  await fetch("https://nxtship-backend.onrender.com/api/integrations/sync");
+  await fetch("https://nxtship-backend.onrender.com/api/integrations/sync", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("customerToken")}`
+          },
+        });
+
   alert("Orders Synced!");
 }
 
@@ -2121,7 +2128,9 @@ async function saveCourierSettings() {
 
   await fetch("https://nxtship-backend.onrender.com/api/integrations/courier", {
     method: "POST",
-    headers: {"Content-Type":"application/json"},
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("customerToken")}`,
+      "Content-Type":"application/json"},
     body: JSON.stringify(settings)
   });
 
@@ -2129,7 +2138,12 @@ async function saveCourierSettings() {
 }
 
 async function generateApiKey() {
-  const res = await fetch("https://nxtship-backend.onrender.com/api/integrations/apikey");
+  const res = await fetch("https://nxtship-backend.onrender.com/api/integrations/apikey", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("customerToken")}`
+          },
+        });
+
   const data = await res.json();
 
   document.getElementById("apiKey").value = data.key;
@@ -2150,7 +2164,9 @@ async function saveAutomation() {
 
   await fetch("https://nxtship-backend.onrender.com/api/integrations/automation", {
     method: "POST",
-    headers: {"Content-Type":"application/json"},
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("customerToken")}`,
+      "Content-Type":"application/json"},
     body: JSON.stringify(settings)
   });
 
@@ -2158,13 +2174,23 @@ async function saveAutomation() {
 }
 
 async function retryFailedOrders() {
-  await fetch("https://nxtship-backend.onrender.com/api/integrations/retry");
+  await fetch("https://nxtship-backend.onrender.com/api/integrations/retry", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("customerToken")}`
+          },
+        });
+
   alert("Retry triggered!");
 }
 
 async function loadIntegrationData() {
 
-  const res = await fetch("https://nxtship-backend.onrender.com/api/integrations");
+  const res = await fetch("https://nxtship-backend.onrender.com/api/integrations", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("customerToken")}`
+          },
+        });
+
   const data = await res.json();
 
   document.getElementById("ordersCount").innerText = data.orders || 0;
