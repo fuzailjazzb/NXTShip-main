@@ -2263,7 +2263,7 @@ Generate Label
   <!-- 📊 PREVIEW TOOL -->
   <div style="background:#fff; padding:16px; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.08);">
     
-    <h3 style="margin-bottom:10px; color:#333;">📍 Test Warehouse Selection</h3>
+    <h3 style="margin-bottom:10px; color:#333;">📍 Find Nearest Warehouse</h3>
 
     <input type="text" id="testPincode" placeholder="Enter Pincode" style="
       width:100%;
@@ -2445,7 +2445,7 @@ async function testWarehouse() {
   const data = await res.json();
 
   document.getElementById("testResult").innerText =
-    `Selected: ${data.warehouse?.name || "Not Found"}`;
+    `Nearest Warehouse : ${data.warehouse?.name || "Not Found"}`;
 }
 
 
