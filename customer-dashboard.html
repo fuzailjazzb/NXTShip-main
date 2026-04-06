@@ -2371,14 +2371,50 @@ async function loadMembers() {
   const container = document.getElementById("members");
 
   container.innerHTML = data.members.map(m => `
-    <div class="card">
-      <p>${m.name} (${m.email})</p>
-      <p>Status: ${m.isActive ? "Active" : "Disabled"}</p>
+  <div style="
+    background: linear-gradient(135deg, #ffffff, #f9f9f9);
+    padding:14px;
+    border-radius:12px;
+    margin-bottom:12px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.08);
+    color:#222;
+  ">
+    <p style="margin:0; font-weight:600;">
+      👤 ${m.name}
+    </p>
 
-      <button onclick="toggleMember('${m._id}')">Toggle</button>
-      <button onclick="deleteMember('${m._id}')">Delete</button>
-    </div>
-  `).join("");
+    <p style="margin:4px 0; font-size:13px; color:#555;">
+      📧 ${m.email}
+    </p>
+
+    <p style="margin:6px 0;">
+      Status: 
+      <span style="
+        color:${m.isActive ? 'green' : 'red'};
+        font-weight:600;
+      ">
+        ${m.isActive ? "Active" : "Disabled"}
+      </span>
+    </p>
+
+    <button onclick="toggleMember('${m._id}')" style="
+      background:#007bff;
+      color:white;
+      border:none;
+      padding:6px 10px;
+      border-radius:6px;
+      margin-right:5px;
+    ">Toggle</button>
+
+    <button onclick="deleteMember('${m._id}')" style="
+      background:#dc3545;
+      color:white;
+      border:none;
+      padding:6px 10px;
+      border-radius:6px;
+    ">Delete</button>
+  </div>
+`).join("");
 }
 
 async function toggleMember(id) {
