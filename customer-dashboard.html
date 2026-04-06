@@ -2429,6 +2429,27 @@ async function saveAutoWarehouse() {
   alert("Auto setting saved 🤖");
 }
 
+async function testWarehouse() {
+
+  const pincode = document.getElementById("testPincode").value;
+
+  const res = await fetch(`${BASE_URL}/api/warehouse-allocation/test`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ pincode })
+  });
+
+  const data = await res.json();
+
+  document.getElementById("testResult").innerText =
+    `Selected: ${data.warehouse?.name || "Not Found"}`;
+}
+
+
+
 
 /* ================= LOAD ================= */
 
