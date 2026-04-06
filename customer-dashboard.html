@@ -2350,6 +2350,22 @@ Generate Label
 
   break;
 
+        case "qc":
+
+  console.log("📦 RQC Page Loaded");
+
+  content.innerHTML = `
+
+<h2>📦 Return Quality Check</h2>
+
+<div id="returnList"></div>
+
+`;
+
+  loadReturns();
+
+  break;
+
         default:
           content.innerHTML = `<h2>❌ Section Not Found</h2>`;
       }
@@ -2368,6 +2384,110 @@ const BASE_URL = "https://nxtship-backend.onrender.com";
 function getToken() {
   return localStorage.getItem("customerToken");
 }
+
+// RQC - RETURN QC
+async function loadReturns() {
+
+  console.log("========== 📥 LOAD RETURNS ==========");
+
+  const res = await fetch(`${BASE_URL}/api/rqc`, {
+    headers: { Authorization: `Bearer ${getToken()}` }
+  });
+
+  console.log("📡 Status:", res.status);
+
+  const data = await res.json();
+
+  console.log("📦 Returns:", data);
+
+  const container = document.getElementById("returnList");
+
+  container.innerHTML = data.data.map(r => `
+    <div style="background:#fff;padding:12px;margin-bottom:10px;color:#000;">
+      <b>AWB:</b> ${r.awb}<br>
+      <b>Product:</b> ${r.product?.name}<br>
+      <b>Status:</b> ${r.status}<br>
+
+      <button onclick="inspectReturn('${r._id}')">Inspect</button>
+    </div>
+  `).join("");
+}
+
+async function inspectReturn(id) {
+
+  console.log("========== 🔬 INSPECT RETURN ==========");
+  console.log("🆔 ID:", id);
+
+  const html = `
+
+<h3>Quality Check</h3>
+
+<select id="condition">
+<option>Good</option>
+<option>Damaged</option>
+<option>Used</option>
+</select>
+
+<br><br>
+
+<select id="packaging">
+<option>Intact</option>
+<option>Torn</option>
+</select>
+
+<br><br>
+
+<textarea id="remarks" placeholder="Remarks"></textarea>
+
+<br><br>
+
+<input type="file" id="images" multiple>
+
+<br><br>
+
+<button onclick="submitQc('${id}','approved')">Approve</button>
+<button onclick="submitQc('${id}','rejected')">Reject</button>
+
+`;
+
+  document.getElementById("returnList").innerHTML = html;
+}
+
+async function submitQc(id, status) {
+
+  console.log("========== 🚀 SUBMIT QC ==========");
+  console.log("🆔 ID:", id);
+  console.log("📊 Status:", status);
+
+  const qc = {
+    condition: document.getElementById("condition").value,
+    packaging: document.getElementById("packaging").value,
+    remarks: document.getElementById("remarks").value
+  };
+
+  console.log("📦 QC Data:", qc);
+
+  const res = await fetch(`${BASE_URL}/api/rqc/${id}`, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ qc, status })
+  });
+
+  console.log("📡 Status:", res.status);
+
+  const data = await res.json();
+
+  console.log("📦 Response:", data);
+
+  alert("QC Updated");
+
+  loadReturns();
+}
+
+// CATALOGUE PRODUCTS
 
 async function addProduct() {
 
