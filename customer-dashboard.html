@@ -2356,9 +2356,45 @@ Generate Label
 
   content.innerHTML = `
 
-<h2>📦 Return Quality Check</h2>
+<h2 style="margin-bottom:15px;">📦 Return Quality Check</h2>
+
+<!-- 🔍 SEARCH + FILTER -->
+<div style="
+  display:flex;
+  gap:10px;
+  margin-bottom:15px;
+  flex-wrap:wrap;
+">
+
+  <input 
+    id="searchAwb"
+    placeholder="Search by AWB..."
+    oninput="filterReturns()"
+    style="
+      padding:10px;
+      border:1px solid #ddd;
+      border-radius:8px;
+      width:200px;
+    "
+  >
+
+  <select id="statusFilter" onchange="filterReturns()" style="
+    padding:10px;
+    border-radius:8px;
+    border:1px solid #ddd;
+  ">
+    <option value="">All</option>
+    <option value="pending">Pending</option>
+    <option value="approved">Approved</option>
+    <option value="rejected">Rejected</option>
+  </select>
+
+</div>
 
 <div id="returnList"></div>
+
+<!-- 📄 PAGINATION -->
+<div id="pagination" style="margin-top:15px;"></div>
 
 `;
 
@@ -2386,9 +2422,43 @@ function getToken() {
 }
 
 // RQC - RETURN QC
+let allReturns = [];
+let filteredReturns = [];
+let currentPage = 1;
+const perPage = 5;
+
+function showSkeleton() {
+
+  console.log("⏳ Showing Skeleton");
+
+  const container = document.getElementById("returnList");
+
+  container.innerHTML = Array(3).fill(`
+    <div style="
+      background:#f3f3f3;
+      height:80px;
+      margin-bottom:10px;
+      border-radius:10px;
+      animation:pulse 1.5s infinite;
+    "></div>
+  `).join("");
+
+  document.head.insertAdjacentHTML("beforeend", `
+    <style>
+      @keyframes pulse {
+        0% { opacity: 0.6; }
+        50% { opacity: 1; }
+        100% { opacity: 0.6; }
+      }
+    </style>
+  `);
+}
+
 async function loadReturns() {
 
   console.log("========== 📥 LOAD RETURNS ==========");
+
+  showSkeleton();
 
   const res = await fetch(`${BASE_URL}/api/rqc`, {
     headers: { Authorization: `Bearer ${getToken()}` }
@@ -2400,17 +2470,153 @@ async function loadReturns() {
 
   console.log("📦 Returns:", data);
 
+  allReturns = data.data || [];
+  filteredReturns = [...allReturns];
+
+  renderReturns();
+}
+
+function filterReturns() {
+
+  console.log("🔍 Filtering...");
+
+  const search = document.getElementById("searchAwb").value.toLowerCase();
+  const status = document.getElementById("statusFilter").value;
+
+  filteredReturns = allReturns.filter(r => {
+
+    const matchSearch = r.awb?.toLowerCase().includes(search);
+    const matchStatus = status ? r.status === status : true;
+
+    return matchSearch && matchStatus;
+  });
+
+  currentPage = 1;
+
+  renderReturns();
+}
+
+function renderReturns() {
+
   const container = document.getElementById("returnList");
 
-  container.innerHTML = data.data.map(r => `
-    <div style="background:#fff;padding:12px;margin-bottom:10px;color:#000;">
-      <b>AWB:</b> ${r.awb}<br>
-      <b>Product:</b> ${r.product?.name}<br>
-      <b>Status:</b> ${r.status}<br>
+  console.log("📊 Rendering:", filteredReturns.length);
 
-      <button onclick="inspectReturn('${r._id}')">Inspect</button>
+  // ❌ EMPTY
+  if (filteredReturns.length === 0) {
+
+    container.innerHTML = `
+      <div style="
+        background:#fff;
+        padding:40px;
+        text-align:center;
+        border-radius:12px;
+        box-shadow:0 5px 20px rgba(0,0,0,0.05);
+      ">
+        <div style="font-size:50px;">📦</div>
+        <h3>No Return Orders</h3>
+        <p style="color:#777;">No data found</p>
+        <button onclick="createDummyReturn()" style="
+          padding:10px 20px;
+          background:#4CAF50;
+          color:#fff;
+          border:none;
+          border-radius:6px;
+          cursor:pointer;
+        ">+ Test Return</button>
+      </div>
+    `;
+
+    document.getElementById("pagination").innerHTML = "";
+    return;
+  }
+
+  // ✅ PAGINATION
+  const start = (currentPage - 1) * perPage;
+  const pageData = filteredReturns.slice(start, start + perPage);
+
+  container.innerHTML = pageData.map(r => `
+    <div style="
+      background:#fff;
+      padding:15px;
+      margin-bottom:10px;
+      border-radius:10px;
+      box-shadow:0 3px 10px rgba(0,0,0,0.05);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    ">
+
+      <div>
+        <b>${r.product?.name}</b><br>
+        AWB: ${r.awb}<br>
+        Status: 
+        <span style="
+          color:${r.status === "approved" ? "green" : r.status === "rejected" ? "red" : "orange"};
+        ">
+          ${r.status}
+        </span>
+      </div>
+
+      <button onclick="inspectReturn('${r._id}')" style="
+        padding:8px 12px;
+        border:none;
+        background:#007bff;
+        color:#fff;
+        border-radius:6px;
+        cursor:pointer;
+      ">Inspect</button>
+
     </div>
   `).join("");
+
+  renderPagination();
+}
+
+function renderPagination() {
+
+  const totalPages = Math.ceil(filteredReturns.length / perPage);
+
+  const container = document.getElementById("pagination");
+
+  container.innerHTML = Array(totalPages).fill(0).map((_, i) => `
+    <button onclick="goPage(${i+1})" style="
+      margin-right:5px;
+      padding:6px 10px;
+      border:none;
+      border-radius:5px;
+      background:${currentPage === i+1 ? "#007bff" : "#ddd"};
+      color:${currentPage === i+1 ? "#fff" : "#000"};
+      cursor:pointer;
+    ">${i+1}</button>
+  `).join("");
+}
+
+function goPage(page) {
+  console.log("📄 Page:", page);
+  currentPage = page;
+  renderReturns();
+}
+
+async function createDummyReturn() {
+
+  console.log("🧪 Creating Dummy");
+
+  await fetch(`${BASE_URL}/api/rqc`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      shipmentId: "TEST123",
+      awb: "AWB" + Math.floor(Math.random()*10000),
+      product: { name: "Demo Product" },
+      returnReason: "Damaged"
+    })
+  });
+
+  loadReturns();
 }
 
 async function inspectReturn(id) {
@@ -2486,6 +2692,7 @@ async function submitQc(id, status) {
 
   loadReturns();
 }
+
 
 // CATALOGUE PRODUCTS
 
