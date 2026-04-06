@@ -2319,6 +2319,36 @@ Generate Label
   loadMembers();
   break;
 
+        case "catalogue":
+
+  console.log("📦 Catalogue Page Loaded");
+
+  document.getElementById("pageTitle").innerText = "Catalogue";
+
+  content.innerHTML = `
+
+<h2>📦 Product Catalogue</h2>
+
+<div style="background:#fff;padding:15px;border-radius:10px;">
+
+<input id="pName" placeholder="Product Name">
+<input id="pSku" placeholder="SKU">
+<input id="pPrice" placeholder="Price">
+<input id="pWeight" placeholder="Weight">
+
+<button onclick="addProduct()">Add Product</button>
+
+</div>
+
+<br>
+
+<div id="productList"></div>
+
+`;
+
+  loadProducts();
+
+  break;
 
         default:
           content.innerHTML = `<h2>❌ Section Not Found</h2>`;
@@ -2339,6 +2369,129 @@ function getToken() {
   return localStorage.getItem("customerToken");
 }
 
+async function addProduct() {
+
+  console.log("========== ➕ ADD PRODUCT ==========");
+
+  const data = {
+    name: document.getElementById("pName").value,
+    sku: document.getElementById("pSku").value,
+    price: document.getElementById("pPrice").value,
+    weight: document.getElementById("pWeight").value
+  };
+
+  console.log("📦 Sending Data:", data);
+
+  const res = await fetch(`${BASE_URL}/api/catalogue`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  });
+
+  console.log("📡 Response Status:", res.status);
+
+  const result = await res.json();
+
+  console.log("📦 Response:", result);
+
+  alert("Product added!");
+  loadProducts();
+}
+
+
+async function loadProducts() {
+
+  console.log("========== 📥 LOAD PRODUCTS ==========");
+
+  const res = await fetch(`${BASE_URL}/api/catalogue`, {
+    headers: { Authorization: `Bearer ${getToken()}` }
+  });
+
+  console.log("📡 Response Status:", res.status);
+
+  const data = await res.json();
+
+  console.log("📦 Products Data:", data);
+
+  const container = document.getElementById("productList");
+
+  container.innerHTML = data.products.map(p => {
+    console.log("🔹 Rendering Product:", p);
+
+    return `
+    <div style="
+      background:#fff;
+      padding:12px;
+      border-radius:10px;
+      margin-bottom:10px;
+      color:#000;
+    ">
+      <b>${p.name}</b> (${p.sku})<br>
+      ₹${p.price} | ${p.weight}kg
+
+      <br><br>
+
+      <button onclick="useProduct('${p._id}')">Use</button>
+      <button onclick="deleteProduct('${p._id}')">Delete</button>
+    </div>
+  `;
+  }).join("");
+}
+
+
+async function deleteProduct(id) {
+
+  console.log("========== 🗑️ DELETE PRODUCT ==========");
+  console.log("🆔 Product ID:", id);
+
+  const res = await fetch(`${BASE_URL}/api/catalogue/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${getToken()}` }
+  });
+
+  console.log("📡 Response Status:", res.status);
+
+  const data = await res.json();
+
+  console.log("📦 Delete Response:", data);
+
+  loadProducts();
+}
+
+async function useProduct(id) {
+
+  console.log("========== ⚡ USE PRODUCT ==========");
+  console.log("🆔 Product ID:", id);
+
+  const res = await fetch(`${BASE_URL}/api/catalogue`, {
+    headers: { Authorization: `Bearer ${getToken()}` }
+  });
+
+  const data = await res.json();
+
+  console.log("📦 All Products:", data.products);
+
+  const product = data.products.find(p => p._id === id);
+
+  console.log("🎯 Selected Product:", product);
+
+  window.shipmentPayload = {
+    ...window.shipmentPayload,
+    productName: product.name,
+    weight: product.weight,
+    orderValue: product.price
+  };
+
+  console.log("🚚 Updated Shipment Payload:", window.shipmentPayload);
+
+  alert("Product selected for shipment!");
+}
+
+
+// USER MANAGEMENT
 async function addMember() {
 
   const name = document.getElementById("name").value;
