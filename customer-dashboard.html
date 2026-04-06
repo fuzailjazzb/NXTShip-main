@@ -1866,7 +1866,7 @@ ${settingsCard("🔍", "Return Quality Check", "QC settings", "qc")}
 
 ${settingsCard("🔗", "Integrations", "API integrations", "integration")}
 
-${settingsCard("💰", "Rate Card", "Courier pricing", "ratecard")}
+${settingsCard("💰", "Rate Card", "Courier pricing", "rate")}
 
 ${settingsCard("👥", "User Management", "Manage users", "users")}
 
@@ -2162,6 +2162,138 @@ Generate Label
 
   break;
 
+        case "allocation":
+
+  document.getElementById("pageTitle").innerText = "Warehouse Allotment";
+
+  content.innerHTML = `
+
+  <h2 style="margin-bottom:15px; color:#222;">🏭 Warehouse Allotment</h2>
+
+  <!-- 🔥 DEFAULT WAREHOUSE -->
+  <div style="background:#fff; padding:16px; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.08); margin-bottom:15px;">
+    
+    <h3 style="margin-bottom:10px; color:#333;">⭐ Default Warehouse</h3>
+
+    <select id="defaultWarehouse" style="
+      width:100%;
+      padding:10px;
+      border-radius:8px;
+      border:1px solid #ddd;
+      outline:none;
+    ">
+      <option>Select Warehouse</option>
+    </select>
+
+    <br><br>
+
+    <button onclick="saveDefaultWarehouse()" style="
+      background:#007bff;
+      color:white;
+      border:none;
+      padding:10px 16px;
+      border-radius:8px;
+      cursor:pointer;
+    ">
+      Save Default
+    </button>
+
+  </div>
+
+
+  <!-- 🏬 WAREHOUSE LIST -->
+  <div style="background:#fff; padding:16px; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.08); margin-bottom:15px;">
+    
+    <h3 style="margin-bottom:10px; color:#333;">🏬 Your Warehouses</h3>
+
+    <div id="warehouseList"></div>
+
+  </div>
+
+
+  <!-- 🔗 STORE MAPPING -->
+  <div style="background:#fff; padding:16px; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.08); margin-bottom:15px;">
+    
+    <h3 style="margin-bottom:10px; color:#333;">🔗 Store → Warehouse Mapping</h3>
+
+    <div id="storeMapping"></div>
+
+    <br>
+
+    <button onclick="saveStoreMapping()" style="
+      background:#28a745;
+      color:white;
+      border:none;
+      padding:10px 16px;
+      border-radius:8px;
+      cursor:pointer;
+    ">
+      Save Mapping
+    </button>
+
+  </div>
+
+
+  <!-- 🤖 AUTO ALLOTMENT -->
+  <div style="background:#fff; padding:16px; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.08); margin-bottom:15px;">
+    
+    <h3 style="margin-bottom:10px; color:#333;">🤖 Auto Allotment</h3>
+
+    <label style="font-size:14px;">
+      <input type="checkbox" id="autoWarehouse" style="margin-right:6px;">
+      Enable Automatic Warehouse Selection
+    </label>
+
+    <br><br>
+
+    <button onclick="saveAutoWarehouse()" style="
+      background:#ff9800;
+      color:white;
+      border:none;
+      padding:10px 16px;
+      border-radius:8px;
+      cursor:pointer;
+    ">
+      Save Settings
+    </button>
+
+  </div>
+
+
+  <!-- 📊 PREVIEW TOOL -->
+  <div style="background:#fff; padding:16px; border-radius:12px; box-shadow:0 6px 18px rgba(0,0,0,0.08);">
+    
+    <h3 style="margin-bottom:10px; color:#333;">📍 Test Warehouse Selection</h3>
+
+    <input type="text" id="testPincode" placeholder="Enter Pincode" style="
+      width:100%;
+      padding:10px;
+      border-radius:8px;
+      border:1px solid #ddd;
+      margin-bottom:10px;
+    ">
+
+    <button onclick="testWarehouse()" style="
+      background:#6f42c1;
+      color:white;
+      border:none;
+      padding:10px 16px;
+      border-radius:8px;
+      cursor:pointer;
+    ">
+      Test
+    </button>
+
+    <p id="testResult" style="margin-top:10px; font-weight:600;"></p>
+
+  </div>
+
+  `;
+
+  loadWarehouseAllotment();
+
+  break;
+
         default:
           content.innerHTML = `<h2>❌ Section Not Found</h2>`;
       }
@@ -2183,8 +2315,125 @@ function getToken() {
 
 /* ================= LOAD ================= */
 
+async function loadWarehouseAllotment() {
+
+  const res = await fetch(`${BASE_URL}/api/warehouse-allotment`, {
+    headers: {
+      Authorization: `Bearer ${getToken()}`
+    }
+  });
+
+  const result = await res.json();
+
+  console.log("📦 Allotment Data:", result);
+
+  const { data, warehouses, stores } = result;
+
+  /* 🔥 DEFAULT DROPDOWN */
+  const dropdown = document.getElementById("defaultWarehouse");
+
+  dropdown.innerHTML = warehouses.map(w =>
+    `<option value="${w._id}" ${data.defaultWarehouseId === w._id ? "selected" : ""}>
+      ${w.name} (${w.pincode})
+    </option>`
+  ).join("");
+
+  /* 🏬 LIST */
+  document.getElementById("warehouseList").innerHTML =
+    warehouses.map(w => `
+      <div style="padding:10px; border:1px solid #eee; border-radius:8px; margin-bottom:8px;">
+        <b>${w.name}</b><br>
+        <small>${w.address} - ${w.pincode}</small>
+      </div>
+    `).join("");
+
+  /* 🔗 STORE MAPPING */
+  document.getElementById("storeMapping").innerHTML =
+    stores.map((s, i) => {
+
+      const selected = data.storeMapping?.find(m => m.storeName === s.name);
+
+      return `
+        <div style="margin-bottom:10px;">
+          <b>${s.name}</b><br>
+          <select id="store_${i}" data-name="${s.name}" style="width:100%; padding:8px;">
+            ${warehouses.map(w => `
+              <option value="${w._id}" ${selected?.warehouseId === w._id ? "selected" : ""}>
+                ${w.name}
+              </option>
+            `).join("")}
+          </select>
+        </div>
+      `;
+    }).join("");
+
+  document.getElementById("autoWarehouse").checked = data.autoWarehouse;
+}
+
+/* ================= SAVE DEFAULT ================= */
+
+async function saveDefaultWarehouse() {
+
+  const warehouseId = document.getElementById("defaultWarehouse").value;
+
+  await fetch(`${BASE_URL}/api/warehouse-allotment/default`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ warehouseId })
+  });
+
+  alert("Default saved ✅");
+}
+
+/* ================= STORE MAP ================= */
+
+async function saveStoreMapping() {
+
+  const selects = document.querySelectorAll("#storeMapping select");
+
+  const mappings = Array.from(selects).map(sel => ({
+    storeName: sel.dataset.name,
+    warehouseId: sel.value
+  }));
+
+  await fetch(`${BASE_URL}/api/warehouse-allotment/mapping`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ mappings })
+  });
+
+  alert("Mapping saved 🔗");
+}
+
+/* ================= AUTO ================= */
+
+async function saveAutoWarehouse() {
+
+  const autoWarehouse = document.getElementById("autoWarehouse").checked;
+
+  await fetch(`${BASE_URL}/api/warehouse-allotment/auto`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ autoWarehouse })
+  });
+
+  alert("Auto setting saved 🤖");
+}
+
+
+/* ================= LOAD ================= */
+
 async function loadWebhookData() {
-  const res = await fetch(`${BASE_URL}/api/webhooks`, {
+  const res = await fetch(`${BASE_URL}/api/order`, {
     headers: {
       Authorization: `Bearer ${getToken()}`
     }
