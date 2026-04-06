@@ -2433,7 +2433,7 @@ async function testWarehouse() {
 
   const pincode = document.getElementById("testPincode").value;
 
-  const res = await fetch(`${BASE_URL}/api/warehouse-allocation/test`, {
+  const res = await fetch(`${BASE_URL}/api/warehouse-allotment/test`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${getToken()}`,
