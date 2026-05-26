@@ -754,6 +754,37 @@
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
 
+    .bulk-toolbar {
+      background: #f8fafc;
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .bulk-toolbar button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .bulk-toolbar button:hover {
+      opacity: 0.85;
+    }
+
+    .bulk-toolbar .info {
+      font-size: 13px;
+      color: #555;
+      margin-left: 5px;
+    }
+
     @media(max-width:768px) {
 
       .kpiGrid,
@@ -1912,19 +1943,19 @@ margin-bottom:15px;
 
         case "kyc":
 
-  console.log("📦 Loading Section: KYC");
+          console.log("📦 Loading Section: KYC");
 
-  document.getElementById("pageTitle").innerText = "KYC Status";
+          document.getElementById("pageTitle").innerText = "KYC Status";
 
-  content.innerHTML = `
+          content.innerHTML = `
     <div id="kycContainer"></div>
   `;
 
-  setTimeout(() => {
-    loadKycStatus();
-  }, 100);
+          setTimeout(() => {
+            loadKycStatus();
+          }, 100);
 
-  break;
+          break;
 
         case "gst":
 
@@ -1993,9 +2024,9 @@ Generate Label
 
         case "integration":
 
-  document.getElementById("pageTitle").innerText = "Integrations";
+          document.getElementById("pageTitle").innerText = "Integrations";
 
-  content.innerHTML = `
+          content.innerHTML = `
 
   <div style="padding:20px; font-family:Segoe UI; background:#f8fafc; color:#0f172a;">
 
@@ -2098,27 +2129,27 @@ Generate Label
   </div>
   `;
 
-  // 🔥 dynamic input change
-  document.getElementById("storeType").addEventListener("change", () => {
-    const type = document.getElementById("storeType").value;
+          // 🔥 dynamic input change
+          document.getElementById("storeType").addEventListener("change", () => {
+            const type = document.getElementById("storeType").value;
 
-    if (type === "shopify") {
-      document.getElementById("consumerKey").placeholder = "Shopify Access Token";
-      document.getElementById("consumerSecret").style.display = "none";
-    } else {
-      document.getElementById("consumerKey").placeholder = "Woo Consumer Key";
-      document.getElementById("consumerSecret").style.display = "block";
-    }
-  });
+            if (type === "shopify") {
+              document.getElementById("consumerKey").placeholder = "Shopify Access Token";
+              document.getElementById("consumerSecret").style.display = "none";
+            } else {
+              document.getElementById("consumerKey").placeholder = "Woo Consumer Key";
+              document.getElementById("consumerSecret").style.display = "block";
+            }
+          });
 
-  loadIntegrationData();
-  break;
+          loadIntegrationData();
+          break;
 
         case "webhooks":
 
-  document.getElementById("pageTitle").innerText = "Webhooks";
+          document.getElementById("pageTitle").innerText = "Webhooks";
 
-  content.innerHTML = `
+          content.innerHTML = `
 
   <h2 style="color:#111;">🔗 Webhooks Panel</h2>
 
@@ -2158,15 +2189,15 @@ Generate Label
 
   `;
 
-  loadWebhookData();
+          loadWebhookData();
 
-  break;
+          break;
 
         case "allocation":
 
-  document.getElementById("pageTitle").innerText = "Warehouse Allotment";
+          document.getElementById("pageTitle").innerText = "Warehouse Allotment";
 
-  content.innerHTML = `
+          content.innerHTML = `
 
   <h2 style="margin-bottom:15px; color:#222;">🏭 Warehouse Allotment</h2>
 
@@ -2290,15 +2321,15 @@ Generate Label
 
   `;
 
-  loadWarehouseAllotment();
+          loadWarehouseAllotment();
 
-  break;
+          break;
 
         case "users":
 
-  document.getElementById("pageTitle").innerText = "Team Management";
+          document.getElementById("pageTitle").innerText = "Team Management";
 
-  content.innerHTML = `
+          content.innerHTML = `
 
   <h2>👥 Team Members</h2>
 
@@ -2316,16 +2347,16 @@ Generate Label
 
   `;
 
-  loadMembers();
-  break;
+          loadMembers();
+          break;
 
         case "catalogue":
 
-  console.log("📦 Catalogue Page Loaded");
+          console.log("📦 Catalogue Page Loaded");
 
-  document.getElementById("pageTitle").innerText = "Catalogue";
+          document.getElementById("pageTitle").innerText = "Catalogue";
 
-  content.innerHTML = `
+          content.innerHTML = `
 
 <h2>📦 Product Catalogue</h2>
 
@@ -2346,15 +2377,15 @@ Generate Label
 
 `;
 
-  loadProducts();
+          loadProducts();
 
-  break;
+          break;
 
         case "qc":
 
-  console.log("📦 RQC Page Loaded");
+          console.log("📦 RQC Page Loaded");
 
-  content.innerHTML = `
+          content.innerHTML = `
 
 <h2 style="margin-bottom:15px;">📦 Return Quality Check</h2>
 
@@ -2398,9 +2429,9 @@ Generate Label
 
 `;
 
-  loadReturns();
+          loadReturns();
 
-  break;
+          break;
 
         default:
           content.innerHTML = `<h2>❌ Section Not Found</h2>`;
@@ -2415,25 +2446,25 @@ Generate Label
    🔗 GLOBAL CONFIG
 ================================ */
 
-const BASE_URL = "https://nxtship-backend.onrender.com";
+    const BASE_URL = "https://nxtship-backend.onrender.com";
 
-function getToken() {
-  return localStorage.getItem("customerToken");
-}
+    function getToken() {
+      return localStorage.getItem("customerToken");
+    }
 
-// RQC - RETURN QC
-let allReturns = [];
-let filteredReturns = [];
-let currentPage = 1;
-const perPage = 5;
+    // RQC - RETURN QC
+    let allReturns = [];
+    let filteredReturns = [];
+    let currentPage = 1;
+    const perPage = 5;
 
-function showSkeleton() {
+    function showSkeleton() {
 
-  console.log("⏳ Showing Skeleton");
+      console.log("⏳ Showing Skeleton");
 
-  const container = document.getElementById("returnList");
+      const container = document.getElementById("returnList");
 
-  container.innerHTML = Array(3).fill(`
+      container.innerHTML = Array(3).fill(`
     <div style="
       background:#f3f3f3;
       height:80px;
@@ -2443,7 +2474,7 @@ function showSkeleton() {
     "></div>
   `).join("");
 
-  document.head.insertAdjacentHTML("beforeend", `
+      document.head.insertAdjacentHTML("beforeend", `
     <style>
       @keyframes pulse {
         0% { opacity: 0.6; }
@@ -2452,60 +2483,60 @@ function showSkeleton() {
       }
     </style>
   `);
-}
+    }
 
-async function loadReturns() {
+    async function loadReturns() {
 
-  console.log("========== 📥 LOAD RETURNS ==========");
+      console.log("========== 📥 LOAD RETURNS ==========");
 
-  showSkeleton();
+      showSkeleton();
 
-  const res = await fetch(`${BASE_URL}/api/rqc`, {
-    headers: { Authorization: `Bearer ${getToken()}` }
-  });
+      const res = await fetch(`${BASE_URL}/api/rqc`, {
+        headers: { Authorization: `Bearer ${getToken()}` }
+      });
 
-  console.log("📡 Status:", res.status);
+      console.log("📡 Status:", res.status);
 
-  const data = await res.json();
+      const data = await res.json();
 
-  console.log("📦 Returns:", data);
+      console.log("📦 Returns:", data);
 
-  allReturns = data.data || [];
-  filteredReturns = [...allReturns];
+      allReturns = data.data || [];
+      filteredReturns = [...allReturns];
 
-  renderReturns();
-}
+      renderReturns();
+    }
 
-function filterReturns() {
+    function filterReturns() {
 
-  console.log("🔍 Filtering...");
+      console.log("🔍 Filtering...");
 
-  const search = document.getElementById("searchAwb").value.toLowerCase();
-  const status = document.getElementById("statusFilter").value;
+      const search = document.getElementById("searchAwb").value.toLowerCase();
+      const status = document.getElementById("statusFilter").value;
 
-  filteredReturns = allReturns.filter(r => {
+      filteredReturns = allReturns.filter(r => {
 
-    const matchSearch = r.awb?.toLowerCase().includes(search);
-    const matchStatus = status ? r.status === status : true;
+        const matchSearch = r.awb?.toLowerCase().includes(search);
+        const matchStatus = status ? r.status === status : true;
 
-    return matchSearch && matchStatus;
-  });
+        return matchSearch && matchStatus;
+      });
 
-  currentPage = 1;
+      currentPage = 1;
 
-  renderReturns();
-}
+      renderReturns();
+    }
 
-function renderReturns() {
+    function renderReturns() {
 
-  const container = document.getElementById("returnList");
+      const container = document.getElementById("returnList");
 
-  console.log("📊 Rendering:", filteredReturns.length);
+      console.log("📊 Rendering:", filteredReturns.length);
 
-  // ❌ EMPTY
-  if (filteredReturns.length === 0) {
+      // ❌ EMPTY
+      if (filteredReturns.length === 0) {
 
-    container.innerHTML = `
+        container.innerHTML = `
       <div style="
         background:#fff;
         padding:40px;
@@ -2527,15 +2558,15 @@ function renderReturns() {
       </div>
     `;
 
-    document.getElementById("pagination").innerHTML = "";
-    return;
-  }
+        document.getElementById("pagination").innerHTML = "";
+        return;
+      }
 
-  // ✅ PAGINATION
-  const start = (currentPage - 1) * perPage;
-  const pageData = filteredReturns.slice(start, start + perPage);
+      // ✅ PAGINATION
+      const start = (currentPage - 1) * perPage;
+      const pageData = filteredReturns.slice(start, start + perPage);
 
-  container.innerHTML = pageData.map(r => `
+      container.innerHTML = pageData.map(r => `
     <div style="
       background:#fff;
       padding:15px;
@@ -2570,61 +2601,61 @@ function renderReturns() {
     </div>
   `).join("");
 
-  renderPagination();
-}
+      renderPagination();
+    }
 
-function renderPagination() {
+    function renderPagination() {
 
-  const totalPages = Math.ceil(filteredReturns.length / perPage);
+      const totalPages = Math.ceil(filteredReturns.length / perPage);
 
-  const container = document.getElementById("pagination");
+      const container = document.getElementById("pagination");
 
-  container.innerHTML = Array(totalPages).fill(0).map((_, i) => `
-    <button onclick="goPage(${i+1})" style="
+      container.innerHTML = Array(totalPages).fill(0).map((_, i) => `
+    <button onclick="goPage(${i + 1})" style="
       margin-right:5px;
       padding:6px 10px;
       border:none;
       border-radius:5px;
-      background:${currentPage === i+1 ? "#007bff" : "#ddd"};
-      color:${currentPage === i+1 ? "#fff" : "#000"};
+      background:${currentPage === i + 1 ? "#007bff" : "#ddd"};
+      color:${currentPage === i + 1 ? "#fff" : "#000"};
       cursor:pointer;
-    ">${i+1}</button>
+    ">${i + 1}</button>
   `).join("");
-}
+    }
 
-function goPage(page) {
-  console.log("📄 Page:", page);
-  currentPage = page;
-  renderReturns();
-}
+    function goPage(page) {
+      console.log("📄 Page:", page);
+      currentPage = page;
+      renderReturns();
+    }
 
-async function createDummyReturn() {
+    async function createDummyReturn() {
 
-  console.log("🧪 Creating Dummy");
+      console.log("🧪 Creating Dummy");
 
-  await fetch(`${BASE_URL}/api/rqc`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${getToken()}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      shipmentId: "TEST123",
-      awb: "AWB" + Math.floor(Math.random()*10000),
-      product: { name: "Demo Product" },
-      returnReason: "Damaged"
-    })
-  });
+      await fetch(`${BASE_URL}/api/rqc`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          shipmentId: "TEST123",
+          awb: "AWB" + Math.floor(Math.random() * 10000),
+          product: { name: "Demo Product" },
+          returnReason: "Damaged"
+        })
+      });
 
-  loadReturns();
-}
+      loadReturns();
+    }
 
-async function inspectReturn(id) {
+    async function inspectReturn(id) {
 
-  console.log("========== 🔬 INSPECT RETURN ==========");
-  console.log("🆔 ID:", id);
+      console.log("========== 🔬 INSPECT RETURN ==========");
+      console.log("🆔 ID:", id);
 
-  const html = `
+      const html = `
 
 <h3>Quality Check</h3>
 
@@ -2656,99 +2687,99 @@ async function inspectReturn(id) {
 
 `;
 
-  document.getElementById("returnList").innerHTML = html;
-}
+      document.getElementById("returnList").innerHTML = html;
+    }
 
-async function submitQc(id, status) {
+    async function submitQc(id, status) {
 
-  console.log("========== 🚀 SUBMIT QC ==========");
-  console.log("🆔 ID:", id);
-  console.log("📊 Status:", status);
+      console.log("========== 🚀 SUBMIT QC ==========");
+      console.log("🆔 ID:", id);
+      console.log("📊 Status:", status);
 
-  const qc = {
-    condition: document.getElementById("condition").value,
-    packaging: document.getElementById("packaging").value,
-    remarks: document.getElementById("remarks").value
-  };
+      const qc = {
+        condition: document.getElementById("condition").value,
+        packaging: document.getElementById("packaging").value,
+        remarks: document.getElementById("remarks").value
+      };
 
-  console.log("📦 QC Data:", qc);
+      console.log("📦 QC Data:", qc);
 
-  const res = await fetch(`${BASE_URL}/api/rqc/${id}`, {
-    method: "PUT",
-    headers: {
-      Authorization: `Bearer ${getToken()}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ qc, status })
-  });
+      const res = await fetch(`${BASE_URL}/api/rqc/${id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ qc, status })
+      });
 
-  console.log("📡 Status:", res.status);
+      console.log("📡 Status:", res.status);
 
-  const data = await res.json();
+      const data = await res.json();
 
-  console.log("📦 Response:", data);
+      console.log("📦 Response:", data);
 
-  alert("QC Updated");
+      alert("QC Updated");
 
-  loadReturns();
-}
-
-
-// CATALOGUE PRODUCTS
-
-async function addProduct() {
-
-  console.log("========== ➕ ADD PRODUCT ==========");
-
-  const data = {
-    name: document.getElementById("pName").value,
-    sku: document.getElementById("pSku").value,
-    price: document.getElementById("pPrice").value,
-    weight: document.getElementById("pWeight").value
-  };
-
-  console.log("📦 Sending Data:", data);
-
-  const res = await fetch(`${BASE_URL}/api/catalogue`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${getToken()}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(data)
-  });
-
-  console.log("📡 Response Status:", res.status);
-
-  const result = await res.json();
-
-  console.log("📦 Response:", result);
-
-  alert("Product added!");
-  loadProducts();
-}
+      loadReturns();
+    }
 
 
-async function loadProducts() {
+    // CATALOGUE PRODUCTS
 
-  console.log("========== 📥 LOAD PRODUCTS ==========");
+    async function addProduct() {
 
-  const res = await fetch(`${BASE_URL}/api/catalogue`, {
-    headers: { Authorization: `Bearer ${getToken()}` }
-  });
+      console.log("========== ➕ ADD PRODUCT ==========");
 
-  console.log("📡 Response Status:", res.status);
+      const data = {
+        name: document.getElementById("pName").value,
+        sku: document.getElementById("pSku").value,
+        price: document.getElementById("pPrice").value,
+        weight: document.getElementById("pWeight").value
+      };
 
-  const data = await res.json();
+      console.log("📦 Sending Data:", data);
 
-  console.log("📦 Products Data:", data);
+      const res = await fetch(`${BASE_URL}/api/catalogue`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
 
-  const container = document.getElementById("productList");
+      console.log("📡 Response Status:", res.status);
 
-  container.innerHTML = data.products.map(p => {
-    console.log("🔹 Rendering Product:", p);
+      const result = await res.json();
 
-    return `
+      console.log("📦 Response:", result);
+
+      alert("Product added!");
+      loadProducts();
+    }
+
+
+    async function loadProducts() {
+
+      console.log("========== 📥 LOAD PRODUCTS ==========");
+
+      const res = await fetch(`${BASE_URL}/api/catalogue`, {
+        headers: { Authorization: `Bearer ${getToken()}` }
+      });
+
+      console.log("📡 Response Status:", res.status);
+
+      const data = await res.json();
+
+      console.log("📦 Products Data:", data);
+
+      const container = document.getElementById("productList");
+
+      container.innerHTML = data.products.map(p => {
+        console.log("🔹 Rendering Product:", p);
+
+        return `
     <div style="
       background:#fff;
       padding:12px;
@@ -2765,92 +2796,92 @@ async function loadProducts() {
       <button onclick="deleteProduct('${p._id}')">Delete</button>
     </div>
   `;
-  }).join("");
-}
-
-
-async function deleteProduct(id) {
-
-  console.log("========== 🗑️ DELETE PRODUCT ==========");
-  console.log("🆔 Product ID:", id);
-
-  const res = await fetch(`${BASE_URL}/api/catalogue/${id}`, {
-    method: "DELETE",
-    headers: { Authorization: `Bearer ${getToken()}` }
-  });
-
-  console.log("📡 Response Status:", res.status);
-
-  const data = await res.json();
-
-  console.log("📦 Delete Response:", data);
-
-  loadProducts();
-}
-
-async function useProduct(id) {
-
-  console.log("========== ⚡ USE PRODUCT ==========");
-  console.log("🆔 Product ID:", id);
-
-  const res = await fetch(`${BASE_URL}/api/catalogue`, {
-    headers: { Authorization: `Bearer ${getToken()}` }
-  });
-
-  const data = await res.json();
-
-  console.log("📦 All Products:", data.products);
-
-  const product = data.products.find(p => p._id === id);
-
-  console.log("🎯 Selected Product:", product);
-
-  window.shipmentPayload = {
-    ...window.shipmentPayload,
-    productName: product.name,
-    weight: product.weight,
-    orderValue: product.price
-  };
-
-  console.log("🚚 Updated Shipment Payload:", window.shipmentPayload);
-
-  alert("Product selected for shipment!");
-}
-
-
-// USER MANAGEMENT
-async function addMember() {
-
-  const name = document.getElementById("name").value;
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-
-  await fetch(`${BASE_URL}/api/team`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${getToken()}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ name, email, password })
-  });
-
-  alert("Member added!");
-  loadMembers();
-}
-
-async function loadMembers() {
-
-  const res = await fetch(`${BASE_URL}/api/team`, {
-    headers: {
-      Authorization: `Bearer ${getToken()}`
+      }).join("");
     }
-  });
 
-  const data = await res.json();
 
-  const container = document.getElementById("members");
+    async function deleteProduct(id) {
 
-  container.innerHTML = data.members.map(m => `
+      console.log("========== 🗑️ DELETE PRODUCT ==========");
+      console.log("🆔 Product ID:", id);
+
+      const res = await fetch(`${BASE_URL}/api/catalogue/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${getToken()}` }
+      });
+
+      console.log("📡 Response Status:", res.status);
+
+      const data = await res.json();
+
+      console.log("📦 Delete Response:", data);
+
+      loadProducts();
+    }
+
+    async function useProduct(id) {
+
+      console.log("========== ⚡ USE PRODUCT ==========");
+      console.log("🆔 Product ID:", id);
+
+      const res = await fetch(`${BASE_URL}/api/catalogue`, {
+        headers: { Authorization: `Bearer ${getToken()}` }
+      });
+
+      const data = await res.json();
+
+      console.log("📦 All Products:", data.products);
+
+      const product = data.products.find(p => p._id === id);
+
+      console.log("🎯 Selected Product:", product);
+
+      window.shipmentPayload = {
+        ...window.shipmentPayload,
+        productName: product.name,
+        weight: product.weight,
+        orderValue: product.price
+      };
+
+      console.log("🚚 Updated Shipment Payload:", window.shipmentPayload);
+
+      alert("Product selected for shipment!");
+    }
+
+
+    // USER MANAGEMENT
+    async function addMember() {
+
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      await fetch(`${BASE_URL}/api/team`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ name, email, password })
+      });
+
+      alert("Member added!");
+      loadMembers();
+    }
+
+    async function loadMembers() {
+
+      const res = await fetch(`${BASE_URL}/api/team`, {
+        headers: {
+          Authorization: `Bearer ${getToken()}`
+        }
+      });
+
+      const data = await res.json();
+
+      const container = document.getElementById("members");
+
+      container.innerHTML = data.members.map(m => `
   <div style="
     background: linear-gradient(135deg, #ffffff, #f9f9f9);
     padding:14px;
@@ -2895,73 +2926,73 @@ async function loadMembers() {
     ">Delete</button>
   </div>
 `).join("");
-}
-
-async function toggleMember(id) {
-
-  await fetch(`${BASE_URL}/api/team/${id}`, {
-    method: "PUT",
-    headers: {
-      Authorization: `Bearer ${getToken()}`
     }
-  });
 
-  loadMembers();
-}
+    async function toggleMember(id) {
 
-async function deleteMember(id) {
+      await fetch(`${BASE_URL}/api/team/${id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${getToken()}`
+        }
+      });
 
-  await fetch(`${BASE_URL}/api/team/${id}`, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${getToken()}`
+      loadMembers();
     }
-  });
 
-  loadMembers();
-}
+    async function deleteMember(id) {
 
-/* ================= LOAD ================= */
+      await fetch(`${BASE_URL}/api/team/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${getToken()}`
+        }
+      });
 
-async function loadWarehouseAllotment() {
-
-  const res = await fetch(`${BASE_URL}/api/warehouse-allotment`, {
-    headers: {
-      Authorization: `Bearer ${getToken()}`
+      loadMembers();
     }
-  });
 
-  const result = await res.json();
+    /* ================= LOAD ================= */
 
-  console.log("📦 Allotment Data:", result);
+    async function loadWarehouseAllotment() {
 
-  const { data, warehouses, stores } = result;
+      const res = await fetch(`${BASE_URL}/api/warehouse-allotment`, {
+        headers: {
+          Authorization: `Bearer ${getToken()}`
+        }
+      });
 
-  /* 🔥 DEFAULT DROPDOWN */
-  const dropdown = document.getElementById("defaultWarehouse");
+      const result = await res.json();
 
-  dropdown.innerHTML = warehouses.map(w =>
-    `<option value="${w._id}" ${data.defaultWarehouseId === w._id ? "selected" : ""}>
+      console.log("📦 Allotment Data:", result);
+
+      const { data, warehouses, stores } = result;
+
+      /* 🔥 DEFAULT DROPDOWN */
+      const dropdown = document.getElementById("defaultWarehouse");
+
+      dropdown.innerHTML = warehouses.map(w =>
+        `<option value="${w._id}" ${data.defaultWarehouseId === w._id ? "selected" : ""}>
       ${w.name} (${w.pincode})
     </option>`
-  ).join("");
+      ).join("");
 
-  /* 🏬 LIST */
-  document.getElementById("warehouseList").innerHTML =
-    warehouses.map(w => `
+      /* 🏬 LIST */
+      document.getElementById("warehouseList").innerHTML =
+        warehouses.map(w => `
       <div style="padding:10px; border:1px solid #eee; border-radius:8px; margin-bottom:8px;">
         <b>${w.name}</b><br>
         <small>${w.address} - ${w.pincode}</small>
       </div>
     `).join("");
 
-  /* 🔗 STORE MAPPING */
-  document.getElementById("storeMapping").innerHTML =
-    stores.map((s, i) => {
+      /* 🔗 STORE MAPPING */
+      document.getElementById("storeMapping").innerHTML =
+        stores.map((s, i) => {
 
-      const selected = data.storeMapping?.find(m => m.storeName === s.name);
+          const selected = data.storeMapping?.find(m => m.storeName === s.name);
 
-      return `
+          return `
         <div style="margin-bottom:10px;">
           <b>${s.name}</b><br>
           <select id="store_${i}" data-name="${s.name}" style="width:100%; padding:8px;">
@@ -2973,172 +3004,172 @@ async function loadWarehouseAllotment() {
           </select>
         </div>
       `;
-    }).join("");
+        }).join("");
 
-  document.getElementById("autoWarehouse").checked = data.autoWarehouse;
-}
-
-/* ================= SAVE DEFAULT ================= */
-
-async function saveDefaultWarehouse() {
-
-  const warehouseId = document.getElementById("defaultWarehouse").value;
-
-  await fetch(`${BASE_URL}/api/warehouse-allotment/default`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${getToken()}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ warehouseId })
-  });
-
-  alert("Default saved ✅");
-}
-
-/* ================= STORE MAP ================= */
-
-async function saveStoreMapping() {
-
-  const selects = document.querySelectorAll("#storeMapping select");
-
-  const mappings = Array.from(selects).map(sel => ({
-    storeName: sel.dataset.name,
-    warehouseId: sel.value
-  }));
-
-  await fetch(`${BASE_URL}/api/warehouse-allotment/mapping`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${getToken()}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ mappings })
-  });
-
-  alert("Mapping saved 🔗");
-}
-
-/* ================= AUTO ================= */
-
-async function saveAutoWarehouse() {
-
-  const autoWarehouse = document.getElementById("autoWarehouse").checked;
-
-  await fetch(`${BASE_URL}/api/warehouse-allotment/auto`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${getToken()}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ autoWarehouse })
-  });
-
-  alert("Auto setting saved 🤖");
-}
-
-async function testWarehouse() {
-
-  const pincode = document.getElementById("testPincode").value;
-
-  const res = await fetch(`${BASE_URL}/api/warehouse-allotment/test`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${getToken()}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ pincode })
-  });
-
-  const data = await res.json();
-
-  document.getElementById("testResult").innerText =
-    `Nearest Warehouse : ${data.warehouse?.name || "Not Found"}`;
-}
-
-
-
-
-/* ================= LOAD ================= */
-
-async function loadWebhookData() {
-  const res = await fetch(`${BASE_URL}/api/order`, {
-    headers: {
-      Authorization: `Bearer ${getToken()}`
+      document.getElementById("autoWarehouse").checked = data.autoWarehouse;
     }
-  });
 
-  const data = await res.json();
+    /* ================= SAVE DEFAULT ================= */
 
-  document.getElementById("webhookUrl").value =
-    `${BASE_URL}/api/webhooks/order`;
+    async function saveDefaultWarehouse() {
 
-  if (data.settings) {
-    document.getElementById("orderCreated").checked = data.settings.orderCreated;
-    document.getElementById("orderUpdated").checked = data.settings.orderUpdated;
-    document.getElementById("orderCancelled").checked = data.settings.orderCancelled;
-    document.getElementById("paymentSuccess").checked = data.settings.paymentSuccess;
-  }
+      const warehouseId = document.getElementById("defaultWarehouse").value;
 
-  if (data.actions) {
-    document.getElementById("autoShip").checked = data.actions.autoShip;
-    document.getElementById("autoAssign").checked = data.actions.autoAssign;
-  }
+      await fetch(`${BASE_URL}/api/warehouse-allotment/default`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ warehouseId })
+      });
 
-  renderWebhookLogs(data.logs || []);
-}
+      alert("Default saved ✅");
+    }
 
-/* ================= SAVE EVENTS ================= */
+    /* ================= STORE MAP ================= */
 
-async function saveWebhookSettings() {
+    async function saveStoreMapping() {
 
-  const settings = {
-    orderCreated: document.getElementById("orderCreated").checked,
-    orderUpdated: document.getElementById("orderUpdated").checked,
-    orderCancelled: document.getElementById("orderCancelled").checked,
-    paymentSuccess: document.getElementById("paymentSuccess").checked
-  };
+      const selects = document.querySelectorAll("#storeMapping select");
 
-  await fetch(`${BASE_URL}/api/webhooks/settings`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${getToken()}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(settings)
-  });
+      const mappings = Array.from(selects).map(sel => ({
+        storeName: sel.dataset.name,
+        warehouseId: sel.value
+      }));
 
-  alert("Webhook settings saved ✅");
-}
+      await fetch(`${BASE_URL}/api/warehouse-allotment/mapping`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ mappings })
+      });
 
-/* ================= SAVE ACTIONS ================= */
+      alert("Mapping saved 🔗");
+    }
 
-async function saveWebhookActions() {
+    /* ================= AUTO ================= */
 
-  const actions = {
-    autoShip: document.getElementById("autoShip").checked,
-    autoAssign: document.getElementById("autoAssign").checked
-  };
+    async function saveAutoWarehouse() {
 
-  await fetch(`${BASE_URL}/api/webhooks/actions`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${getToken()}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(actions)
-  });
+      const autoWarehouse = document.getElementById("autoWarehouse").checked;
 
-  alert("Auto actions saved 🚀");
-}
+      await fetch(`${BASE_URL}/api/warehouse-allotment/auto`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ autoWarehouse })
+      });
 
-/* ================= LOGS ================= */
+      alert("Auto setting saved 🤖");
+    }
 
-function renderWebhookLogs(logs) {
+    async function testWarehouse() {
 
-  const container = document.getElementById("webhookLogs");
+      const pincode = document.getElementById("testPincode").value;
 
-  container.innerHTML = logs.map(log => `
+      const res = await fetch(`${BASE_URL}/api/warehouse-allotment/test`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ pincode })
+      });
+
+      const data = await res.json();
+
+      document.getElementById("testResult").innerText =
+        `Nearest Warehouse : ${data.warehouse?.name || "Not Found"}`;
+    }
+
+
+
+
+    /* ================= LOAD ================= */
+
+    async function loadWebhookData() {
+      const res = await fetch(`${BASE_URL}/api/order`, {
+        headers: {
+          Authorization: `Bearer ${getToken()}`
+        }
+      });
+
+      const data = await res.json();
+
+      document.getElementById("webhookUrl").value =
+        `${BASE_URL}/api/webhooks/order`;
+
+      if (data.settings) {
+        document.getElementById("orderCreated").checked = data.settings.orderCreated;
+        document.getElementById("orderUpdated").checked = data.settings.orderUpdated;
+        document.getElementById("orderCancelled").checked = data.settings.orderCancelled;
+        document.getElementById("paymentSuccess").checked = data.settings.paymentSuccess;
+      }
+
+      if (data.actions) {
+        document.getElementById("autoShip").checked = data.actions.autoShip;
+        document.getElementById("autoAssign").checked = data.actions.autoAssign;
+      }
+
+      renderWebhookLogs(data.logs || []);
+    }
+
+    /* ================= SAVE EVENTS ================= */
+
+    async function saveWebhookSettings() {
+
+      const settings = {
+        orderCreated: document.getElementById("orderCreated").checked,
+        orderUpdated: document.getElementById("orderUpdated").checked,
+        orderCancelled: document.getElementById("orderCancelled").checked,
+        paymentSuccess: document.getElementById("paymentSuccess").checked
+      };
+
+      await fetch(`${BASE_URL}/api/webhooks/settings`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(settings)
+      });
+
+      alert("Webhook settings saved ✅");
+    }
+
+    /* ================= SAVE ACTIONS ================= */
+
+    async function saveWebhookActions() {
+
+      const actions = {
+        autoShip: document.getElementById("autoShip").checked,
+        autoAssign: document.getElementById("autoAssign").checked
+      };
+
+      await fetch(`${BASE_URL}/api/webhooks/actions`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(actions)
+      });
+
+      alert("Auto actions saved 🚀");
+    }
+
+    /* ================= LOGS ================= */
+
+    function renderWebhookLogs(logs) {
+
+      const container = document.getElementById("webhookLogs");
+
+      container.innerHTML = logs.map(log => `
     <div style="padding:8px; border-bottom:1px solid #eee;">
       <b>${log.event}</b> - 
       <span style="color:${log.status === "success" ? "green" : "red"}">
@@ -3148,123 +3179,123 @@ function renderWebhookLogs(logs) {
       <small>${new Date(log.createdAt).toLocaleString()}</small>
     </div>
   `).join("");
-}
-
-/* ================= COPY ================= */
-
-function copyWebhook() {
-  const input = document.getElementById("webhookUrl");
-  input.select();
-  document.execCommand("copy");
-  alert("Copied!");
-}
-
-/* ================================
-   🛒 CONNECT STORE (Woo + Shopify)
-================================ */
-
-async function connectStore() {
-
-  const token = localStorage.getItem("customerToken");
-
-  if (!token) {
-    alert("Please login again");
-    return;
-  }
-
-  const data = {
-    type: document.getElementById("storeType").value,
-    url: document.getElementById("storeUrl").value,
-    key: document.getElementById("consumerKey").value,
-    secret: document.getElementById("consumerSecret").value
-  };
-
-  console.log("🚀 Connecting Store:", data);
-
-  try {
-
-    const res = await fetch(`${BASE_URL}/api/integrations/store`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify(data)
-    });
-
-    const result = await res.json();
-
-    console.log("✅ Store Response:", result);
-
-    document.getElementById("storeStatus").innerText = result.message;
-
-    loadIntegrationData();
-
-  } catch (err) {
-    console.log("❌ Store Error:", err.message);
-  }
-}
-
-/* ================================
-   🔄 SYNC ORDERS (ALL STORES)
-================================ */
-
-async function syncOrders() {
-
-  const token = localStorage.getItem("customerToken");
-
-  try {
-
-    const res = await fetch(`${BASE_URL}/api/integrations/sync`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-
-    const result = await res.json();
-
-    console.log("📦 Orders Synced:", result);
-
-    alert("Orders Synced Successfully");
-
-    loadIntegrationData();
-
-  } catch (err) {
-    console.log("❌ Sync Error:", err.message);
-  }
-}
-
-/* ================================
-   📥 LOAD INTEGRATION DATA
-================================ */
-
-async function loadIntegrationData() {
-
-  const token = localStorage.getItem("customerToken");
-
-  try {
-
-    const res = await fetch(`${BASE_URL}/api/integrations`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-
-    const result = await res.json();
-
-    console.log("📊 Integration Data:", result);
-
-    const container = document.getElementById("savedStores");
-
-    document.getElementById("ordersCount").innerText = result.orders || 0;
-    document.getElementById("shipmentCount").innerText = result.shipments || 0;
-
-    if (!result.data || !result.data.stores || result.data.stores.length === 0) {
-      container.innerHTML = "<p>No stores connected</p>";
-      return;
     }
 
-    container.innerHTML = result.data.stores.map((store, index) => `
+    /* ================= COPY ================= */
+
+    function copyWebhook() {
+      const input = document.getElementById("webhookUrl");
+      input.select();
+      document.execCommand("copy");
+      alert("Copied!");
+    }
+
+    /* ================================
+       🛒 CONNECT STORE (Woo + Shopify)
+    ================================ */
+
+    async function connectStore() {
+
+      const token = localStorage.getItem("customerToken");
+
+      if (!token) {
+        alert("Please login again");
+        return;
+      }
+
+      const data = {
+        type: document.getElementById("storeType").value,
+        url: document.getElementById("storeUrl").value,
+        key: document.getElementById("consumerKey").value,
+        secret: document.getElementById("consumerSecret").value
+      };
+
+      console.log("🚀 Connecting Store:", data);
+
+      try {
+
+        const res = await fetch(`${BASE_URL}/api/integrations/store`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+
+        console.log("✅ Store Response:", result);
+
+        document.getElementById("storeStatus").innerText = result.message;
+
+        loadIntegrationData();
+
+      } catch (err) {
+        console.log("❌ Store Error:", err.message);
+      }
+    }
+
+    /* ================================
+       🔄 SYNC ORDERS (ALL STORES)
+    ================================ */
+
+    async function syncOrders() {
+
+      const token = localStorage.getItem("customerToken");
+
+      try {
+
+        const res = await fetch(`${BASE_URL}/api/integrations/sync`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        const result = await res.json();
+
+        console.log("📦 Orders Synced:", result);
+
+        alert("Orders Synced Successfully");
+
+        loadIntegrationData();
+
+      } catch (err) {
+        console.log("❌ Sync Error:", err.message);
+      }
+    }
+
+    /* ================================
+       📥 LOAD INTEGRATION DATA
+    ================================ */
+
+    async function loadIntegrationData() {
+
+      const token = localStorage.getItem("customerToken");
+
+      try {
+
+        const res = await fetch(`${BASE_URL}/api/integrations`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        const result = await res.json();
+
+        console.log("📊 Integration Data:", result);
+
+        const container = document.getElementById("savedStores");
+
+        document.getElementById("ordersCount").innerText = result.orders || 0;
+        document.getElementById("shipmentCount").innerText = result.shipments || 0;
+
+        if (!result.data || !result.data.stores || result.data.stores.length === 0) {
+          container.innerHTML = "<p>No stores connected</p>";
+          return;
+        }
+
+        container.innerHTML = result.data.stores.map((store, index) => `
       <div style="border:1px solid #e2e8f0; padding:12px; border-radius:10px; margin-top:10px; background:#f8fafc;">
 
         <div style="display:flex; justify-content:space-between;">
@@ -3297,172 +3328,172 @@ async function loadIntegrationData() {
       </div>
     `).join("");
 
-  } catch (err) {
-    console.log("❌ Load Error:", err.message);
-  }
-}
-
-/* ================================
-   ❌ DELETE STORE
-================================ */
-
-async function deleteStore(index) {
-
-  const token = localStorage.getItem("customerToken");
-
-  if (!confirm("Delete this store?")) return;
-
-  try {
-
-    await fetch(`${BASE_URL}/api/integrations/store/${index}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`
+      } catch (err) {
+        console.log("❌ Load Error:", err.message);
       }
-    });
-
-    console.log("🗑 Store Deleted");
-
-    loadIntegrationData();
-
-  } catch (err) {
-    console.log("❌ Delete Error:", err.message);
-  }
-}
-
-/* ================================
-   🔁 AUTO SYNC TOGGLE
-================================ */
-
-async function toggleAutoSync(index, value) {
-
-  const token = localStorage.getItem("customerToken");
-
-  try {
-
-    await fetch(`${BASE_URL}/api/integrations/autosync`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({ index, value })
-    });
-
-    console.log("🔁 Auto Sync Updated");
-
-  } catch (err) {
-    console.log("❌ AutoSync Error:", err.message);
-  }
-}
-
-/* ================================
-   🚚 COURIER SETTINGS
-================================ */
-
-async function saveCourierSettings() {
-
-  const token = localStorage.getItem("customerToken");
-
-  const settings = {
-    shipfast: document.getElementById("shipfastToggle").checked,
-    delhivery: document.getElementById("delhiveryToggle").checked,
-    ekart: document.getElementById("ekartToggle").checked
-  };
-
-  try {
-
-    const res = await fetch(`${BASE_URL}/api/integrations/courier`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(settings)
-    });
-
-    const result = await res.json();
-
-    console.log("🚚 Courier Saved:", result);
-
-    alert("Settings Saved");
-
-  } catch (err) {
-    console.log("❌ Courier Error:", err.message);
-  }
-}
-
-/* ================================
-   🔐 API KEY
-================================ */
-
-async function generateApiKey() {
-
-  const token = localStorage.getItem("customerToken");
-
-  const res = await fetch(`${BASE_URL}/api/integrations/apikey`, {
-    headers: {
-      Authorization: `Bearer ${token}`
     }
-  });
 
-  const result = await res.json();
+    /* ================================
+       ❌ DELETE STORE
+    ================================ */
 
-  document.getElementById("apiKey").value = result.apiKey;
-}
+    async function deleteStore(index) {
 
-function copyApiKey() {
-  const input = document.getElementById("apiKey");
-  input.select();
-  document.execCommand("copy");
-  alert("Copied");
-}
+      const token = localStorage.getItem("customerToken");
 
-/* ================================
-   ⚙️ AUTOMATION
-================================ */
+      if (!confirm("Delete this store?")) return;
 
-async function saveAutomation() {
+      try {
 
-  const token = localStorage.getItem("customerToken");
+        await fetch(`${BASE_URL}/api/integrations/store/${index}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
 
-  const data = {
-    autoShip: document.getElementById("autoShip").checked,
-    autoAssign: document.getElementById("autoAssign").checked
-  };
+        console.log("🗑 Store Deleted");
 
-  await fetch(`${BASE_URL}/api/integrations/automation`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(data)
-  });
+        loadIntegrationData();
 
-  alert("Saved");
-}
-
-/* ================================
-   🔁 RETRY FAILED
-================================ */
-
-async function retryFailedOrders() {
-
-  const token = localStorage.getItem("customerToken");
-
-  const res = await fetch(`${BASE_URL}/api/integrations/retry`, {
-    headers: {
-      Authorization: "Bearer " + localStorage.getItem("customerToken")
+      } catch (err) {
+        console.log("❌ Delete Error:", err.message);
+      }
     }
-  });
 
-  const result = await res.json();
+    /* ================================
+       🔁 AUTO SYNC TOGGLE
+    ================================ */
 
-  console.log("🔁 Retry Result:", result);
+    async function toggleAutoSync(index, value) {
 
-  alert("Retry Done");
-}
+      const token = localStorage.getItem("customerToken");
+
+      try {
+
+        await fetch(`${BASE_URL}/api/integrations/autosync`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({ index, value })
+        });
+
+        console.log("🔁 Auto Sync Updated");
+
+      } catch (err) {
+        console.log("❌ AutoSync Error:", err.message);
+      }
+    }
+
+    /* ================================
+       🚚 COURIER SETTINGS
+    ================================ */
+
+    async function saveCourierSettings() {
+
+      const token = localStorage.getItem("customerToken");
+
+      const settings = {
+        shipfast: document.getElementById("shipfastToggle").checked,
+        delhivery: document.getElementById("delhiveryToggle").checked,
+        ekart: document.getElementById("ekartToggle").checked
+      };
+
+      try {
+
+        const res = await fetch(`${BASE_URL}/api/integrations/courier`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(settings)
+        });
+
+        const result = await res.json();
+
+        console.log("🚚 Courier Saved:", result);
+
+        alert("Settings Saved");
+
+      } catch (err) {
+        console.log("❌ Courier Error:", err.message);
+      }
+    }
+
+    /* ================================
+       🔐 API KEY
+    ================================ */
+
+    async function generateApiKey() {
+
+      const token = localStorage.getItem("customerToken");
+
+      const res = await fetch(`${BASE_URL}/api/integrations/apikey`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      const result = await res.json();
+
+      document.getElementById("apiKey").value = result.apiKey;
+    }
+
+    function copyApiKey() {
+      const input = document.getElementById("apiKey");
+      input.select();
+      document.execCommand("copy");
+      alert("Copied");
+    }
+
+    /* ================================
+       ⚙️ AUTOMATION
+    ================================ */
+
+    async function saveAutomation() {
+
+      const token = localStorage.getItem("customerToken");
+
+      const data = {
+        autoShip: document.getElementById("autoShip").checked,
+        autoAssign: document.getElementById("autoAssign").checked
+      };
+
+      await fetch(`${BASE_URL}/api/integrations/automation`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      });
+
+      alert("Saved");
+    }
+
+    /* ================================
+       🔁 RETRY FAILED
+    ================================ */
+
+    async function retryFailedOrders() {
+
+      const token = localStorage.getItem("customerToken");
+
+      const res = await fetch(`${BASE_URL}/api/integrations/retry`, {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("customerToken")
+        }
+      });
+
+      const result = await res.json();
+
+      console.log("🔁 Retry Result:", result);
+
+      alert("Retry Done");
+    }
 
 
     ////////// SUB-SETTINGS FUNCTIONS
@@ -4039,68 +4070,68 @@ ${pickup.address || ""}
 
     function setupKycPreview() {
 
-  const fileInput = document.getElementById("docFile");
-  const preview = document.getElementById("previewImg");
+      const fileInput = document.getElementById("docFile");
+      const preview = document.getElementById("previewImg");
 
-  if (!fileInput) return;
+      if (!fileInput) return;
 
-  fileInput.addEventListener("change", () => {
+      fileInput.addEventListener("change", () => {
 
-    const file = fileInput.files[0];
+        const file = fileInput.files[0];
 
-    if (!file) return;
+        if (!file) return;
 
-    preview.src = URL.createObjectURL(file);
-    preview.style.display = "block";
+        preview.src = URL.createObjectURL(file);
+        preview.style.display = "block";
 
-  });
-}
+      });
+    }
 
     // LOAD KYC STATUS + OLD DOC
 
     async function loadKycStatus() {
 
-  const BASE_URL = "https://nxtship-backend.onrender.com";
+      const BASE_URL = "https://nxtship-backend.onrender.com";
 
-  const container = document.getElementById("kycContainer");
+      const container = document.getElementById("kycContainer");
 
-  if (!container) {
-    console.error("❌ kycContainer not found");
-    return;
-  }
-
-  console.log("📡 Loading KYC status...");
-
-  try {
-
-    const res = await fetch(`${BASE_URL}/api/kyc/get`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("customerToken")}`
+      if (!container) {
+        console.error("❌ kycContainer not found");
+        return;
       }
-    });
 
-    const data = await res.json();
+      console.log("📡 Loading KYC status...");
 
-    console.log("📦 KYC DATA:", data);
+      try {
 
-    /* =========================
-       🆕 NO KYC
-    ========================== */
+        const res = await fetch(`${BASE_URL}/api/kyc/get`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("customerToken")}`
+          }
+        });
 
-    if (!data.data) {
-      renderKycForm();
-      return;
-    }
+        const data = await res.json();
 
-    const kyc = data.data;
+        console.log("📦 KYC DATA:", data);
 
-    /* =========================
-       🟡 PENDING / VERIFIED
-    ========================== */
+        /* =========================
+           🆕 NO KYC
+        ========================== */
 
-    if (kyc.status === "pending" || kyc.status === "verified") {
+        if (!data.data) {
+          renderKycForm();
+          return;
+        }
 
-      container.innerHTML = `
+        const kyc = data.data;
+
+        /* =========================
+           🟡 PENDING / VERIFIED
+        ========================== */
+
+        if (kyc.status === "pending" || kyc.status === "verified") {
+
+          container.innerHTML = `
 
 <h2>Company KYC</h2>
 
@@ -4121,30 +4152,30 @@ style="width:150px; border-radius:8px;" />
 
 `;
 
-      return;
+          return;
+        }
+
+        /* =========================
+           🔴 REJECTED
+        ========================== */
+
+        if (kyc.status === "rejected") {
+          renderKycForm(kyc);
+        }
+
+      } catch (err) {
+
+        console.error("❌ Load error:", err);
+
+      }
     }
-
-    /* =========================
-       🔴 REJECTED
-    ========================== */
-
-    if (kyc.status === "rejected") {
-      renderKycForm(kyc);
-    }
-
-  } catch (err) {
-
-    console.error("❌ Load error:", err);
-
-  }
-}
 
     // RENDER KYC FORM
     function renderKycForm(kyc = null) {
 
-  const container = document.getElementById("kycContainer");
+      const container = document.getElementById("kycContainer");
 
-  container.innerHTML = `
+      container.innerHTML = `
 
 <h2>Company KYC</h2>
 
@@ -4178,56 +4209,56 @@ ${kyc ? `<div style="color:red;">❌ KYC Rejected - Re-upload required</div><br>
 
 `;
 
-  setupKycPreview();
-}
+      setupKycPreview();
+    }
 
 
     // SUBMIT KYC
     async function submitKyc() {
 
-  const type = document.getElementById("kycType").value;
-  const name = document.getElementById("docName").value;
-  const number = document.getElementById("docNumber").value;
-  const file = document.getElementById("docFile").files[0];
+      const type = document.getElementById("kycType").value;
+      const name = document.getElementById("docName").value;
+      const number = document.getElementById("docNumber").value;
+      const file = document.getElementById("docFile").files[0];
 
-  if (!type || !name || !number || !file) {
-    alert("All fields required");
-    return;
-  }
+      if (!type || !name || !number || !file) {
+        alert("All fields required");
+        return;
+      }
 
-  const formData = new FormData();
+      const formData = new FormData();
 
-  formData.append("type", type);
-  formData.append("name", name);
-  formData.append("number", number);
-  formData.append("document", file);
+      formData.append("type", type);
+      formData.append("name", name);
+      formData.append("number", number);
+      formData.append("document", file);
 
-  try {
+      try {
 
-  const res = await fetch("https://nxtship-backend.onrender.com/api/kyc/submit", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("customerToken")}`
-    },
-    body: formData
-  });
+        const res = await fetch("https://nxtship-backend.onrender.com/api/kyc/submit", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("customerToken")}`
+          },
+          body: formData
+        });
 
-  const data = await res.json();
+        const data = await res.json();
 
-  console.log("Response : ", data);
+        console.log("Response : ", data);
 
-  if (!data.success) {
-    alert("Failed");
-    return;
-  }
-
-  alert("KYC Submitted");
-
-  loadKycStatus(); // 🔥 refresh
-      } catch (err) {
-          console.log("Submit error : ", err);
+        if (!data.success) {
+          alert("Failed");
+          return;
         }
-  }
+
+        alert("KYC Submitted");
+
+        loadKycStatus(); // 🔥 refresh
+      } catch (err) {
+        console.log("Submit error : ", err);
+      }
+    }
 
 
 
@@ -4315,17 +4346,17 @@ ${kyc ? `<div style="color:red;">❌ KYC Rejected - Re-upload required</div><br>
 
     function renderCourierOptions(couriers) {
 
-  const list = document.getElementById("courierList");
-  list.innerHTML = "";
+      const list = document.getElementById("courierList");
+      list.innerHTML = "";
 
-  // 🔥 store globally (IMPORTANT)
-  window.shipfastCouriers = couriers;
+      // 🔥 store globally (IMPORTANT)
+      window.shipfastCouriers = couriers;
 
-  couriers.forEach((c, index) => {
+      couriers.forEach((c, index) => {
 
-    const isShipfast = c.carrier_id !== undefined;
+        const isShipfast = c.carrier_id !== undefined;
 
-    list.innerHTML += `
+        list.innerHTML += `
 
       <div style="border:1px solid #ddd; padding:10px; margin-bottom:10px; border-radius:6px">
 
@@ -4342,10 +4373,10 @@ ${kyc ? `<div style="color:red;">❌ KYC Rejected - Re-upload required</div><br>
       </div>
 
     `;
-  });
+      });
 
-  document.getElementById("courierPopup").style.display = "block";
-}
+      document.getElementById("courierPopup").style.display = "block";
+    }
 
 
     function closeCourierPopup() {
@@ -4353,9 +4384,9 @@ ${kyc ? `<div style="color:red;">❌ KYC Rejected - Re-upload required</div><br>
     }
 
     window.DEBUG = {
-  couriers: null,
-  lastClicked: null
-};
+      couriers: null,
+      lastClicked: null
+    };
 
     function openCourierPopup(couriers, payload) {
       console.log("🔥 openCourierPopup CALLED");
@@ -4421,177 +4452,177 @@ Select
 
     async function bookSelectedCourier(courier) {
 
-  console.log("========== 🚀 BOOKING START ==========");
-  console.log("📥 Incoming courier param:", courier);
-  console.log("📥 Courier type:", typeof courier);
-  console.log("📦 DEBUG couriers:", window.DEBUG.couriers);
-  console.log("📦 shipfastCouriers:", window.shipfastCouriers);
+      console.log("========== 🚀 BOOKING START ==========");
+      console.log("📥 Incoming courier param:", courier);
+      console.log("📥 Courier type:", typeof courier);
+      console.log("📦 DEBUG couriers:", window.DEBUG.couriers);
+      console.log("📦 shipfastCouriers:", window.shipfastCouriers);
 
-    let finalCourier = courier;
-    let carrier_id = null;
+      let finalCourier = courier;
+      let carrier_id = null;
 
-  const productPayload = window.shipmentPayload || {};
-  const ratePayload = window.ratePayload || {};
+      const productPayload = window.shipmentPayload || {};
+      const ratePayload = window.ratePayload || {};
 
-  console.log("📦 Global shipmentPayload:", productPayload);
-  console.log("📦 Global ratePayload:", ratePayload);
+      console.log("📦 Global shipmentPayload:", productPayload);
+      console.log("📦 Global ratePayload:", ratePayload);
 
-  const dropdown = document.getElementById("warehouseSelect");
+      const dropdown = document.getElementById("warehouseSelect");
 
-  if (!dropdown) {
-    console.error("❌ Warehouse dropdown not found");
-    alert("Warehouse dropdown missing");
-    return;
-  }
-
-  const selectedOption = dropdown.options[dropdown.selectedIndex];
-
-  const warehouseId = selectedOption?.value;
-  const fromPincode = selectedOption?.getAttribute("data-pincode");
-
-  console.log("✅ Selected WarehouseId:", warehouseId);
-  console.log("✅ Selected Pincode:", fromPincode);
-  console.log("📍 Selected Option Object:", selectedOption);
-
-  if (!warehouseId) {
-    console.error("❌ WarehouseId missing");
-    alert("Please select warehouse");
-    return;
-  }
-
-  if (!fromPincode) {
-    console.error("❌ fromPincode missing");
-    alert("Invalid warehouse pincode");
-    return;
-  }
-
-  console.log("🔍 Starting courier detection...");
-
-  /* =========================
-     🔥 SHIPFAST ONLY
-  ========================== */
-
-  if (typeof courier === "number") {
-
-    console.log("📦 Shipfast index received:", courier);
-    console.log("📦 shipfastCouriers global:", window.shipfastCouriers);
-
-    const selected = window.shipfastCouriers?.[courier];
-
-    console.log("📦 Selected courier object:", selected);
-
-    if (!selected) {
-      console.error("❌ No courier found at this index");
-    }
-
-    if (selected?.carrier_id) {
-      console.log("⚡ Shipfast detected");
-
-      finalCourier = "shipfast";
-      carrier_id = selected.carrier_id;
-
-      console.log("✅ carrier_id set:", carrier_id);
-    } else {
-      console.warn("⚠️ courierType not shipfast:", selected?.courierType);
-    }
-
-  } else {
-
-    console.log("📦 Non-shipfast courier detected:", courier);
-
-    finalCourier = courier?.toLowerCase();
-
-    console.log("✅ finalCourier (normalized):", finalCourier);
-
-    if (finalCourier === "shipfast" && !carrier_id) {
-    console.error("❌ Shipfast but no carrier_id → STOP");
-    alert("Shipfast error: carrier_id missing");
-    return;
-  }
-  }
-
-
-  /* =========================
-     ✅ FIX RATE PAYLOAD
-  ========================== */
-
-  const safeRatePayload = {
-    ...ratePayload,
-    fromPincode: fromPincode || ratePayload.fromPincode || "",
-  };
-
-  console.log("📦 Safe Rate Payload:", safeRatePayload);
-  console.log("📦 Product Payload:", productPayload);
-
-  /* =========================
-     ✅ FINAL MERGE PAYLOAD
-  ========================== */
-
-  const payload = {
-    ...safeRatePayload,
-    ...productPayload,
-
-    warehouseId: warehouseId,
-    courier: finalCourier,
-    carrier_id: carrier_id
-  };
-
-  console.log("🔥 FINAL BOOKING PAYLOAD:", payload);
-
-  if (!payload.courier) {
-    console.error("❌ Courier missing in payload");
-  }
-
-  if (payload.courier === "shipfast" && !payload.carrier_id) {
-    console.error("❌ Shipfast selected but carrier_id missing");
-  }
-
-  showPopup("📦 Booking shipment...");
-
-  try {
-
-    console.log("📡 Sending request to backend...");
-
-    const res = await fetch(
-      "https://nxtship-backend.onrender.com/api/shipment/book",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("customerToken")}`
-        },
-        body: JSON.stringify(payload)
+      if (!dropdown) {
+        console.error("❌ Warehouse dropdown not found");
+        alert("Warehouse dropdown missing");
+        return;
       }
-    );
 
-    console.log("📡 Response status:", res.status);
+      const selectedOption = dropdown.options[dropdown.selectedIndex];
 
-    const data = await res.json();
+      const warehouseId = selectedOption?.value;
+      const fromPincode = selectedOption?.getAttribute("data-pincode");
 
-    console.log("📦 API Response:", data);
+      console.log("✅ Selected WarehouseId:", warehouseId);
+      console.log("✅ Selected Pincode:", fromPincode);
+      console.log("📍 Selected Option Object:", selectedOption);
 
-    if (!res.ok || !data.success) {
-      console.error("❌ Booking failed:", data);
-      showPopup(`❌ Shipment Failed\n${data.message || "Unknown error"}`);
-      return;
+      if (!warehouseId) {
+        console.error("❌ WarehouseId missing");
+        alert("Please select warehouse");
+        return;
+      }
+
+      if (!fromPincode) {
+        console.error("❌ fromPincode missing");
+        alert("Invalid warehouse pincode");
+        return;
+      }
+
+      console.log("🔍 Starting courier detection...");
+
+      /* =========================
+         🔥 SHIPFAST ONLY
+      ========================== */
+
+      if (typeof courier === "number") {
+
+        console.log("📦 Shipfast index received:", courier);
+        console.log("📦 shipfastCouriers global:", window.shipfastCouriers);
+
+        const selected = window.shipfastCouriers?.[courier];
+
+        console.log("📦 Selected courier object:", selected);
+
+        if (!selected) {
+          console.error("❌ No courier found at this index");
+        }
+
+        if (selected?.carrier_id) {
+          console.log("⚡ Shipfast detected");
+
+          finalCourier = "shipfast";
+          carrier_id = selected.carrier_id;
+
+          console.log("✅ carrier_id set:", carrier_id);
+        } else {
+          console.warn("⚠️ courierType not shipfast:", selected?.courierType);
+        }
+
+      } else {
+
+        console.log("📦 Non-shipfast courier detected:", courier);
+
+        finalCourier = courier?.toLowerCase();
+
+        console.log("✅ finalCourier (normalized):", finalCourier);
+
+        if (finalCourier === "shipfast" && !carrier_id) {
+          console.error("❌ Shipfast but no carrier_id → STOP");
+          alert("Shipfast error: carrier_id missing");
+          return;
+        }
+      }
+
+
+      /* =========================
+         ✅ FIX RATE PAYLOAD
+      ========================== */
+
+      const safeRatePayload = {
+        ...ratePayload,
+        fromPincode: fromPincode || ratePayload.fromPincode || "",
+      };
+
+      console.log("📦 Safe Rate Payload:", safeRatePayload);
+      console.log("📦 Product Payload:", productPayload);
+
+      /* =========================
+         ✅ FINAL MERGE PAYLOAD
+      ========================== */
+
+      const payload = {
+        ...safeRatePayload,
+        ...productPayload,
+
+        warehouseId: warehouseId,
+        courier: finalCourier,
+        carrier_id: carrier_id
+      };
+
+      console.log("🔥 FINAL BOOKING PAYLOAD:", payload);
+
+      if (!payload.courier) {
+        console.error("❌ Courier missing in payload");
+      }
+
+      if (payload.courier === "shipfast" && !payload.carrier_id) {
+        console.error("❌ Shipfast selected but carrier_id missing");
+      }
+
+      showPopup("📦 Booking shipment...");
+
+      try {
+
+        console.log("📡 Sending request to backend...");
+
+        const res = await fetch(
+          "https://nxtship-backend.onrender.com/api/shipment/book",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("customerToken")}`
+            },
+            body: JSON.stringify(payload)
+          }
+        );
+
+        console.log("📡 Response status:", res.status);
+
+        const data = await res.json();
+
+        console.log("📦 API Response:", data);
+
+        if (!res.ok || !data.success) {
+          console.error("❌ Booking failed:", data);
+          showPopup(`❌ Shipment Failed\n${data.message || "Unknown error"}`);
+          return;
+        }
+
+        console.log("✅ BOOKING SUCCESS");
+        console.log("📦 AWB:", data.waybill);
+
+        showPopup(`✅ Shipment Created\nAWB: ${data.waybill}`);
+
+        closeCourierPopup();
+
+      } catch (error) {
+
+        console.error("❌ FETCH ERROR:", error);
+        showPopup("❌ Network error");
+
+      }
+
+      console.log("========== ✅ BOOKING END ==========");
     }
-
-    console.log("✅ BOOKING SUCCESS");
-    console.log("📦 AWB:", data.waybill);
-
-    showPopup(`✅ Shipment Created\nAWB: ${data.waybill}`);
-
-    closeCourierPopup();
-
-  } catch (error) {
-
-    console.error("❌ FETCH ERROR:", error);
-    showPopup("❌ Network error");
-
-  }
-
-  console.log("========== ✅ BOOKING END ==========");
-}
 
 
 
@@ -4979,40 +5010,56 @@ Select
           return;
         }
 
+        // Store globally for bulk ops
+        window.allShipments = data.shipments;
+
         table.innerHTML = `
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Status</th>
-                            <th>Date</th>
-                            <th>Invoice</th>
-                            <th>Export</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${data.shipments.map(s => `
-                            <tr>
-                                <td>${s._id}</td>
-                                <td>${s.status}</td>
-                                <td>${new Date(s.createdAt).toLocaleDateString()}</td>
-                                <td>
-                                    <button onclick="downloadInvoice('${s._id}')">
-                                        📄 Invoice
-                                    </button>
-                                </td>
-                                <td>
-                                    <button onclick="exportCSV('${s._id}')">
-                                        📥 CSV
-                                    </button>
-                                </td>
-                            </tr>
-                        `).join("")}
-                    </tbody>
-                </table>
-            </div>
-        `;
+      <div style="margin-bottom:10px;">
+        <label>
+          <input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll(this)" />
+          <b>Select All</b>
+        </label>
+        <span id="selectedCount" style="margin-left:15px;font-size:13px;color:#555;">0 selected</span>
+      </div>
+
+      <div class="bulk-toolbar">
+        <button onclick="bulkDownloadCSV()">📥 Download Selected CSV</button>
+        <button onclick="bulkDownloadInvoices()">📄 Download Selected Invoices</button>
+        <button onclick="bulkDownloadLabels()">🏷️ Download Selected Labels</button>
+        <span class="info">Click rows or checkboxes to select</span>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:40px;"></th>
+              <th>Order ID</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Invoice</th>
+              <th>Export</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${data.shipments.map((s, idx) => `
+              <tr data-index="${idx}" onclick="toggleRow(this)" style="cursor:pointer;">
+                <td><input type="checkbox" class="shipmentCheckbox" data-index="${idx}" onclick="event.stopPropagation();updateSelectedCount()" /></td>
+                <td>${s._id}</td>
+                <td>${s.status}</td>
+                <td>${new Date(s.createdAt).toLocaleDateString()}</td>
+                <td>
+                  <button onclick="event.stopPropagation();downloadInvoice('${s._id}')">📄 Invoice</button>
+                </td>
+                <td>
+                  <button onclick="event.stopPropagation();exportCSV('${s._id}')">📥 CSV</button>
+                </td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+      </div>
+    `;
 
       } catch (err) {
         document.getElementById("shipmentTable").innerHTML =
@@ -5299,7 +5346,84 @@ Select
         `<div class="preview-box">Estimated Charge: ₹${data.breakdown.totalAmount}</div>`;
     }
 
+    /* ================================
+      BULK DOWNLOAD HELPERS
+    ================================ */
 
+    function toggleRow(row) {
+      const cb = row.querySelector(".shipmentCheckbox");
+      if (cb) {
+        cb.checked = !cb.checked;
+        updateSelectedCount();
+      }
+    }
+
+    function toggleSelectAll(master) {
+      document.querySelectorAll(".shipmentCheckbox").forEach(cb => {
+        cb.checked = master.checked;
+      });
+      updateSelectedCount();
+    }
+
+    function getSelectedShipments() {
+      const selected = [];
+      document.querySelectorAll(".shipmentCheckbox:checked").forEach(cb => {
+        const idx = parseInt(cb.dataset.index);
+        if (window.allShipments && window.allShipments[idx]) {
+          selected.push(window.allShipments[idx]);
+        }
+      });
+      return selected;
+    }
+
+    function updateSelectedCount() {
+      const count = document.querySelectorAll(".shipmentCheckbox:checked").length;
+      const el = document.getElementById("selectedCount");
+      if (el) el.innerText = count + " selected";
+    }
+
+    function bulkDownloadCSV() {
+      const selected = getSelectedShipments();
+      if (!selected.length) { alert("Select at least one shipment"); return; }
+
+      let csv = "Order ID,Status,Date\n";
+      selected.forEach(s => {
+        csv += `${s._id},${s.status},${new Date(s.createdAt).toLocaleDateString()}\n`;
+      });
+
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "bulk-shipments.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function bulkDownloadInvoices() {
+      const selected = getSelectedShipments();
+      if (!selected.length) { alert("Select at least one shipment"); return; }
+
+      selected.forEach(s => {
+        window.open(
+          `https://nxtship-backend.onrender.com/api/resources/invoice/${s._id}`,
+          "_blank"
+        );
+      });
+    }
+
+    function bulkDownloadLabels() {
+      const selected = getSelectedShipments();
+      if (!selected.length) { alert("Select at least one shipment"); return; }
+
+      selected.forEach(s => {
+        // Reuse the label generation but in a new tab
+        window.open(
+          `https://nxtship-backend.onrender.com/label-api/courier/${s._id}`,
+          "_blank"
+        );
+      });
+    }
 
 
 
