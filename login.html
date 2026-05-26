@@ -274,6 +274,7 @@
         setTimeout(() => toast.remove(), 300);
       }, 3000);
     }
+    let otpMode = false;
 
     // ✅ Login Function
     async function loginUser() {
@@ -287,6 +288,11 @@
         return;
       }
 
+      if (otpMode && otp === "") {
+        showToast("⚠️ Please enter OTP", "warning");
+        return;
+      }
+
       try {
         // ✅ Call Backend Login API
         const res = await fetch(
@@ -297,9 +303,9 @@
               "Content-Type": "application/json",
             },
             body: JSON.stringify({
-              email: email,
-              password: password,
-              otp: otp, // Include OTP if required by backend
+              email,
+              password,
+              ...(otpMode && { otp }),
             }),
           }
         );
@@ -307,6 +313,8 @@
         const data = await res.json();
 
         if (data.otpRequired) {
+
+          otpMode = true;
 
           document.getElementById("otpBox").style.display = "block";
 
