@@ -2458,6 +2458,11 @@ Generate Label
     let currentPage = 1;
     const perPage = 5;
 
+    if (!token || token === "undefined") {
+      showPopup("❌ Session expired, please login again");
+      window.location.href = "login.html";
+      return;
+}
     function showSkeleton() {
 
       console.log("⏳ Showing Skeleton");
