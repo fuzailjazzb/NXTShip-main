@@ -4345,7 +4345,6 @@ ${kyc ? `<div style="color:red;">❌ KYC Rejected - Re-upload required</div><br>
 
 
     function renderCourierOptions(couriers) {
-
       const list = document.getElementById("courierList");
       list.innerHTML = "";
 
@@ -4353,31 +4352,35 @@ ${kyc ? `<div style="color:red;">❌ KYC Rejected - Re-upload required</div><br>
       window.shipfastCouriers = couriers;
 
       couriers.forEach((c, index) => {
-
         const isShipfast = c.carrier_id !== undefined;
 
+        // 🔴 CHECK: Kya ye courier Ekart hai? (Case-insensitive)
+        const isEkart = c.name && c.name.toLowerCase() === "ekart";
+
+        // 🔴 SMART DISPLAY LOGIC: Agar Ekart hai toh custom text, warna actual price/days
+        const priceDisplay = isEkart 
+            ? `<span style="color: #f59e0b; font-size: 14px;">Calculated later</span>` 
+            : `₹${c.price}`;
+            
+        const deliveryDisplay = isEkart 
+            ? `<span style="color: var(--muted); font-size: 14px;">To be determined</span>` 
+            : `${c.deliveryDays} days`;
+
         list.innerHTML += `
-
-      <div style="border:1px solid #ddd; padding:10px; margin-bottom:10px; border-radius:6px">
-
-        <h4>${c.name}</h4>
-
-        <p>Price: ₹${c.price}</p>
-
-        <p>Delivery: ${c.deliveryDays} days</p>
-
-        <button onclick='bookSelectedCourier(${isShipfast ? index : `"${c.name}"`})'>
-          Ship with ${c.name}
-        </button>
-
-      </div>
-
-    `;
+          <div style="border:1px solid #ddd; padding:10px; margin-bottom:10px; border-radius:6px">
+            <h4>${c.name}</h4>
+            <p>Price: ${priceDisplay}</p>
+            <p>Delivery: ${deliveryDisplay}</p>
+            
+            <button class="btn btn-primary" style="margin-top: 8px;" onclick='bookSelectedCourier(${isShipfast ? index : `"${c.name}"`})'>
+              Ship with ${c.name}
+            </button>
+          </div>
+        `;
       });
 
       document.getElementById("courierPopup").style.display = "block";
     }
-
 
     function closeCourierPopup() {
       document.getElementById("courierPopup").style.display = "none";
