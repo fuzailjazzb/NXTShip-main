@@ -4372,6 +4372,8 @@ ${kyc ? `<div style="color:red;">❌ KYC Rejected - Re-upload required</div><br>
             <p>Price: ${priceDisplay}</p>
             <p>Delivery: ${deliveryDisplay}</p>
             
+            <div id="booking-error-${c.name.toLowerCase()}" style="color: #dc2626; font-size: 13px; font-weight: 500; margin-top: 8px; margin-bottom: 8px; display: none;"></div>
+            
             <button class="btn btn-primary" style="margin-top: 8px;" onclick='bookSelectedCourier(${isShipfast ? index : `"${c.name}"`})'>
               Ship with ${c.name}
             </button>
@@ -4454,11 +4456,10 @@ Select
     // booking after recommendations
 
     async function bookSelectedCourier(courier) {
-
       console.log("========== 🚀 BOOKING START ==========");
       console.log("📥 Incoming courier param:", courier);
       console.log("📥 Courier type:", typeof courier);
-      console.log("📦 DEBUG couriers:", window.DEBUG.couriers);
+      console.log("📦 DEBUG couriers:", window.DEBUG?.couriers);
       console.log("📦 shipfastCouriers:", window.shipfastCouriers);
 
       let finalCourier = courier;
@@ -4479,7 +4480,6 @@ Select
       }
 
       const selectedOption = dropdown.options[dropdown.selectedIndex];
-
       const warehouseId = selectedOption?.value;
       const fromPincode = selectedOption?.getAttribute("data-pincode");
 
@@ -4504,14 +4504,11 @@ Select
       /* =========================
          🔥 SHIPFAST ONLY
       ========================== */
-
       if (typeof courier === "number") {
-
         console.log("📦 Shipfast index received:", courier);
         console.log("📦 shipfastCouriers global:", window.shipfastCouriers);
 
         const selected = window.shipfastCouriers?.[courier];
-
         console.log("📦 Selected courier object:", selected);
 
         if (!selected) {
@@ -4520,21 +4517,17 @@ Select
 
         if (selected?.carrier_id) {
           console.log("⚡ Shipfast detected");
-
           finalCourier = "shipfast";
           carrier_id = selected.carrier_id;
-
           console.log("✅ carrier_id set:", carrier_id);
         } else {
+          // 🔴 Sahi courier name nikalna UI error box ke liye
+          finalCourier = (selected?.name || "delhivery").toLowerCase();
           console.warn("⚠️ courierType not shipfast:", selected?.courierType);
         }
-
       } else {
-
         console.log("📦 Non-shipfast courier detected:", courier);
-
         finalCourier = courier?.toLowerCase();
-
         console.log("✅ finalCourier (normalized):", finalCourier);
 
         if (finalCourier === "shipfast" && !carrier_id) {
@@ -4544,11 +4537,18 @@ Select
         }
       }
 
+      // 🔴 Purana error hatana (agar pehle fail hua tha)
+      const errorDivName = finalCourier === "shipfast" ? "shipfast" : finalCourier;
+      const errorDiv = document.getElementById(`booking-error-${errorDivName}`);
+      
+      if (errorDiv) {
+          errorDiv.style.display = "none";
+          errorDiv.innerText = "";
+      }
 
       /* =========================
          ✅ FIX RATE PAYLOAD
       ========================== */
-
       const safeRatePayload = {
         ...ratePayload,
         fromPincode: fromPincode || ratePayload.fromPincode || "",
@@ -4560,11 +4560,9 @@ Select
       /* =========================
          ✅ FINAL MERGE PAYLOAD
       ========================== */
-
       const payload = {
         ...safeRatePayload,
         ...productPayload,
-
         warehouseId: warehouseId,
         courier: finalCourier,
         carrier_id: carrier_id
@@ -4580,11 +4578,10 @@ Select
         console.error("❌ Shipfast selected but carrier_id missing");
       }
 
-      showPopup("📦 Booking shipment...");
-
       try {
-
         console.log("📡 Sending request to backend...");
+
+        // Button click hone par aap chahein toh button ko disable/loading state me daal sakte hain yahan
 
         const res = await fetch(
           "https://nxtship-backend.onrender.com/api/shipment/book",
@@ -4599,34 +4596,42 @@ Select
         );
 
         console.log("📡 Response status:", res.status);
-
         const data = await res.json();
-
         console.log("📦 API Response:", data);
 
+        // 🔴 Inline Error Display (Popup ki jagah direct box me)
         if (!res.ok || !data.success) {
           console.error("❌ Booking failed:", data);
-          showPopup(`❌ Shipment Failed\n${data.message || "Unknown error"}`);
+          
+          if (errorDiv) {
+              errorDiv.innerText = `❌ ${data.message || "Booking failed"}`;
+              errorDiv.style.display = "block";
+          } else {
+              showPopup(`❌ Shipment Failed\n${data.message || "Unknown error"}`);
+          }
           return;
         }
 
         console.log("✅ BOOKING SUCCESS");
         console.log("📦 AWB:", data.waybill);
-
+        
+        // Success hone par abhi bhi popup aayega
         showPopup(`✅ Shipment Created\nAWB: ${data.waybill}`);
-
         closeCourierPopup();
 
       } catch (error) {
-
         console.error("❌ FETCH ERROR:", error);
-        showPopup("❌ Network error");
-
+        
+        if (errorDiv) {
+            errorDiv.innerText = `❌ Network error`;
+            errorDiv.style.display = "block";
+        } else {
+            showPopup("❌ Network error");
+        }
       }
 
       console.log("========== ✅ BOOKING END ==========");
     }
-
 
 
     async function addMoneyToWallet() {
