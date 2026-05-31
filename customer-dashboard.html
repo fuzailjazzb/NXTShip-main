@@ -908,6 +908,12 @@
         flex-direction: column;
       }
     }
+
+    @media (max-width: 600px) {
+    .form-grid-2, .form-grid-3 {
+      grid-template-columns: 1fr; 
+    }
+  }
   </style>
 </head>
 
@@ -1316,83 +1322,137 @@ Track Here
           document.getElementById("pageTitle").innerText = "Create Shipment";
 
           content.innerHTML = `
+<style>
+  /* Modern UI Styles for Shipment Form */
+  .shipment-panel { max-width: 800px; margin: 0 auto; padding-bottom: 30px; font-family: inherit; }
+  .form-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 24px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+  .form-card h3 { margin-top: 0; margin-bottom: 20px; font-size: 16px; color: #1e293b; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .input-group { margin-bottom: 16px; }
+  .input-group label { display: block; font-size: 13px; font-weight: 600; color: #64748b; margin-bottom: 6px; }
+  .form-control { width: 100%; padding: 10px 14px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 14px; color: #334155; box-sizing: border-box; transition: all 0.2s; outline: none; background: #fff; }
+  .form-control:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+  .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  textarea.form-control { resize: vertical; min-height: 80px; }
+  .btn-submit { background: #2563eb; color: #fff; border: none; padding: 14px 24px; font-size: 16px; font-weight: 600; border-radius: 8px; cursor: pointer; width: 100%; transition: background 0.2s; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2); }
+  .btn-submit:hover { background: #1d4ed8; }
+</style>
+
 <div class="shipment-panel">
 
-<h2>Create Shipment</h2>
+  <div class="form-card" style="background: #f8fafc; border-color: #cbd5e1;">
+    <div class="input-group" style="margin-bottom: 0;">
+      <label style="color: #0f172a; font-size: 14px;">🏢 Select Pickup Warehouse</label>
+      <select id="warehouseSelect" class="form-control" style="border-color: #94a3b8;">
+        <option value="">Loading Warehouses...</option>
+      </select>
+    </div>
+  </div>
 
-<div style="margin-bottom:15px; width:100%;">
+  <div class="form-card">
+    <h3>👤 Receiver Details</h3>
+    
+    <div class="form-grid-2">
+      <div class="input-group">
+        <label>Full Name</label>
+        <input id="receiverName" class="form-control" placeholder="e.g. Rahul Kumar"/>
+      </div>
+      <div class="input-group">
+        <label>Phone Number</label>
+        <input id="receiverPhone" class="form-control" placeholder="10-digit mobile number"/>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label>Complete Address</label>
+      <textarea id="receiverAddress" class="form-control" placeholder="House/Flat No., Street, Area..."></textarea>
+    </div>
+
+    <div class="form-grid-3">
+      <div class="input-group">
+        <label>Pincode</label>
+        <input id="toPincode" class="form-control" placeholder="e.g. 110001"/>
+      </div>
+      <div class="input-group">
+        <label>City</label>
+        <input id="receiverCity" class="form-control" placeholder="City"/>
+      </div>
+      <div class="input-group">
+        <label>State</label>
+        <input id="receiverState" class="form-control" placeholder="State"/>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-card">
+    <h3>📦 Product Details</h3>
+
+    <div style="background-color: #f0f9ff; border-left: 4px solid #3b82f6; padding: 12px 16px; margin-bottom: 24px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+      <h4 style="margin-top: 0; margin-bottom: 8px; color: #1e3a8a; font-size: 14px; font-weight: 600;">
+        ℹ️ Estimated Shipping Rates (By Weight)
+      </h4>
+      <ul style="margin: 0; padding-left: 20px; color: #334155; font-size: 13px; line-height: 1.6;">
+        <li><strong>Up to 1 kg</strong> — ₹85</li>
+        <li><strong>Above 1 kg up to 3 kg</strong> — ₹198</li>
+        <li><strong>Above 3 kg up to 5 kg</strong> — ₹230</li>
+        <li><strong>Above 5 kg up to 10 kg</strong> — ₹359</li>
+        <li><strong>Additional weight above 10 kg:</strong> ₹20–₹30 per kg</li>
+      </ul>
+      <p style="margin-top: 10px; margin-bottom: 0; color: #475569; font-size: 12px; font-style: italic;">
+        * Note: Same-day delivery and Express delivery may incur additional surcharges.
+      </p>
+    </div>
+    <div class="input-group">
+      <label>Product Name</label>
+      <input id="productName" class="form-control" placeholder="e.g. T-Shirt, Shoes, Mobile Cover" required/>
+    </div>
+
+    <div class="form-grid-2">
+      <div class="input-group">
+        <label>Weight (kg)</label>
+        <input id="weight" type="number" step="0.1" class="form-control" placeholder="0.5"/>
+      </div>
+      <div class="input-group">
+        <label>Order Value (₹)</label>
+        <input id="orderValue" type="number" class="form-control" placeholder="e.g. 999"/>
+      </div>
+    </div>
+
+    <div class="form-grid-3">
+      <div class="input-group">
+        <label>Length (cm)</label>
+        <input id="length" class="form-control" placeholder="L"/>
+      </div>
+      <div class="input-group">
+        <label>Breadth (cm)</label>
+        <input id="breadth" class="form-control" placeholder="B"/>
+      </div>
+      <div class="input-group">
+        <label>Height (cm)</label>
+        <input id="height" class="form-control" placeholder="H"/>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label>Payment Type</label>
+      <select id="paymentType" class="form-control">
+        <option value="Pre-paid">Pre-paid</option>
+        <option value="COD">Cash on Delivery (COD)</option>
+      </select>
+    </div>
+  </div>
+
+  <button id="bookBtn" class="btn-submit" onclick="showCourierOptions()">🚀 Get Rates & Create Shipment</button>
   
-  <label> Select Warehouse </label>
+  <div id="bookingLoader" style="display:none; text-align:center; padding: 15px; color: #64748b;">
+    <span style="display:inline-block;width:16px;height:16px;border:2px solid #3b82f6;border-top-color:transparent;border-radius:50%;animation:spin 0.7s linear infinite; margin-right: 8px; vertical-align: middle;"></span>
+    Booking Shipment...
+  </div>
 
-  <select id="warehouseSelect"
-  style="
-    width:100%;
-    padding:10px;
-    border-radius:6px;
-    border:1px solid #ccc;
-    font-size:14px;
-    box-sizing:border-box;
-    margin-bottom:15px;
-    background:#fff;
-  ">
-    <option value="">Loading Warehouses...</option>
-  </select>
+  <div id="shipmentMessage" style="margin-top: 15px; text-align: center;"></div>
 
 </div>
-
-<h3>Receiver Details</h3>
-
-<input id="receiverName" placeholder="Receiver Name"/>
-<input id="receiverPhone" placeholder="Receiver Phone"/>
-<textarea id="receiverAddress" placeholder="Receiver Address"></textarea>
-<input id="toPincode" placeholder="Receiver Pincode"/>
-<input id="receiverCity" placeholder="City"/>
-<input id="receiverState" placeholder="State"/>
-
-<h3>Product Details</h3>
-
-<div style="background-color: #f0f9ff; border-left: 4px solid #3b82f6; padding: 12px 16px; margin-bottom: 20px; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-  <h4 style="margin-top: 0; margin-bottom: 8px; color: #1e3a8a; font-size: 14px; font-weight: 600;">
-    ℹ️ Estimated Shipping Rates (By Weight)
-  </h4>
-  <ul style="margin: 0; padding-left: 20px; color: #334155; font-size: 13px; line-height: 1.6;">
-    <li><strong>Up to 1 kg</strong> — ₹85</li>
-    <li><strong>Above 1 kg up to 3 kg</strong> — ₹198</li>
-    <li><strong>Above 3 kg up to 5 kg</strong> — ₹230</li>
-    <li><strong>Above 5 kg up to 10 kg</strong> — ₹359</li>
-    <li><strong>Additional weight above 10 kg:</strong> ₹20–₹30 per kg</li>
-  </ul>
-  <p style="margin-top: 10px; margin-bottom: 0; color: #475569; font-size: 12px; font-style: italic;">
-    * Note: Same-day delivery and Express delivery may incur additional surcharges.
-  </p>
-</div>
-<input id="productName" placeholder="Product Name (e.g. T-Shirt, Shoes, Mobile Cover)" required/>
-
-<input id="weight" type="number" step="0.1" placeholder="Weight (kg)"/>
-
-<input id="length" placeholder="Length (cm)"/>
-<input id="breadth" placeholder="Breadth (cm)"/>
-<input id="height" placeholder="Height (cm)"/>
-
-<select id="paymentType">
-  <option value="Pre-paid">Pre-paid</option>
-  <option value="COD">Cash on Delivery</option>
-</select>
-
-<input id="orderValue" type="number" placeholder="Order Value"/>
-
-<br><br>
-
-<button id="bookBtn" onclick="showCourierOptions()">🚀 Create Shipment</button>
-<span id="bookingLoader" style="display:none;">
-  Booking Shipment...
-</span>
-
-<div id="shipmentMessage"></div>
-
-</div>
-
-                                  `;
+`;
           setTimeout(getWarehouses, 300);
           break;
 
