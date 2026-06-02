@@ -29,6 +29,10 @@
   </script>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -38,6 +42,18 @@
       overflow-y: auto;
     }
 
+    /* =========================================
+       💻 TABLET & SMALL LAPTOP FIX (768px to 1024px)
+    ========================================= */
+    @media(max-width: 1024px) {
+      .main {
+        padding: 25px !important; /* 50px ki jagah 25px kiya taaki content ko jagah mile */
+      }
+      .kpiGrid, .trackerGrid, .cards {
+        grid-template-columns: repeat(2, 1fr) !important; /* Tablet par perfect 2-2 ka grid aayega */
+      }
+    }
+    
     /* Sidebar */
     .sidebar {
       width: 260px;
@@ -1119,8 +1135,6 @@ margin-top:4px;
 
 <div class="dashboardContainer">
 
-<div class="dashboardContainer">
-
                                 <!-- Notification Slider -->
 
 <div id="notificationSlider"
@@ -1373,7 +1387,7 @@ Track Here
       padding: 16px !important; /* Mobile pe screen fitting ke liye padding thodi kam ki */
     }
   }
-    
+
 </style>
 
 <div class="shipment-panel">
