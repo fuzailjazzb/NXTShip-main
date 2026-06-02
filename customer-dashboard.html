@@ -893,27 +893,54 @@
       }
     }
 
-    /* Mobile Responsive */
+    /* =========================================
+       📱 MASTER MOBILE RESPONSIVENESS FIX
+    ========================================= */
     @media(max-width: 800px) {
-      .menu-btn {
-        display: block;
-      }
-
+      .menu-btn { display: block; }
+      
+      /* Fix 1: Padding 1px ki jagah 15px kiya taaki kinaro se na chipke */
       .main {
         margin-left: 0 !important;
-        padding: 1px;
+        padding: 15px !important; 
       }
-
-      .rate-container {
-        flex-direction: column;
+      
+      /* Fix 2: Topbar ko mobile pe stack karna */
+      .topbar {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 10px;
       }
+      
+      /* Fix 3: Saare Grids (Shipment form, Cards, Rate form) ko 1 column banana */
+      .rate-container, .rate-form { flex-direction: column; width: 100% !important; }
+      .form-grid-2, .form-grid-3, .cards, .kpiGrid, .trackerGrid, .dimension-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+      }
+      
+      /* Fix 4: Tables screen se bahar na nikle (Horizontal Scroll) */
+      .table-container, .activityBox, .table-wrapper {
+        overflow-x: auto !important;
+        width: 100%;
+      }
+      
+      /* Fix 5: Shipment Form ke cards ki padding kam ki */
+      .form-card { padding: 16px !important; }
     }
 
-    @media (max-width: 600px) {
-    .form-grid-2, .form-grid-3 {
-      grid-template-columns: 1fr; 
+    @media(max-width: 480px) {
+      /* Chhote phones ke liye Quick actions aur stats theek karna */
+      .report-stats { grid-template-columns: 1fr !important; }
+      .quickActions button { width: 100%; margin-bottom: 5px; }
+      .topbar h1 { font-size: 18px; }
     }
-  }
+
+    /* Fix 6: JS me banaye gaye Popups (Warehouse etc) ki hardcoded width theek karna */
+    div[style*="width:350px"] {
+      width: 90% !important;
+      max-width: 350px !important;
+    }
   </style>
 </head>
 
@@ -1336,6 +1363,17 @@ Track Here
   textarea.form-control { resize: vertical; min-height: 80px; }
   .btn-submit { background: #2563eb; color: #fff; border: none; padding: 14px 24px; font-size: 16px; font-weight: 600; border-radius: 8px; cursor: pointer; width: 100%; transition: background 0.2s; box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2); }
   .btn-submit:hover { background: #1d4ed8; }
+
+  @media (max-width: 768px) {
+    .form-grid-2, .form-grid-3 {
+      grid-template-columns: 1fr !important; /* Mobile pe saare columns ek line me aa jayenge */
+      gap: 12px !important;
+    }
+    .form-card {
+      padding: 16px !important; /* Mobile pe screen fitting ke liye padding thodi kam ki */
+    }
+  }
+    
 </style>
 
 <div class="shipment-panel">
