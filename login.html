@@ -65,7 +65,10 @@
 
     /* Login Card */
     .login-card {
-      width: 420px;
+      width: 90%;
+      /* Mobile par screen ka 90% lega */
+      max-width: 420px;
+      /* PC par 420px se bada nahi hoga */
       background: rgba(255, 255, 255, 0.9);
       backdrop-filter: blur(12px);
       padding: 40px;
@@ -209,6 +212,43 @@
 
     .toast.warning {
       border-left: 6px solid #facc15;
+    }
+
+    /* =========================================
+       📱 MOBILE RESPONSIVENESS FIX
+    ========================================= */
+    @media (max-width: 480px) {
+      body {
+        overflow-y: auto;
+        /* Keyboard khulne par scroll allow karega */
+      }
+
+      .login-card {
+        padding: 30px 20px;
+        /* Mobile par card ke andar ki space thodi kam ki */
+        margin: 60px 0;
+        /* Keyboard khulne par scroll ke liye margin */
+      }
+
+      .login-card h1 {
+        font-size: 24px;
+        /* Heading thodi chhoti ki */
+      }
+
+      .back-home {
+        top: 15px;
+        left: 15px;
+        padding: 8px 12px;
+        font-size: 12px;
+        /* Button ko thoda compact kiya */
+      }
+
+      .toast {
+        width: 90%;
+        /* Toast message mobile me choda na ho */
+        left: 5%;
+        right: auto;
+      }
     }
   </style>
 </head>
