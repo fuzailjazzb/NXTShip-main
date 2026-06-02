@@ -65,11 +65,12 @@
 
     /* Signup Card */
     .signup-card {
-      width: 450px;
+      width: 90%;
+      max-width: 450px;
       background: rgba(255, 255, 255, 0.92);
       backdrop-filter: blur(12px);
       padding: 40px;
-      margin-top: 20%;
+      margin-top: 0;
       border-radius: 22px;
       box-shadow: 0 20px 55px rgba(0, 0, 0, 0.15);
       transform: perspective(1000px) rotateX(8deg);
@@ -224,6 +225,36 @@
       to {
         transform: translateX(0px);
         opacity: 1;
+      }
+    }
+
+  /* =========================================
+       📱 MOBILE RESPONSIVENESS FIX
+    ========================================= */
+    @media (max-width: 480px) {
+      body {
+        overflow-y: auto; /* Lamba form hone ki wajah se scroll zaroori hai */
+        align-items: flex-start; /* Form ko top se shuru karega taaki kate na */
+        padding: 40px 0; 
+      }
+      .signup-card {
+        padding: 30px 20px;
+        margin-top: 30px; /* Back button ke neeche thodi jagah */
+      }
+      .signup-card h1 {
+        font-size: 24px;
+      }
+      .back-home {
+        top: 15px;
+        left: 15px;
+        padding: 8px 12px;
+        font-size: 12px;
+      }
+      #toastPopup {
+        width: 90%;
+        left: 5%;
+        right: auto;
+        min-width: 0;
       }
     }
   </style>
